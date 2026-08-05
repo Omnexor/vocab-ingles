@@ -11,41 +11,57 @@
   <body>
     <header class="topbar">
       <div class="brand">
-        <span class="logo" aria-hidden="true">📘</span>
+        <span class="logo" aria-hidden="true">V</span>
         <div>
+          <span class="brand-kicker">Inglés práctico</span>
           <h1>Vocab</h1>
           <p class="tagline" id="saludo">Inglés, palabra a palabra</p>
         </div>
       </div>
       <div class="streak" id="streak-badge" title="Días seguidos estudiando">
-        <span class="flame" aria-hidden="true">🔥</span><span id="streak-count">0</span>
+        <span class="flame" aria-hidden="true">🔥</span>
+        <span class="streak-copy"><b id="streak-count">0</b><small>racha</small></span>
       </div>
     </header>
 
     <!-- Barra de progreso del día: siempre visible, dice qué te queda -->
     <div class="daybar" id="daybar">
-      <div class="daybar-track"><span id="daybar-fill"></span></div>
-      <p class="daybar-text" id="daybar-text"></p>
+      <div class="daybar-meta">
+        <span class="daybar-label">Tu sesión de hoy</span>
+        <p class="daybar-text" id="daybar-text" aria-live="polite"></p>
+      </div>
+      <div class="daybar-track" id="daybar-track" role="progressbar" aria-label="Progreso de la sesión" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="daybar-fill"></span>
+      </div>
     </div>
 
     <main id="app">
       <!-- HOY -->
       <section class="view is-active" data-view="hoy">
-        <div class="view-head">
+        <div class="view-head view-head-featured">
+          <span class="eyebrow">Plan diario</span>
           <h2>Palabras de hoy</h2>
           <p class="muted" id="hoy-sub">Cargando…</p>
         </div>
-        <div class="stepper" role="group" aria-label="Cuántas palabras hoy">
-          <span>Hoy quiero</span>
-          <button type="button" id="menos" aria-label="Menos palabras">−</button>
-          <b id="cuantas">5</b>
-          <button type="button" id="mas" aria-label="Más palabras">+</button>
-          <span>palabras nuevas</span>
+        <div class="daily-plan">
+          <div class="plan-copy">
+            <h3>Prepara tu sesión</h3>
+            <p>Elige un objetivo cómodo y el vocabulario que más te interesa.</p>
+          </div>
+          <div class="stepper" role="group" aria-label="Objetivo diario de palabras">
+            <span class="stepper-label">Objetivo diario</span>
+            <div class="stepper-control">
+              <button type="button" id="menos" aria-label="Reducir objetivo diario">−</button>
+              <b id="cuantas">5</b>
+              <button type="button" id="mas" aria-label="Aumentar objetivo diario">+</button>
+            </div>
+            <span class="stepper-unit">palabras nuevas</span>
+          </div>
+          <p class="hint-line">¿Qué quieres practicar?</p>
+          <div class="chips" id="chips-categoria" role="group" aria-label="Tipo de palabra"></div>
         </div>
-        <p class="hint-line">Elige qué tipo de palabras quieres aprender:</p>
-        <div class="chips" id="chips-categoria" role="group" aria-label="Tipo de palabra"></div>
         <div id="hoy-cards" class="cards"></div>
-        <div id="hoy-actions" class="row-actions"></div>
+        <div id="hoy-actions" class="row-actions today-actions"></div>
       </section>
 
       <!-- REPASO -->
@@ -185,7 +201,7 @@
 
     <!-- Navegación: abajo en el móvil (al alcance del pulgar), arriba en escritorio -->
     <nav class="tabs" id="tabs" aria-label="Secciones">
-      <button class="tab is-active" data-view="hoy">
+      <button class="tab is-active" data-view="hoy" aria-current="page">
         <span class="tab-ico" aria-hidden="true">☀️</span><span class="tab-txt">Hoy</span>
       </button>
       <button class="tab" data-view="repaso">

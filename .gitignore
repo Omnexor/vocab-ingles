@@ -7,3 +7,6 @@ node_modules/
 # Banco grande de vocabulario: se genera con `npm run vocabulario` y puede
 # pesar varios MB. No hace falta versionarlo; cada quien lo genera o lo copia.
 public/vocabulario.json
+
+.vercel
+.env*

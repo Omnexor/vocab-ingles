@@ -210,6 +210,7 @@ async function ensureDailyBatch() {
  * ------------------------------------------------------------------ */
 
 let voice = null;
+let speechRun = 0;
 function pickVoice() {
   const voices = speechSynthesis.getVoices();
   voice =
@@ -222,14 +223,24 @@ if ("speechSynthesis" in window) {
   speechSynthesis.onvoiceschanged = pickVoice;
 }
 
-function speak(text) {
-  if (!("speechSynthesis" in window)) return toast("Tu navegador no soporta audio");
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.9;
-  if (voice) u.voice = voice;
-  speechSynthesis.speak(u);
+function speak(text, { cancel = true } = {}) {
+  if (!("speechSynthesis" in window)) {
+    toast("Tu navegador no soporta audio");
+    return Promise.resolve();
+  }
+  if (cancel) {
+    speechRun += 1;
+    speechSynthesis.cancel();
+  }
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = 0.9;
+    if (voice) u.voice = voice;
+    u.onend = resolve;
+    u.onerror = resolve;
+    speechSynthesis.speak(u);
+  });
 }
 
 /* ------------------------------------------------------------------ *
@@ -294,13 +305,22 @@ function cambiarDiarias(n) {
     $("#set-daily").value = store.settings.daily;
     $("#daily-valor").textContent = store.settings.daily;
   }
+  updateMoreButtonLabel();
+}
+
+function updateMoreButtonLabel() {
+  const btn = $("#more-words");
+  if (!btn) return;
+  const hoy = store.daily.date === todayStr() ? store.daily.ids.map(byId).filter(Boolean).length : 0;
+  const faltan = Math.max(store.settings.daily - hoy, 0);
+  btn.textContent = `+ ${faltan ? `Completar objetivo · ${faltan}` : "Más palabras"}`;
 }
 
 function renderChipsCategoria() {
   const cont = $("#chips-categoria");
   cont.innerHTML = CATEGORIAS.map(
     (c) =>
-      `<button class="chip ${store.settings.category === c.id ? "is-active" : ""}" data-cat="${c.id}">${esc(c.nombre)}</button>`,
+      `<button class="chip ${store.settings.category === c.id ? "is-active" : ""}" data-cat="${c.id}" aria-pressed="${store.settings.category === c.id}">${esc(c.nombre)}</button>`,
   ).join("");
 
   $$(".chip", cont).forEach((b) => {
@@ -350,17 +370,27 @@ async function renderHoy() {
   cards.innerHTML = aviso + words.map((w) => wordCard(w, { blurred: store.settings.tapar })).join("");
 
   const pendientes = dueWords().length;
+  const faltanObjetivo = Math.max(store.settings.daily - words.length, 0);
   actions.innerHTML = `
-    <button class="btn" id="go-repaso">${pendientes ? `Repasar (${pendientes})` : "Nada que repasar"}</button>
-    <button class="btn btn-ghost" id="listen-all">🔊 Escuchar todas</button>
-    <button class="btn btn-ghost" id="more-words">+ Más palabras</button>
-    <button class="btn btn-ghost" id="toggle-tapar">${store.settings.tapar ? "👁 Mostrar todo" : "🙈 Taparme la respuesta"}</button>`;
+    <button class="btn" id="go-repaso">${pendientes ? `Repasar ahora · ${pendientes}` : "Repaso al día ✓"}</button>
+    <button class="btn btn-ghost" id="listen-all"><span aria-hidden="true">🔊</span> Escuchar</button>
+    <button class="btn btn-ghost" id="more-words">+ ${faltanObjetivo ? `Completar objetivo · ${faltanObjetivo}` : "Más palabras"}</button>
+    <button class="btn btn-quiet" id="toggle-tapar">${store.settings.tapar ? "👁 Mostrar respuestas" : "🙈 Ocultar respuestas"}</button>`;
 
   $("#go-repaso").disabled = !pendientes;
   $("#go-repaso").onclick = () => showView("repaso");
-  $("#listen-all").onclick = () => {
+  $("#listen-all").onclick = async () => {
+    const btn = $("#listen-all");
+    const run = ++speechRun;
+    btn.disabled = true;
+    btn.innerHTML = `<span aria-hidden="true">🔊</span> Escuchando…`;
     speechSynthesis.cancel();
-    words.forEach((w) => speak(w.en));
+    for (const w of words) {
+      if (run !== speechRun) break;
+      await speak(w.en, { cancel: false });
+    }
+    btn.disabled = false;
+    btn.innerHTML = `<span aria-hidden="true">🔊</span> Escuchar`;
   };
   $("#more-words").onclick = () => addMoreWords();
   $("#toggle-tapar").onclick = () => {
@@ -379,7 +409,10 @@ async function addMoreWords() {
   btn.disabled = true;
   btn.textContent = "Generando…";
   try {
-    const { words: incoming, source } = await obtenerPalabras(store.settings.daily);
+    const hoy = store.daily.date === todayStr() ? store.daily.ids.map(byId).filter(Boolean).length : 0;
+    const faltanObjetivo = Math.max(store.settings.daily - hoy, 0);
+    const cantidad = faltanObjetivo || store.settings.daily;
+    const { words: incoming, source } = await obtenerPalabras(cantidad);
     const added = incoming.map(addWord).filter(Boolean);
 
     if (!added.length) {
@@ -389,12 +422,15 @@ async function addMoreWords() {
 
     store.daily.ids.push(...added.map((w) => w.id));
     save();
-    $("#hoy-cards").insertAdjacentHTML("beforeend", added.map((w) => wordCard(w)).join(""));
+    $("#hoy-cards").insertAdjacentHTML(
+      "beforeend",
+      added.map((w) => wordCard(w, { blurred: store.settings.tapar })).join(""),
+    );
     $("#hoy-sub").textContent = `${store.daily.ids.length} palabras hoy · ${nombreCategoria(store.settings.category).toLowerCase()}`;
     toast(`+${added.length} ${source === "seed" ? "de la lista local" : "palabras nuevas"}`);
   } finally {
     btn.disabled = false;
-    btn.textContent = "+ Más palabras";
+    updateMoreButtonLabel();
   }
   updateChrome();
 }
@@ -1342,8 +1378,13 @@ function renderAjustes() {
 
 function showView(name) {
   if (name !== "juegos") pararJuego();
-  $$(".tab").forEach((t) => t.classList.toggle("is-active", t.dataset.view === name));
+  $$(".tab").forEach((t) => {
+    const active = t.dataset.view === name;
+    t.classList.toggle("is-active", active);
+    t.setAttribute("aria-current", active ? "page" : "false");
+  });
   $$(".view").forEach((v) => v.classList.toggle("is-active", v.dataset.view === name));
+  if (name === "hoy") renderHoy();
   if (name === "repaso") renderRepaso(true);
   if (name === "juegos") renderJuegosIndex();
   if (name === "lecciones") renderLeccionesIndex();
@@ -1370,6 +1411,7 @@ function updateChrome() {
   const pct = total ? Math.round((hechas / total) * 100) : store.words.length ? 100 : 0;
 
   $("#daybar-fill").style.width = `${pct}%`;
+  $("#daybar-track").setAttribute("aria-valuenow", String(pct));
   $("#daybar-text").innerHTML = pendientes
     ? `<b>${pendientes}</b> ${pendientes === 1 ? "palabra" : "palabras"} por repasar${hechas ? ` · ${hechas} ya ${hechas === 1 ? "hecha" : "hechas"}` : ""}`
     : store.words.length
@@ -1480,7 +1522,6 @@ $("#file-import").addEventListener("change", async (e) => {
     save();
     toast("Copia restaurada");
     showView("hoy");
-    renderHoy();
   } catch (err) {
     toast(`No se pudo restaurar: ${err.message}`);
   } finally {
@@ -1495,7 +1536,6 @@ $("#btn-reset").addEventListener("click", () => {
   save();
   toast("Todo borrado.");
   showView("hoy");
-  renderHoy();
 });
 
 /**
