@@ -1,0 +1,16 @@
+{
+  "name": "vocab-ingles",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "App de vocabulario de ingles: palabra, traduccion y pronunciacion escrita en espanol",
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "vocabulario": "node scripts/generar-vocabulario.mjs",
+    "dev:vercel": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0"
+  }
+}

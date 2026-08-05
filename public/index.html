@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f1220" />
+    <title>Vocab — inglés cada día</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📘</text></svg>" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">📘</span>
+        <div>
+          <h1>Vocab</h1>
+          <p class="tagline" id="saludo">Inglés, palabra a palabra</p>
+        </div>
+      </div>
+      <div class="streak" id="streak-badge" title="Días seguidos estudiando">
+        <span class="flame" aria-hidden="true">🔥</span><span id="streak-count">0</span>
+      </div>
+    </header>
+
+    <!-- Barra de progreso del día: siempre visible, dice qué te queda -->
+    <div class="daybar" id="daybar">
+      <div class="daybar-track"><span id="daybar-fill"></span></div>
+      <p class="daybar-text" id="daybar-text"></p>
+    </div>
+
+    <main id="app">
+      <!-- HOY -->
+      <section class="view is-active" data-view="hoy">
+        <div class="view-head">
+          <h2>Palabras de hoy</h2>
+          <p class="muted" id="hoy-sub">Cargando…</p>
+        </div>
+        <div class="stepper" role="group" aria-label="Cuántas palabras hoy">
+          <span>Hoy quiero</span>
+          <button type="button" id="menos" aria-label="Menos palabras">−</button>
+          <b id="cuantas">5</b>
+          <button type="button" id="mas" aria-label="Más palabras">+</button>
+          <span>palabras nuevas</span>
+        </div>
+        <p class="hint-line">Elige qué tipo de palabras quieres aprender:</p>
+        <div class="chips" id="chips-categoria" role="group" aria-label="Tipo de palabra"></div>
+        <div id="hoy-cards" class="cards"></div>
+        <div id="hoy-actions" class="row-actions"></div>
+      </section>
+
+      <!-- REPASO -->
+      <section class="view" data-view="repaso">
+        <div class="view-head">
+          <h2>Repaso</h2>
+          <p class="muted" id="repaso-sub"></p>
+        </div>
+        <div id="quiz"></div>
+        <p class="atajos">Atajos: <kbd>espacio</kbd> girar · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> calificar · <kbd>0</kbd> no lo sé</p>
+      </section>
+
+      <!-- JUEGOS -->
+      <section class="view" data-view="juegos">
+        <div id="juegos-index">
+          <div class="view-head">
+            <h2>Juegos</h2>
+            <p class="muted" id="juegos-sub"></p>
+          </div>
+          <div id="juegos-lista" class="game-grid"></div>
+          <p class="hint-line">Si fallas una palabra jugando, vuelve sola a la cola de repaso.</p>
+        </div>
+        <div id="juego-activo" hidden></div>
+      </section>
+
+      <!-- LECCIONES -->
+      <section class="view" data-view="lecciones">
+        <div id="lecciones-index">
+          <div class="view-head">
+            <h2>Lecciones</h2>
+            <p class="muted" id="lecciones-sub"></p>
+          </div>
+          <div id="lecciones-lista" class="lesson-grid"></div>
+        </div>
+        <div id="leccion-detalle" hidden></div>
+      </section>
+
+      <!-- LISTA -->
+      <section class="view" data-view="lista">
+        <div class="view-head">
+          <h2>Mis palabras</h2>
+          <p class="muted" id="lista-sub"></p>
+        </div>
+        <div class="filtros">
+          <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" />
+          <select id="filtro-lista" class="input">
+            <option value="todas">Todas</option>
+            <option value="hoy">Toca repasarlas</option>
+            <option value="dificiles">Se me resisten</option>
+            <option value="dominadas">Ya dominadas</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="word-table">
+            <thead>
+              <tr>
+                <th>Inglés</th>
+                <th>Pronunciación</th>
+                <th>Significado</th>
+                <th><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="lista"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- AJUSTES -->
+      <section class="view" data-view="ajustes">
+        <div class="view-head">
+          <h2>Ajustes</h2>
+          <p class="muted">Todo se guarda en este navegador. Haz una copia de vez en cuando.</p>
+        </div>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="ajustes-grupo">
+          <h3>Qué quiero aprender</h3>
+
+          <label class="field">
+            <span>Nivel</span>
+            <select id="set-level" class="input">
+              <option value="basico">Básico (A1–A2)</option>
+              <option value="intermedio">Intermedio (B1–B2)</option>
+              <option value="avanzado">Avanzado (C1–C2)</option>
+            </select>
+            <small>Marca lo difíciles que serán las palabras nuevas.</small>
+          </label>
+
+          <label class="field">
+            <span>Tipo de palabra</span>
+            <select id="set-categoria" class="input"></select>
+            <small>Lo mismo que los botones de la pantalla Hoy.</small>
+          </label>
+
+          <label class="field">
+            <span>Tema (opcional)</span>
+            <input
+              id="set-topic"
+              class="input"
+              type="text"
+              list="temas"
+              placeholder="Ej: viajes, reuniones de trabajo…"
+              autocomplete="off"
+            />
+            <datalist id="temas">
+              <option value="reuniones y emails de trabajo"></option>
+              <option value="viajes y aeropuerto"></option>
+              <option value="expresiones para conversar"></option>
+              <option value="tecnología e informática"></option>
+              <option value="restaurantes y comida"></option>
+              <option value="salud y médico"></option>
+            </datalist>
+            <small>Se combina con el tipo de palabra. Déjalo vacío para vocabulario general.</small>
+          </label>
+
+          <label class="field">
+            <span>Palabras nuevas al día: <b id="daily-valor">5</b></span>
+            <input id="set-daily" class="slider" type="range" min="1" max="50" step="1" />
+            <small>De 1 a 50. Con 5 al día son unas 1.800 palabras en un año.</small>
+          </label>
+        </div>
+
+        <div class="ajustes-grupo">
+          <h3>Mis datos</h3>
+          <div class="row-actions">
+            <button class="btn btn-ghost" id="btn-export">⬇ Guardar copia</button>
+            <button class="btn btn-ghost" id="btn-import">⬆ Restaurar copia</button>
+          </div>
+          <input type="file" id="file-import" accept="application/json,.json" hidden />
+          <div class="row-actions">
+            <button class="btn btn-danger" id="btn-reset">Borrar todo y empezar de cero</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Navegación: abajo en el móvil (al alcance del pulgar), arriba en escritorio -->
+    <nav class="tabs" id="tabs" aria-label="Secciones">
+      <button class="tab is-active" data-view="hoy">
+        <span class="tab-ico" aria-hidden="true">☀️</span><span class="tab-txt">Hoy</span>
+      </button>
+      <button class="tab" data-view="repaso">
+        <span class="tab-ico" aria-hidden="true">🔁</span><span class="tab-txt">Repaso</span>
+        <span class="badge" id="due-badge" hidden>0</span>
+      </button>
+      <button class="tab" data-view="juegos">
+        <span class="tab-ico" aria-hidden="true">🎮</span><span class="tab-txt">Juegos</span>
+      </button>
+      <button class="tab" data-view="lecciones">
+        <span class="tab-ico" aria-hidden="true">📖</span><span class="tab-txt">Lecciones</span>
+      </button>
+      <button class="tab" data-view="lista">
+        <span class="tab-ico" aria-hidden="true">📋</span><span class="tab-txt">Palabras</span>
+      </button>
+      <button class="tab" data-view="ajustes">
+        <span class="tab-ico" aria-hidden="true">⚙️</span><span class="tab-txt">Ajustes</span>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
