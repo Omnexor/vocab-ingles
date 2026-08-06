@@ -128,10 +128,15 @@ export function conjugar(base, { es = "" } = {}) {
     };
   }
 
+  const irr = PORBASE.get(v);
   return {
     base: v,
     es,
-    irregular: PORBASE.has(v),
+    irregular: Boolean(irr),
+    // Las tres formas en pronunciación figurada y, si la americana no es la
+    // que se enseña de siempre (burned, gotten, snuck), el porqué.
+    pron: irr?.pron || "",
+    nota: irr?.nota || "",
     formas: { tercera: t3, gerundio: ger, pasado: pas, participio: par },
     tiempos: [
       { id: "presente", nombre: "Presente simple", yo: `I ${v}`, el: `he ${t3}`, nota: "Rutinas y hechos. La -s de la tercera persona es el fallo más típico." },
@@ -152,7 +157,7 @@ export function conjugar(base, { es = "" } = {}) {
 
 /** Verbos que merece la pena ofrecer para conjugar: los irregulares y los regulares frecuentes. */
 export function verbosConjugables(banco) {
-  const irregulares = IRREGULARES.map((v) => ({ base: v.base, es: v.es, irregular: true }));
+  const irregulares = IRREGULARES.map((v) => ({ base: v.base, es: v.es, irregular: true, pron: v.pron, nota: v.nota || "" }));
   const yaEstan = new Set(irregulares.map((v) => v.base));
   const regulares = (banco || [])
     .filter((w) => w.cat === "verbos" && /^[a-z]+$/.test(w.en) && !yaEstan.has(w.en) && !esModal(w.en))

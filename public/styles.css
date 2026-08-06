@@ -478,12 +478,18 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 .rl-es { color: var(--muted); font-size: 14px; }
 
 /* Panel de verbos */
+.verbos-cuenta {
+  margin: 10px 0 0;
+  font-size: 13px;
+}
 .verb-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin: 14px 0 18px;
-  max-height: 190px;
+  margin: 10px 0 18px;
+  /* Los 187 irregulares caben aquí dentro: se recorren con scroll propio sin
+     empujar la tabla de tiempos fuera de la pantalla. */
+  max-height: 240px;
   overflow-y: auto;
 }
 .verb-chip {
@@ -550,8 +556,71 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
   color: var(--muted);
 }
 .verbo-formas b { font-size: 15px; word-break: break-word; }
+.verbo-pron {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  word-break: break-word;
+}
+
+.btn-oir-tres { width: 100%; margin-bottom: 12px; }
+.verbo-aviso {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
 
 .verbo-tabla td { vertical-align: top; }
+
+/* En móvil la tabla de tiempos se apila.
+   A tres columnas, la de "Tiempo" lleva el nombre Y su explicación, así que se
+   comía todo el ancho y empujaba las conjugaciones fuera de la pantalla: abrías
+   un verbo en el teléfono y no veías una sola forma sin arrastrar de lado.
+   Apilada, cada tiempo es un bloque con sus dos formas debajo, etiquetadas. */
+@media (max-width: 620px) {
+  .verbo-tabla,
+  .verbo-tabla tbody,
+  .verbo-tabla tr,
+  .verbo-tabla td {
+    display: block;
+    width: 100%;
+  }
+  .verbo-tabla thead { display: none; }
+  .verbo-tabla tr {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .verbo-tabla tr:last-child { border-bottom: 0; }
+  .verbo-tabla td {
+    padding: 3px 0;
+    border-bottom: 0;
+  }
+  .verbo-tabla td.cell-en {
+    white-space: normal;
+    margin-bottom: 7px;
+  }
+  .verbo-tabla td[data-quien] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+  }
+  .verbo-tabla td[data-quien]::before {
+    content: attr(data-quien);
+    flex: 0 0 62px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .verbo-tabla td[data-quien] .speak-sm { margin-left: auto; }
+}
 .verbo-nota {
   display: block;
   margin-top: 3px;
@@ -1347,6 +1416,39 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
   border-style: solid;
   border-color: var(--warn);
   color: var(--warn);
+}
+
+/* Pista: un empujón. Va en ámbar para distinguirla de "No lo sé", que es
+   rendirse, y del botón principal, que es responder. */
+.btn-pista {
+  flex: 1 1 auto;
+  background: transparent;
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  font-weight: 650;
+  box-shadow: none;
+}
+.btn-pista:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  box-shadow: none;
+}
+.pista-box {
+  margin: 0 0 12px;
+  padding: 11px 14px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--warn) 10%, var(--bg-soft));
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.pista-box em { color: var(--muted); }
+.pista-letras {
+  display: inline-block;
+  font-family: var(--mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  word-break: break-word;
 }
 
 .explain.nose { border-left-color: var(--warn); }

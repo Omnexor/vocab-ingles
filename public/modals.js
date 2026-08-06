@@ -29,6 +29,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["must", "might", "could"],
     correcta: 0,
     why: "Obligación fuerte, y encima legal: must. «Might» es posibilidad y «could» capacidad.",
+    pista: "Es una ley. No es que convenga: es que no hay opción.",
   },
   {
     frase: "You look tired. You ___ go to bed earlier.",
@@ -36,6 +37,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["must", "should", "can"],
     correcta: 1,
     why: "Es un consejo, no una obligación: should. Con «must» sonaría a orden.",
+    pista: "Le estás dando un consejo, no una orden.",
   },
   {
     frase: "___ you speak Japanese?",
@@ -43,6 +45,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["Can", "Must", "Should"],
     correcta: 0,
     why: "Capacidad: can. Ojo, en español decimos «saber», pero en inglés es can, no «know».",
+    pista: "Preguntas por una habilidad aprendida, no por permiso.",
   },
   {
     frase: "It's cloudy. It ___ rain later.",
@@ -50,6 +53,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["must", "might", "should"],
     correcta: 1,
     why: "Posibilidad sin seguridad: might. «Must» sería estar convencido.",
+    pista: "No lo sabes: solo es una posibilidad.",
   },
   {
     frase: "___ I use your phone, please?",
@@ -57,6 +61,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["May", "Must", "Will"],
     correcta: 0,
     why: "Permiso educado: may (o could). «Can» también vale, pero es más informal.",
+    pista: "Pides permiso, y con educación.",
   },
   {
     frase: "I ___ work on Saturdays. It's in my contract.",
@@ -64,6 +69,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["have to", "should", "might"],
     correcta: 0,
     why: "Obligación que viene de fuera (el contrato): have to. Must suena a decisión propia.",
+    pista: "La obligación te la impone algo de fuera, no la eliges tú.",
   },
   {
     frase: "She isn't answering. She ___ be busy.",
@@ -71,6 +77,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["must", "should", "can"],
     correcta: 0,
     why: "Deducción lógica: must. En español es «debe de», que se confunde con «debe».",
+    pista: "No es obligación: estás deduciendo lo que pasa, y bastante seguro.",
   },
   {
     frase: "___ you help me with this box?",
@@ -78,6 +85,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["Would", "Must", "Might"],
     correcta: 0,
     why: "Petición educada: would (o could). «Must» sería exigir.",
+    pista: "Es una petición educada, no una exigencia.",
   },
   {
     frase: "When I was young, I ___ run for hours.",
@@ -85,6 +93,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["can", "could", "must"],
     correcta: 1,
     why: "Capacidad en pasado: could, el pasado de can.",
+    pista: "Habilidad, pero en pasado.",
   },
   {
     frase: "You ___ smoke here. It's forbidden.",
@@ -92,6 +101,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["mustn't", "shouldn't", "don't have to"],
     correcta: 0,
     why: "Prohibición: mustn't. Ojo: «don't have to» es lo contrario, significa que no hace falta.",
+    pista: "Está prohibido. Cuidado: una de las opciones significa justo lo contrario, «no hace falta».",
   },
   {
     frase: "It's Sunday, so you ___ get up early.",
@@ -99,6 +109,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["mustn't", "don't have to", "shouldn't"],
     correcta: 1,
     why: "No hay obligación (pero puedes si quieres): don't have to. «Mustn't» sería prohibirlo.",
+    pista: "Nadie te prohíbe madrugar: es que no hace falta.",
   },
   {
     frase: "I ___ have another coffee. I can't sleep at night.",
@@ -106,6 +117,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["mustn't", "shouldn't", "couldn't"],
     correcta: 1,
     why: "Consejo en negativo: shouldn't. No está prohibido, es que no conviene.",
+    pista: "Nadie te lo prohíbe: es que no te conviene.",
   },
   {
     frase: "___ you like something to drink?",
@@ -113,6 +125,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["Would", "Will", "Should"],
     correcta: 0,
     why: "«Would you like…?» es la fórmula fija para ofrecer. Nunca «do you want» si quieres ser educado.",
+    pista: "Fórmula fija para ofrecer algo con educación.",
   },
   {
     frase: "Don't worry, I ___ help you tomorrow.",
@@ -120,6 +133,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["will", "would", "might"],
     correcta: 0,
     why: "Decisión que tomas en el momento: will.",
+    pista: "Lo decides ahora mismo, mientras hablas.",
   },
   {
     frase: "He ___ be at home; his car isn't here.",
@@ -127,6 +141,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["mustn't", "can't", "shouldn't"],
     correcta: 1,
     why: "Deducción negativa (es imposible): can't. El contrario de «must be» es «can't be», no «mustn't be».",
+    pista: "Deduces que es imposible. Ojo: el contrario de «must be» no es «mustn’t be».",
   },
   {
     frase: "You ___ have told me! I had no idea.",
@@ -134,6 +149,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["could", "can", "must"],
     correcta: 0,
     why: "Reproche por algo no hecho: could have + participio.",
+    pista: "Le reprochas algo que pudo hacer y no hizo.",
   },
   {
     frase: "Students ___ use dictionaries during the exam.",
@@ -141,6 +157,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["may", "might", "would"],
     correcta: 0,
     why: "Permiso en contexto formal: may. «Might» sería posibilidad, no permiso.",
+    pista: "Permiso, en un contexto formal y por escrito.",
   },
   {
     frase: "I ___ swim when I was five, but now I can.",
@@ -148,6 +165,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["can't", "couldn't", "mustn't"],
     correcta: 1,
     why: "Falta de capacidad en pasado: couldn't.",
+    pista: "Falta de habilidad, y en pasado.",
   },
   {
     frase: "We ___ book a table? The restaurant gets full.",
@@ -155,6 +173,7 @@ export const EJERCICIOS_MODALES = [
     opciones: ["Should", "Must", "Can"],
     correcta: 0,
     why: "Pedir consejo o sugerir: should.",
+    pista: "Pides opinión o sugieres algo.",
   },
   {
     frase: "If I had more time, I ___ travel more.",
@@ -162,5 +181,6 @@ export const EJERCICIOS_MODALES = [
     opciones: ["will", "would", "should"],
     correcta: 1,
     why: "Condicional: would. Es la terminación «-ría» del español.",
+    pista: "La frase en español acaba en «-ría».",
   },
 ];

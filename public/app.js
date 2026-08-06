@@ -905,11 +905,33 @@ function cambiarModoLista(modo) {
 
 let verboAbierto = null;
 let filtroVerbo = "";
+let tipoVerbo = "todos"; // todos | irregulares | regulares
+
+// Los irregulares se pintan enteros: son la lista que se memoriza y hay que
+// poder recorrerla de arriba abajo. Los regulares no, que son cientos y todos
+// hacen lo mismo: ahí se busca el que quieras y punto.
+const TOPE_REGULARES = 80;
 
 function renderPanelVerbos() {
   const lista = verbosConjugables(listaLocal());
   const q = norm(filtroVerbo);
-  const visibles = (q ? lista.filter((v) => v.base.startsWith(q) || norm(v.es).includes(q)) : lista).slice(0, 60);
+  const delTipo = lista.filter(
+    (v) => tipoVerbo === "todos" || (tipoVerbo === "irregulares" ? v.irregular : !v.irregular),
+  );
+  const casan = q ? delTipo.filter((v) => v.base.startsWith(q) || norm(v.es).includes(q)) : delTipo;
+  const tope = tipoVerbo === "irregulares" ? casan.length : TOPE_REGULARES;
+  const visibles = casan.slice(0, tope);
+
+  $$("#chips-verbos .chip").forEach((c) => c.classList.toggle("is-active", c.dataset.tipo === tipoVerbo));
+
+  const nIrr = lista.filter((v) => v.irregular).length;
+  $("#verbos-cuenta").textContent = !casan.length
+    ? ""
+    : visibles.length < casan.length
+      ? `Mostrando ${visibles.length} de ${casan.length}. Busca arriba para llegar al que quieras.`
+      : tipoVerbo === "irregulares"
+        ? `Los ${casan.length} verbos irregulares, de la a a la z.`
+        : `${casan.length} verbos · ${nIrr} irregulares (★).`;
 
   $("#lista-verbos").innerHTML = visibles.length
     ? visibles
@@ -945,6 +967,11 @@ function renderVerboDetalle(lista) {
   if (!c) return;
 
   const f = c.formas;
+  // Solo los irregulares traen pronunciación de las tres formas: es justo
+  // donde no se adivina (read → "red", wound → "uáund").
+  const prons = c.pron ? c.pron.split(" · ") : [];
+  const dice = (n) => (prons[n] ? `<span class="verbo-pron">${esc(prons[n])}</span>` : "");
+
   box.innerHTML = `
     <article class="card verbo-card">
       <div class="verbo-head">
@@ -958,12 +985,19 @@ function renderVerboDetalle(lista) {
       </div>
 
       <div class="verbo-formas">
-        <div><small>infinitivo</small><b lang="en">${esc(c.base)}</b></div>
+        <div><small>infinitivo</small><b lang="en">${esc(c.base)}</b>${dice(0)}</div>
         <div><small>3ª persona</small><b lang="en">${esc(f.tercera)}</b></div>
         <div><small>gerundio</small><b lang="en">${esc(f.gerundio || "—")}</b></div>
-        <div><small>pasado</small><b lang="en">${esc(f.pasado)}</b></div>
-        <div><small>participio</small><b lang="en">${esc(f.participio)}</b></div>
+        <div><small>pasado</small><b lang="en">${esc(f.pasado)}</b>${dice(1)}</div>
+        <div><small>participio</small><b lang="en">${esc(f.participio)}</b>${dice(2)}</div>
       </div>
+
+      ${
+        c.irregular
+          ? `<button class="btn btn-ghost btn-oir-tres" data-speak="${esc(c.base)} , ${esc(String(f.pasado).replace("/", " or "))} , ${esc(f.participio)}">🔊 Oír las tres formas seguidas</button>`
+          : ""
+      }
+      ${c.nota ? `<p class="verbo-aviso">💡 ${esc(c.nota)}</p>` : ""}
 
       <div class="table-wrap">
         <table class="word-table verbo-tabla">
@@ -973,10 +1007,12 @@ function renderVerboDetalle(lista) {
           <tbody>
             ${c.tiempos
               .map(
+                // data-quien reetiqueta las columnas en móvil, donde la tabla
+                // se apila en bloques y la cabecera deja de verse.
                 (t) => `<tr>
                   <td class="cell-en">${esc(t.nombre)}<small class="verbo-nota">${esc(t.nota)}</small></td>
-                  <td lang="en">${esc(t.yo)}<button class="speak speak-sm" data-speak="${esc(t.yo)}" aria-label="Escuchar">🔊</button></td>
-                  <td lang="en">${esc(t.el)}<button class="speak speak-sm" data-speak="${esc(t.el)}" aria-label="Escuchar">🔊</button></td>
+                  <td lang="en" data-quien="yo">${esc(t.yo)}<button class="speak speak-sm" data-speak="${esc(t.yo)}" aria-label="Escuchar">🔊</button></td>
+                  <td lang="en" data-quien="él / ella">${esc(t.el)}<button class="speak speak-sm" data-speak="${esc(t.el)}" aria-label="Escuchar">🔊</button></td>
                 </tr>`,
               )
               .join("")}
@@ -1035,7 +1071,7 @@ const JUEGOS = [
     id: "ordena",
     emoji: "🔤",
     nombre: "Ordena las letras",
-    desc: "Toca las letras en el orden correcto para formar la palabra en inglés.",
+    desc: "Toca las letras en el orden correcto para formar la palabra en inglés. Si te atascas, la pista te coloca la siguiente.",
     minimo: 4,
     record: "aciertos",
   },
@@ -1059,7 +1095,7 @@ const JUEGOS = [
     id: "irregulares",
     emoji: "🧩",
     nombre: "Verbos irregulares",
-    desc: "go · went · gone. Te falta una forma y la escribes. El hueso clásico.",
+    desc: `go · went · gone. Te falta una forma y la escribes. Los ${IRREGULARES.length} verbos irregulares.`,
     minimo: 0,
     record: "aciertos",
   },
@@ -1211,8 +1247,12 @@ const record = (id) => store.games?.[id] ?? 0;
 function guardarRecord(id, valor, menorEsMejor = false) {
   store.games = store.games || {};
   const actual = store.games[id];
+  // Sin marca previa cuenta como récord, pero un cero no: ni la primera
+  // partida debería celebrar un 0 de 10, ni una resuelta entera a base de
+  // pistas, que para el récord vale lo mismo que un cero.
+  const esMarca = menorEsMejor || valor > 0;
   const mejor =
-    actual === undefined ? true : menorEsMejor ? valor < actual : valor > actual;
+    actual === undefined ? esMarca : menorEsMejor ? valor < actual : valor > actual;
   if (mejor) store.games[id] = valor;
   registerStudyDay();
   save();
@@ -1312,6 +1352,22 @@ function distractores(pool, correcta, n) {
     if (elegidas.length === n) break;
   }
   return elegidas;
+}
+
+/**
+ * Las opciones se sortean UNA sola vez por pregunta.
+ *
+ * Se rebarajaban en cada repintado, y como `distractores` elige al azar, al
+ * responder no solo cambiaban de sitio: podían cambiar de contenido. La opción
+ * que acababas de fallar desaparecía de la lista y nunca llegabas a ver tu
+ * propio error marcado en rojo. Ahora se guardan con el índice de la pregunta.
+ */
+function opcionesFijas(construir) {
+  if (juego.opcionesIdx !== juego.i) {
+    juego.opciones = construir();
+    juego.opcionesIdx = juego.i;
+  }
+  return juego.opciones;
 }
 
 /** Elige n palabras con significados distintos entre sí. */
@@ -1425,13 +1481,94 @@ function abrirJuego(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/** Desglose honesto: aciertos, fallos y las que reconociste no saber. */
+/** Desglose honesto: aciertos, fallos, pistas y las que reconociste no saber. */
 function detalle(j, esRecord) {
   const partes = [];
   if (j.fallos) partes.push(`${j.fallos} ${j.fallos === 1 ? "fallo" : "fallos"}`);
   if (j.nose) partes.push(`${j.nose} sin saber`);
+  if (j.pistas) partes.push(`${j.pistas} con pista${j.conPista ? " (no cuentan para el récord)" : ""}`);
   if (esRecord) partes.push("nuevo récord");
-  return partes.length ? partes.join(" · ") : "Sin un solo fallo";
+  return partes.length ? partes.join(" · ") : "Sin un solo fallo, y sin pistas";
+}
+
+/**
+ * Suma un acierto, y apunta si venía con pista.
+ *
+ * El marcador de la partida los cuenta todos —los has respondido tú—, pero el
+ * récord no: si valiera pedir pista diez veces, dejaría de medir nada y nunca
+ * más podrías batirlo sin pistas.
+ */
+function acertar() {
+  juego.aciertos += 1;
+  if (juego.pista) juego.conPista = (juego.conPista || 0) + 1;
+}
+
+/** Lo que cuenta para el récord: los aciertos que te salieron solo. */
+const limpios = (j) => j.aciertos - (j.conPista || 0);
+
+/* ---------- 💡 Pistas ---------- */
+
+/**
+ * Una pista es un empujón, no la respuesta.
+ *
+ * Dar la primera letra, o la frase en español, es una *pista de recuperación*:
+ * te obliga a sacar la palabra de tu memoria igualmente, y eso es justo lo que
+ * fija el recuerdo. Ver la respuesta entera no enseña nada, y por eso "No lo
+ * sé" sigue existiendo aparte y cuenta distinto: manda la palabra al repaso.
+ *
+ * Acertar con pista cuenta como acierto —has llegado tú— pero se apunta y sale
+ * en el resultado. Si necesitas pista en ocho de diez, te interesa saberlo.
+ *
+ * No todos los juegos la llevan: en Emparejar es un juego de memoria contra el
+ * reloj, en Falsos amigos solo hay tres opciones y una es la trampa, y en Las
+ * que confundes distinguir las dos ES el ejercicio. Ahí una pista lo rompe.
+ */
+function botonPista(niveles = 1) {
+  const usadas = juego?.pista || 0;
+  if (usadas >= niveles) return "";
+  return `<button class="btn btn-pista" id="pista">💡 Pista${niveles > 1 ? ` (${usadas + 1} de ${niveles})` : ""}</button>`;
+}
+
+function cajaPista(texto) {
+  return juego?.pista && texto ? `<p class="pista-box" aria-live="polite">💡 ${texto}</p>` : "";
+}
+
+/** Apunta la pista y repinta. Cuenta preguntas con pista, no clics. */
+function usarPista(repintar) {
+  if (!juego) return;
+  if (!juego.pista) juego.pistas = (juego.pistas || 0) + 1;
+  juego.pista = (juego.pista || 0) + 1;
+  repintar();
+}
+
+/** "Empieza por «h» y tiene 5 letras" / "Son 2 palabras y empieza por «g»". */
+function pistaInicial(en) {
+  const trozos = String(en).trim().split(/\s+/);
+  if (trozos.length > 1) return `Son ${trozos.length} palabras y empieza por «<b>${esc(trozos[0][0])}</b>».`;
+  const n = trozos[0].length;
+  return `Empieza por «<b>${esc(trozos[0][0])}</b>» y tiene ${n} ${n === 1 ? "letra" : "letras"}.`;
+}
+
+/** h _ _ _ _ → ho _ _ _. Se enseñan las n primeras letras y el resto en huecos. */
+function esqueleto(en, n) {
+  return String(en)
+    .split("")
+    .map((ch, i) => (/\s/.test(ch) ? "&nbsp;&nbsp;" : i < n ? esc(ch) : "_"))
+    .join(" ");
+}
+
+/**
+ * Repinta un juego de escribir sin perder lo que llevabas tecleado.
+ *
+ * Pedir pista vuelve a montar el HTML entero, así que el campo nacería vacío y
+ * te borraría media respuesta justo cuando pides ayuda.
+ */
+function repintarConTexto(repintar, selector, texto) {
+  repintar();
+  const campo = $(selector);
+  if (!campo) return;
+  campo.value = texto;
+  campo.focus({ preventScroll: true });
 }
 
 function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
@@ -1475,7 +1612,7 @@ function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
 /* ---------- ⚡ Respuesta rápida ---------- */
 
 function iniciarRapida(pool) {
-  juego = { pool, aciertos: 0, fallos: 0, nose: 0, restante: 60, actual: null, bloqueado: false };
+  juego = { pool, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, restante: 60, actual: null, bloqueado: false };
   clearInterval(gameTimer);
   gameTimer = setInterval(() => {
     if (!juego) return clearInterval(gameTimer);
@@ -1484,7 +1621,7 @@ function iniciarRapida(pool) {
     if (reloj) reloj.textContent = juego.restante;
     if (juego.restante <= 0) {
       clearInterval(gameTimer);
-      const esRecord = guardarRecord("rapida", juego.aciertos);
+      const esRecord = guardarRecord("rapida", limpios(juego));
       pantallaFinal(
         `${juego.aciertos} aciertos`,
         detalle(juego, esRecord),
@@ -1497,13 +1634,17 @@ function iniciarRapida(pool) {
   siguienteRapida();
 }
 
-function siguienteRapida() {
+function siguienteRapida(mantenerPista = false) {
   if (!juego) return;
   const candidatas = juego.pool.filter((x) => x.en !== juego.actual?.en);
-  const w = mezclar(candidatas.length ? candidatas : juego.pool)[0];
-  const opciones = mezclar([w, ...distractores(juego.pool, w, 3)]);
+  const w = mantenerPista ? juego.actual : mezclar(candidatas.length ? candidatas : juego.pool)[0];
+  // Con pista puesta hay que repintar la MISMA pregunta y las MISMAS opciones:
+  // volver a barajar mientras miras la pista sería tramposo y desconcertante.
+  const opciones = mantenerPista ? juego.opciones : mezclar([w, ...distractores(juego.pool, w, 3)]);
   juego.actual = w;
+  juego.opciones = opciones;
   juego.bloqueado = false;
+  if (!mantenerPista) juego.pista = 0;
 
   $("#game-box").innerHTML = `
     <div class="game-hud">
@@ -1514,10 +1655,16 @@ function siguienteRapida() {
       <p class="quiz-count">¿Cómo se dice…?</p>
       <p class="word">${esc(w.es)}</p>
     </div>
+    ${cajaPista(pistaInicial(w.en))}
     <div class="options" id="op-rapida">
       ${opciones.map((o) => `<button class="option" data-en="${esc(o.en)}">${esc(o.en)}</button>`).join("")}
     </div>
-    <button class="btn btn-nose" id="nose">🤷 No lo sé</button>`;
+    <div class="row-actions">
+      ${botonPista()}
+      <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
+    </div>`;
+
+  if ($("#pista")) $("#pista").onclick = () => usarPista(() => siguienteRapida(true));
 
   const marcarCorrecta = () =>
     $$("#op-rapida .option").forEach((x) => {
@@ -1529,7 +1676,7 @@ function siguienteRapida() {
       if (!juego || juego.bloqueado) return;
       juego.bloqueado = true;
       const bien = b.dataset.en === juego.actual.en;
-      if (bien) juego.aciertos += 1;
+      if (bien) acertar();
       else {
         juego.fallos += 1;
         registrarConfusion(juego.actual.en, b.dataset.en);
@@ -1573,7 +1720,7 @@ function iniciarHueco(pool) {
     $("#game-box").innerHTML = `<div class="empty">Aún no hay frases suficientes. Añade más palabras.</div>`;
     return;
   }
-  juego = { pool, items: mezclar(validas).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, elegida: null };
+  juego = { pool, items: mezclar(validas).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, elegida: null };
   renderHueco();
 }
 
@@ -1582,7 +1729,7 @@ function renderHueco() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("hueco", juego.aciertos);
+    const esRecord = guardarRecord("hueco", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -1596,7 +1743,7 @@ function renderHueco() {
 
   const w = items[i];
   const hueco = w.example.replace(regexPalabra(w.en), "______");
-  const opciones = mezclar([w, ...distractores(juego.pool, w, 2)]);
+  const opciones = opcionesFijas(() => mezclar([w, ...distractores(juego.pool, w, 2)]));
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
 
@@ -1606,6 +1753,7 @@ function renderHueco() {
       <p class="quiz-q">${esc(hueco)}</p>
       ${respondida ? `<p class="muted">${esc(w.exampleEs)}</p>` : ""}
     </div>
+    ${respondida ? "" : cajaPista(`La frase dice: <em>${esc(w.exampleEs)}</em>`)}
     <div class="options" id="op-hueco">
       ${opciones
         .map((o) => {
@@ -1616,7 +1764,14 @@ function renderHueco() {
         })
         .join("")}
     </div>
-    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? ""
+        : `<div class="row-actions">
+             ${botonPista()}
+             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
+           </div>`
+    }
     ${
       respondida
         ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
@@ -1632,7 +1787,7 @@ function renderHueco() {
     $$("#op-hueco .option").forEach((b) => {
       b.onclick = () => {
         juego.elegida = b.dataset.en;
-        if (juego.elegida === w.en) juego.aciertos += 1;
+        if (juego.elegida === w.en) acertar();
         else {
           juego.fallos += 1;
           registrarConfusion(w.en, juego.elegida);
@@ -1647,10 +1802,12 @@ function renderHueco() {
       penalizar(w);
       renderHueco();
     };
+    if ($("#pista")) $("#pista").onclick = () => usarPista(renderHueco);
   } else {
     $("#next-hueco").onclick = () => {
       juego.i += 1;
       juego.elegida = null;
+      juego.pista = 0;
       renderHueco();
     };
   }
@@ -1659,7 +1816,7 @@ function renderHueco() {
 /* ---------- ✍️ Escríbela ---------- */
 
 function iniciarEscribe(pool) {
-  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, resultado: null };
+  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, resultado: null };
   renderEscribe();
 }
 
@@ -1668,7 +1825,7 @@ function renderEscribe() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("escribe", juego.aciertos);
+    const esRecord = guardarRecord("escribe", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -1683,6 +1840,15 @@ function renderEscribe() {
   const w = items[i];
   const r = juego.resultado;
 
+  // Primero cuántas letras y por dónde empieza; si aún así no sale, la mitad.
+  // Con la mitad delante todavía tienes que recordar el final, que es donde
+  // están las trampas de ortografía inglesas.
+  const letras = w.en.length;
+  const pistaEscribe =
+    juego.pista >= 2
+      ? `${esqueleto(w.en, Math.ceil(letras / 2))} &nbsp;·&nbsp; suena <b>${esc(w.pron || "—")}</b>`
+      : `${esqueleto(w.en, 1)}`;
+
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
     <div class="card quiz-card">
@@ -1690,6 +1856,7 @@ function renderEscribe() {
       <p class="word">${esc(w.es)}</p>
       <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>
     </div>
+    ${r ? "" : cajaPista(`<span class="pista-letras">${pistaEscribe}</span>`)}
     <input id="resp-escribe" class="input input-big" type="text" placeholder="Escribe aquí…"
            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
@@ -1703,6 +1870,7 @@ function renderEscribe() {
            <button class="btn" id="next-escribe">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
         : `<div class="row-actions">
              <button class="btn" id="comprobar">Comprobar</button>
+             ${botonPista(2)}
              <button class="btn btn-nose" id="paso">🤷 No la sé</button>
            </div>`
     }`;
@@ -1719,7 +1887,7 @@ function renderEscribe() {
     const comprobar = (texto, rendida = false) => {
       const acertada = rendida ? null : validas.find((x) => norm(texto) === norm(x.en));
       const bien = Boolean(acertada);
-      if (bien) juego.aciertos += 1;
+      if (bien) acertar();
       else {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
@@ -1738,10 +1906,12 @@ function renderEscribe() {
     };
     $("#comprobar").onclick = () => comprobar(input.value);
     $("#paso").onclick = () => comprobar("", true);
+    if ($("#pista")) $("#pista").onclick = () => usarPista(() => repintarConTexto(renderEscribe, "#resp-escribe", input.value));
   } else {
     $("#next-escribe").onclick = () => {
       juego.i += 1;
       juego.resultado = null;
+      juego.pista = 0;
       renderEscribe();
     };
   }
@@ -1848,7 +2018,7 @@ function renderParejas() {
 /* ---------- 🎧 Escucha y elige ---------- */
 
 function iniciarEscucha(pool) {
-  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, elegida: null, audioIdx: -1 };
+  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, elegida: null, audioIdx: -1 };
   renderEscucha();
 }
 
@@ -1857,7 +2027,7 @@ function renderEscucha() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("escucha", juego.aciertos);
+    const esRecord = guardarRecord("escucha", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -1872,7 +2042,7 @@ function renderEscucha() {
   const w = items[i];
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
-  const opciones = mezclar([w, ...distractores(juego.pool, w, 3)]);
+  const opciones = opcionesFijas(() => mezclar([w, ...distractores(juego.pool, w, 3)]));
 
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
@@ -1881,6 +2051,7 @@ function renderEscucha() {
       <button class="speak speak-lg" id="repetir" aria-label="Volver a escuchar">🔊</button>
       ${respondida ? `<p class="word" lang="en">${esc(w.en)}</p><span class="pron">${esc(w.pron || "—")}</span>` : `<p class="quiz-hint">Toca el altavoz cuantas veces quieras.</p>`}
     </div>
+    ${respondida ? "" : cajaPista(`Se escribe <b lang="en">${esc(w.en)}</b> — pero el significado lo pones tú.`)}
     <div class="options" id="op-escucha">
       ${opciones
         .map((o) => {
@@ -1891,7 +2062,14 @@ function renderEscucha() {
         })
         .join("")}
     </div>
-    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? ""
+        : `<div class="row-actions">
+             ${botonPista()}
+             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
+           </div>`
+    }
     ${
       respondida
         ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
@@ -1913,7 +2091,7 @@ function renderEscucha() {
     $$("#op-escucha .option").forEach((b) => {
       b.onclick = () => {
         juego.elegida = b.dataset.en;
-        if (juego.elegida === w.en) juego.aciertos += 1;
+        if (juego.elegida === w.en) acertar();
         else {
           juego.fallos += 1;
           registrarConfusion(w.en, juego.elegida);
@@ -1928,10 +2106,12 @@ function renderEscucha() {
       penalizar(w);
       renderEscucha();
     };
+    if ($("#pista")) $("#pista").onclick = () => usarPista(renderEscucha);
   } else {
     $("#next-escucha").onclick = () => {
       juego.i += 1;
       juego.elegida = null;
+      juego.pista = 0;
       renderEscucha();
     };
   }
@@ -1949,7 +2129,7 @@ function iniciarOrdena(pool) {
     $("#game-box").innerHTML = `<div class="empty">Aún no hay suficientes palabras cortas de una sola pieza. Añade más palabras o prueba otro juego.</div>`;
     return;
   }
-  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, disponibles: [], construida: [], resultado: null };
+  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, disponibles: [], construida: [], resultado: null };
   prepararLetras();
   renderOrdena();
 }
@@ -1975,7 +2155,7 @@ function renderOrdena() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("ordena", juego.aciertos);
+    const esRecord = guardarRecord("ordena", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -2012,6 +2192,7 @@ function renderOrdena() {
     </div>
     <div class="row-actions">
       <button class="btn btn-ghost" id="borrar-letra" ${juego.construida.length && !r ? "" : "disabled"}>⌫ Borrar letra</button>
+      ${r ? "" : botonPista(topePistasOrdena(palabraObjetivo))}
       ${r ? "" : `<button class="btn btn-nose" id="nose">🤷 No la sé</button>`}
     </div>
     ${
@@ -2026,7 +2207,7 @@ function renderOrdena() {
 
   const terminar = (rendida = false) => {
     const bien = !rendida && juego.construida.map((f) => f.char).join("") === palabraObjetivo;
-    if (bien) juego.aciertos += 1;
+    if (bien) acertar();
     else {
       if (rendida) juego.nose += 1;
       else juego.fallos += 1;
@@ -2062,14 +2243,45 @@ function renderOrdena() {
       renderOrdena();
     };
     $("#nose").onclick = () => terminar(true);
+
+    // La pista aquí no se lee: coloca por ti la siguiente letra buena.
+    if ($("#pista")) {
+      $("#pista").onclick = () => {
+        // Si lo que llevas construido ya se fue del camino, primero se deshace
+        // hasta el último trozo correcto: si no, no hay "siguiente letra".
+        while (
+          juego.construida.length &&
+          juego.construida.map((f) => f.char).join("") !== palabraObjetivo.slice(0, juego.construida.length)
+        ) {
+          juego.disponibles.push(juego.construida.pop());
+        }
+        const ficha = juego.disponibles.find((f) => f.char === palabraObjetivo[juego.construida.length]);
+        if (!ficha) return;
+        juego.disponibles = juego.disponibles.filter((f) => f.idx !== ficha.idx);
+        juego.construida.push(ficha);
+        usarPista(() => {
+          if (juego.construida.length === palabraObjetivo.length) terminar(false);
+          else renderOrdena();
+        });
+      };
+    }
   } else {
     $("#next-ordena").onclick = () => {
       juego.i += 1;
       juego.resultado = null;
+      juego.pista = 0;
       if (juego.i < items.length) prepararLetras();
       renderOrdena();
     };
   }
+}
+
+/**
+ * Cuántas letras te puede colocar la pista: como mucho la mitad, y nunca más
+ * de tres. Con eso desatasca sin llegar a resolver la palabra por ti.
+ */
+function topePistasOrdena(palabra) {
+  return Math.max(1, Math.min(3, Math.floor(palabra.length / 2)));
 }
 
 /* ---------- 🎤 Pronúncialo ---------- */
@@ -2189,7 +2401,7 @@ function renderHablar() {
     juego.oido = res.alternativas?.[0] || null;
     juego.error = res.error || null;
 
-    if (acertada) juego.aciertos += 1;
+    if (acertada) acertar();
     else if (!res.error) {
       juego.fallos += 1;
       penalizar(w);
@@ -2221,7 +2433,7 @@ function iniciarDictado(pool) {
     $("#game-box").innerHTML = `<div class="empty">Aún no hay suficientes frases de ejemplo para este juego.</div>`;
     return;
   }
-  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, resultado: null, audioIdx: -1 };
+  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, resultado: null, audioIdx: -1 };
   renderDictado();
 }
 
@@ -2230,7 +2442,7 @@ function renderDictado() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("dictado", juego.aciertos);
+    const esRecord = guardarRecord("dictado", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -2252,6 +2464,15 @@ function renderDictado() {
         .join(" ")
     : "";
 
+  // Primero cuántas palabras hay y por cuál empieza: lo que más se pierde al
+  // oír inglés seguido es dónde acaba una palabra y empieza la siguiente.
+  // Si con eso no basta, la frase en español y a reconstruirla.
+  const trozos = palabrasDe(w.example);
+  const pistaDictado =
+    juego.pista >= 2
+      ? `Dice: <em>${esc(w.exampleEs || "")}</em>`
+      : `Son <b>${trozos.length} palabras</b> y empieza por «<b lang="en">${esc(trozos[0])}</b>».`;
+
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
     <div class="card quiz-card">
@@ -2259,6 +2480,7 @@ function renderDictado() {
       <button class="speak speak-lg" id="repetir" aria-label="Volver a escuchar">🔊</button>
       <p class="quiz-hint">Escúchala las veces que quieras.</p>
     </div>
+    ${r ? "" : cajaPista(pistaDictado)}
     <input id="resp-dictado" class="input input-big" type="text" placeholder="Escribe la frase…"
            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
@@ -2272,6 +2494,7 @@ function renderDictado() {
            <button class="btn" id="next-dictado">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
         : `<div class="row-actions">
              <button class="btn" id="comprobar-dictado">Comprobar</button>
+             ${botonPista(2)}
              <button class="btn btn-nose" id="nose">🤷 No la pillo</button>
            </div>`
     }`;
@@ -2290,7 +2513,7 @@ function renderDictado() {
       const tuyas = palabrasDe(input.value);
       const aciertos = rendida ? 0 : objetivo.filter((p, n) => tuyas[n] === p).length;
       const bien = !rendida && aciertos === objetivo.length && tuyas.length === objetivo.length;
-      if (bien) juego.aciertos += 1;
+      if (bien) acertar();
       else {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
@@ -2304,10 +2527,12 @@ function renderDictado() {
     };
     $("#comprobar-dictado").onclick = () => comprobar();
     $("#nose").onclick = () => comprobar(true);
+    if ($("#pista")) $("#pista").onclick = () => usarPista(() => repintarConTexto(renderDictado, "#resp-dictado", input.value));
   } else {
     $("#next-dictado").onclick = () => {
       juego.i += 1;
       juego.resultado = null;
+      juego.pista = 0;
       renderDictado();
     };
   }
@@ -2327,6 +2552,8 @@ function iniciarIrregulares(pool) {
     aciertos: 0,
     fallos: 0,
     nose: 0,
+    pistas: 0,
+    pista: 0,
     falladas: [],
     resultado: null,
   };
@@ -2338,7 +2565,7 @@ function renderIrregulares() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("irregulares", juego.aciertos);
+    const esRecord = guardarRecord("irregulares", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -2373,6 +2600,13 @@ function renderIrregulares() {
       </div>
       <button class="speak" data-speak="${esc(v.base)}" aria-label="Escuchar">🔊</button>
     </div>
+    ${
+      r
+        ? ""
+        : cajaPista(
+            `${pistaInicial(esperado.split("/")[0])} Suena <b>${esc(prons[hueco === "pasado" ? 1 : 2] || "—")}</b>.`,
+          )
+    }
     <input id="resp-irr" class="input input-big" type="text" placeholder="Escribe la forma que falta…"
            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
@@ -2389,6 +2623,7 @@ function renderIrregulares() {
            </div>`
         : `<div class="row-actions">
              <button class="btn" id="comprobar-irr">Comprobar</button>
+             ${botonPista()}
              <button class="btn btn-nose" id="nose">🤷 No la sé</button>
            </div>`
     }`;
@@ -2400,7 +2635,7 @@ function renderIrregulares() {
       // "was/were" vale entero o cualquiera de las dos por separado.
       const validas = [esperado, ...esperado.split("/")].map((s) => norm(s));
       const bien = !rendida && validas.includes(norm(input.value));
-      if (bien) juego.aciertos += 1;
+      if (bien) acertar();
       else {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
@@ -2414,10 +2649,12 @@ function renderIrregulares() {
     };
     $("#comprobar-irr").onclick = () => comprobar();
     $("#nose").onclick = () => comprobar(true);
+    if ($("#pista")) $("#pista").onclick = () => usarPista(() => repintarConTexto(renderIrregulares, "#resp-irr", input.value));
   } else {
     $("#next-irr").onclick = () => {
       juego.i += 1;
       juego.resultado = null;
+      juego.pista = 0;
       renderIrregulares();
     };
   }
@@ -2433,6 +2670,8 @@ function iniciarModales(pool) {
     aciertos: 0,
     fallos: 0,
     nose: 0,
+    pistas: 0,
+    pista: 0,
     falladas: [],
     elegida: null,
   };
@@ -2444,7 +2683,7 @@ function renderModales() {
   const { items, i } = juego;
 
   if (i >= items.length) {
-    const esRecord = guardarRecord("modales", juego.aciertos);
+    const esRecord = guardarRecord("modales", limpios(juego));
     const pool = juego.pool;
     pantallaFinal(
       `${juego.aciertos} de ${items.length}`,
@@ -2470,6 +2709,7 @@ function renderModales() {
       <p class="quiz-q" lang="en">${esc(ej.frase)}</p>
       ${respondida ? `<p class="muted">${esc(ej.es)}</p>` : ""}
     </div>
+    ${respondida ? "" : cajaPista(esc(ej.pista))}
     <div class="options" id="op-modales">
       ${ej.opciones
         .map((o, n) => {
@@ -2480,7 +2720,14 @@ function renderModales() {
         })
         .join("")}
     </div>
-    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? ""
+        : `<div class="row-actions">
+             ${botonPista()}
+             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
+           </div>`
+    }
     ${
       respondida
         ? `<div class="explain ${acerto ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
@@ -2499,7 +2746,7 @@ function renderModales() {
     $$("#op-modales .option").forEach((b) => {
       b.onclick = () => {
         juego.elegida = Number(b.dataset.op);
-        if (juego.elegida === ej.correcta) juego.aciertos += 1;
+        if (juego.elegida === ej.correcta) acertar();
         else {
           juego.fallos += 1;
           juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
@@ -2513,10 +2760,12 @@ function renderModales() {
       juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
       renderModales();
     };
+    if ($("#pista")) $("#pista").onclick = () => usarPista(renderModales);
   } else {
     $("#next-modales").onclick = () => {
       juego.i += 1;
       juego.elegida = null;
+      juego.pista = 0;
       renderModales();
     };
   }
@@ -2608,7 +2857,7 @@ function renderFalsos() {
     $$("#op-falsos .option").forEach((b) => {
       b.onclick = () => {
         juego.elegida = b.dataset.tipo;
-        if (juego.elegida === "bien") juego.aciertos += 1;
+        if (juego.elegida === "bien") acertar();
         else {
           juego.fallos += 1;
           // Se queda en tu repaso: son justo las que hay que machacar.
@@ -2687,7 +2936,7 @@ function renderConfusas() {
   const { w, otra } = items[i];
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
-  const opciones = mezclar([w, otra]);
+  const opciones = opcionesFijas(() => mezclar([w, otra]));
 
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
@@ -2725,7 +2974,7 @@ function renderConfusas() {
       b.onclick = () => {
         juego.elegida = b.dataset.en;
         if (juego.elegida === w.en) {
-          juego.aciertos += 1;
+          acertar();
           aflojarConfusion(w.en, otra.en);
         } else {
           juego.fallos += 1;
@@ -3436,6 +3685,12 @@ $("#buscar-verbo").addEventListener("input", (e) => {
   filtroVerbo = e.target.value;
   renderPanelVerbos();
 });
+$("#chips-verbos").addEventListener("click", (e) => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  tipoVerbo = chip.dataset.tipo;
+  renderPanelVerbos();
+});
 $("#modo-gramatica").addEventListener("click", () => cambiarModoAprender("gramatica"));
 $("#modo-lecturas").addEventListener("click", () => cambiarModoAprender("lecturas"));
 
@@ -3529,6 +3784,7 @@ $("#btn-reset").addEventListener("click", () => {
  * Atajos de teclado:
  *   1 2 3    → elegir opción (repaso, tests y juegos) o calificar
  *   0        → no lo sé
+ *   p        → pista (en los juegos que la tienen)
  *   enter    → siguiente
  *   ← → a    → moverse por Explorar y añadir la palabra
  *
@@ -3579,6 +3835,15 @@ document.addEventListener("keydown", (e) => {
     if (nose) {
       e.preventDefault();
       nose.click();
+    }
+    return;
+  }
+
+  if (e.key.toLowerCase() === "p") {
+    const pista = $("#pista", vista);
+    if (pista) {
+      e.preventDefault();
+      pista.click();
     }
     return;
   }
