@@ -1015,6 +1015,559 @@ export const LESSONS = [
       { q: "«He goes to ___ bed at eleven.»", options: ["the", "a", "(nada)"], answer: 2, why: "«Go to bed», «go to work», «go to school»: sin artículo." },
     ],
   },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "past-perfect",
+    title: "Past perfect (had + participio)",
+    tag: "Pasado",
+    goal: "Contar qué había pasado antes de otro momento del pasado.",
+    blocks: [
+      {
+        t: "p",
+        text: "Es el pasado del pasado: sirve para marcar cuál de dos acciones pasadas ocurrió ANTES. Si cuentas dos cosas que pasaron hace tiempo, la más antigua va en past perfect.",
+      },
+      {
+        t: "formula",
+        parts: ["Sujeto", "had", "participio"],
+        example: "The train had already left when I arrived.",
+      },
+      {
+        t: "table",
+        head: ["Acción", "Tiempo"],
+        rows: [
+          ["La más antigua (pasó primero)", "had + participio"],
+          ["La más reciente (pasó después)", "pasado simple"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«Had» es igual para todas las personas, y el participio es el mismo que usas en present perfect: had gone, had eaten, had finished.",
+      },
+      {
+        t: "error",
+        wrong: "When I arrived, the film already started.",
+        right: "When I arrived, the film had already started.",
+        why: "Dos pasados simples no dejan claro cuál ocurrió antes. «Had» marca sin ambigüedad la acción anterior.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "The train had already left when I arrived.", pron: "de tréin jad olrédi left uen ai aráivd", es: "El tren ya se había ido cuando llegué." },
+          { en: "I had never seen snow before.", pron: "ai jad néver siin snóu bifór", es: "Nunca había visto nieve antes." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«By the time we arrived, the film ___.» (start)", options: ["started", "had started", "has started"], answer: 1, why: "La película empezó ANTES de que llegáramos: had + participio." },
+      { q: "Elige el orden correcto:", options: ["I had already eaten breakfast.", "I already had eaten breakfast.", "I had eaten already breakfast."], answer: 0, why: "«Already» va entre had y el participio." },
+      { q: "Past perfect de «go» (ella):", options: ["she had went", "she had gone", "she has gone"], answer: 1, why: "El participio de go es gone, no went (que es el pasado simple)." },
+      { q: "«She had left before I arrived.» ¿Qué pasó primero?", options: ["Ella se fue", "Yo llegué", "Pasaron a la vez"], answer: 0, why: "Had + participio marca la acción anterior: ella se fue primero." },
+      { q: "«I ___ never flown before that trip.»", options: ["was", "had", "have"], answer: 1, why: "Hecho anterior a un momento pasado (that trip) → past perfect con had." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "present-perfect-continuous",
+    title: "Present perfect continuous (have been + -ing)",
+    tag: "Pasado",
+    goal: "Poner el foco en cuánto tiempo llevas haciendo algo, no solo en el resultado.",
+    blocks: [
+      {
+        t: "p",
+        text: "Se usa cuando importa la DURACIÓN o el proceso, no el resultado o la cantidad. Compáralo con el present perfect simple que ya conoces.",
+      },
+      {
+        t: "formula",
+        parts: ["Sujeto", "have/has", "been", "verbo-ing"],
+        example: "I have been studying English for two years.",
+      },
+      {
+        t: "table",
+        head: ["", "Present perfect simple", "Present perfect continuous"],
+        rows: [
+          ["Foco", "el resultado, cuántas veces", "la duración, el proceso"],
+          ["Ejemplo", "I've read three books.", "I've been reading all day."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Los verbos de estado (know, believe, love, want) no van en continuo, ni siquiera aquí: se dice «I have known her for years», nunca «I have been knowing».",
+      },
+      {
+        t: "error",
+        wrong: "I know her since 2015.",
+        right: "I've known her since 2015.",
+        why: "Con since/for y una acción que sigue, hace falta present perfect (simple o continuo), nunca presente simple.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "It's been raining all morning.", pron: "its bin réining ol mórning", es: "Ha estado lloviendo toda la mañana." },
+          { en: "How long have you been waiting?", pron: "jáu long jav yu bin uéiting", es: "¿Cuánto tiempo llevas esperando?" },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«I ___ for you for twenty minutes!»", options: ["wait", "have been waiting", "am waiting"], answer: 1, why: "Duración desde el pasado hasta ahora, con foco en el proceso → present perfect continuous." },
+      { q: "¿Cuál pone el foco en el RESULTADO, no en la duración?", options: ["I've been cleaning the house.", "I've cleaned the house.", "I'm cleaning the house."], answer: 1, why: "El present perfect simple (sin been+ing) se centra en que ya está hecho." },
+      { q: "«She's been working here ___ 2020.»", options: ["for", "since", "during"], answer: 1, why: "Since + punto de inicio, igual que en present perfect simple." },
+      { q: "¿Cuál está mal?", options: ["I've been knowing him for years.", "I've known him for years.", "I've been living here for years."], answer: 0, why: "Know es verbo de estado: nunca en forma continua." },
+      { q: "«Why are you out of breath? — ___»", options: ["I run.", "I've been running.", "I am running since an hour."], answer: 1, why: "Explica una acción reciente cuyo efecto se nota ahora, sin aliento." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "voz-pasiva",
+    title: "Voz pasiva (be + participio)",
+    tag: "Estructuras",
+    goal: "Poner el foco en la acción o en quién la recibe, no en quién la hace.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español decimos «se construyó» o «fue construido»; en inglés, be (en el tiempo que toque) + participio. Se usa mucho cuando no importa o no se sabe quién hizo la acción.",
+      },
+      {
+        t: "formula",
+        parts: ["Sujeto (quien recibe)", "be", "participio"],
+        example: "The house was built in 1990.",
+      },
+      {
+        t: "table",
+        head: ["Tiempo", "Activa", "Pasiva"],
+        rows: [
+          ["Presente simple", "They clean the office every day.", "The office is cleaned every day."],
+          ["Pasado simple", "Someone stole my bike.", "My bike was stolen."],
+          ["Present perfect", "They have cancelled the flight.", "The flight has been cancelled."],
+          ["Futuro (will)", "They will announce the results.", "The results will be announced."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«By + agente» solo se añade si importa decir quién hizo la acción: «The window was broken by my brother.» Si no importa o no se sabe, se omite.",
+      },
+      {
+        t: "error",
+        wrong: "The letter was wrote yesterday.",
+        right: "The letter was written yesterday.",
+        why: "Tras «be» siempre va el PARTICIPIO (written), no el pasado simple (wrote).",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "English is spoken all over the world.", pron: "ínglish is spóuken ol óuver de uérld", es: "El inglés se habla en todo el mundo." },
+          { en: "This song was written by a famous band.", pron: "dis song uós ríten bai a féimos band", es: "Esta canción fue escrita por una banda famosa." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«The car ___ in Germany.»", options: ["makes", "is made", "made"], answer: 1, why: "No importa quién lo fabrica, el coche RECIBE la acción → be + participio." },
+      { q: "Pasiva de «Someone broke the window.»", options: ["The window broke.", "The window was broken.", "The window is breaking."], answer: 1, why: "Be (was) + participio (broken)." },
+      { q: "¿Cuándo se usa «by»?", options: ["Siempre, es obligatorio", "Solo si importa decir quién hizo la acción", "Nunca en pasiva"], answer: 1, why: "By + agente es opcional; se añade solo cuando aporta información relevante." },
+      { q: "«The results ___ announced tomorrow.»", options: ["will", "will be", "are"], answer: 1, why: "Futuro en pasiva: will + be + participio." },
+      { q: "¿Cuál está bien?", options: ["The email was sent yesterday.", "The email was send yesterday.", "The email was sended yesterday."], answer: 0, why: "El participio de send es sent, no send ni sended." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "estilo-indirecto",
+    title: "Estilo indirecto (reported speech)",
+    tag: "Estructuras",
+    goal: "Contar lo que alguien dijo, sin citarlo entre comillas.",
+    blocks: [
+      {
+        t: "p",
+        text: "Cuando cuentas lo que alguien dijo (sin comillas), casi todo se mueve un paso hacia atrás en el tiempo: el presente pasa a pasado, el pasado a past perfect, etc. Es el «reported speech» o estilo indirecto.",
+      },
+      {
+        t: "formula",
+        parts: ["said/told", "that", "[tiempo un paso atrás]"],
+        example: "\"I'm tired\" → She said (that) she was tired.",
+      },
+      {
+        t: "table",
+        head: ["Dijo (estilo directo)", "Cuentas (estilo indirecto)"],
+        rows: [
+          ["\"I am tired.\"", "She said she was tired."],
+          ["\"I work here.\"", "He said he worked there."],
+          ["\"I have finished.\"", "She said she had finished."],
+          ["\"I will call you.\"", "He said he would call me."],
+          ["\"I can help.\"", "She said she could help."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "También cambian palabras de lugar y tiempo: «here» → there, «now» → then, «today» → that day, «tomorrow» → the next day.",
+      },
+      {
+        t: "error",
+        wrong: "She said that she is happy.",
+        right: "She said that she was happy.",
+        why: "Al contar lo que alguien dijo, el presente retrocede a pasado, aunque en español digamos «dijo que está contenta» tal cual.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "He said he would be late.", pron: "ji sed ji uud bi léit", es: "Dijo que llegaría tarde." },
+          { en: "She told me she had already eaten.", pron: "shi tóuld mi shi jad olrédi íten", es: "Me dijo que ya había comido." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "\"I live in Madrid.\" → He said…", options: ["he lives in Madrid.", "he lived in Madrid.", "he live in Madrid."], answer: 1, why: "Presente → pasado en estilo indirecto." },
+      { q: "\"I will help you.\" → She said…", options: ["she will help me.", "she would help me.", "she helped me."], answer: 1, why: "Will → would." },
+      { q: "\"I can swim.\" → He said…", options: ["he can swim.", "he could swim.", "he cans swim."], answer: 1, why: "Can → could." },
+      { q: "Say vs tell: ¿cuál lleva a la persona justo detrás?", options: ["say", "tell", "las dos igual"], answer: 1, why: "«Tell someone» (tell me, tell her); «say» no lleva a la persona directamente (say to me)." },
+      { q: "\"I am working today.\" → He said…", options: ["he was working today.", "he was working that day.", "he is working that day."], answer: 1, why: "Presente → pasado, y today → that day." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "gerundio-infinitivo",
+    title: "Gerundio o infinitivo: -ing o to + verbo",
+    tag: "Palabras",
+    goal: "Saber si después de un verbo va -ing o to + infinitivo.",
+    blocks: [
+      {
+        t: "p",
+        text: "Algunos verbos siempre van seguidos de -ing, otros siempre de to + infinitivo, y unos pocos aceptan las dos formas, a veces cambiando el significado. No hay una regla única: hay que aprenderse los grupos.",
+      },
+      {
+        t: "table",
+        head: ["Verbo + -ing", "Ejemplo"],
+        rows: [
+          ["enjoy", "I enjoy reading."],
+          ["finish", "She finished working at six."],
+          ["avoid", "We avoided talking about it."],
+          ["suggest", "He suggested going by train."],
+          ["mind", "Do you mind waiting?"],
+        ],
+      },
+      {
+        t: "table",
+        head: ["Verbo + to + infinitivo", "Ejemplo"],
+        rows: [
+          ["want", "I want to travel."],
+          ["decide", "They decided to leave."],
+          ["hope", "She hopes to pass the exam."],
+          ["promise", "I promise to call you."],
+          ["need", "We need to talk."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Después de una preposición siempre va -ing, nunca to + infinitivo: «I'm interested in learning English», no «to learn».",
+      },
+      {
+        t: "p",
+        text: "Ojo con los que cambian de significado: «stop doing» es dejar de hacer algo; «stop to do» es parar PARA hacer otra cosa. «I stopped smoking» (dejé de fumar) no es lo mismo que «I stopped to smoke» (paré para fumar).",
+      },
+      {
+        t: "error",
+        wrong: "I enjoy to cook.",
+        right: "I enjoy cooking.",
+        why: "Enjoy siempre va con -ing, nunca con to + infinitivo.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I'm thinking of moving abroad.", pron: "aim zínking ov múuving abród", es: "Estoy pensando en mudarme al extranjero." },
+          { en: "She stopped to answer the phone.", pron: "shi stopt tu ánser de fóun", es: "Dejó lo que hacía para contestar al teléfono." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«I enjoy ___ before bed.» (read)", options: ["read", "to read", "reading"], answer: 2, why: "Enjoy siempre va con -ing." },
+      { q: "«She decided ___ medicine.» (study)", options: ["studying", "to study", "study"], answer: 1, why: "Decide siempre va con to + infinitivo." },
+      { q: "«I'm not interested in ___ a new car.» (buy)", options: ["buy", "to buy", "buying"], answer: 2, why: "Tras preposición (in) siempre -ing." },
+      { q: "«I stopped ___ two years ago.» (dejé de fumar)", options: ["to smoke", "smoking", "smoke"], answer: 1, why: "Stop + -ing = dejar de hacer algo; stop + to = parar PARA hacer otra cosa." },
+      { q: "¿Cuál está mal?", options: ["We avoided answering.", "We avoided to answer.", "We avoided the question."], answer: 1, why: "Avoid nunca lleva to + infinitivo, solo -ing o un sustantivo directo." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "pronombres-relativos",
+    title: "Pronombres relativos: who, which, that, where",
+    tag: "Estructuras",
+    goal: "Unir dos frases dando información extra sobre una persona, cosa o lugar.",
+    blocks: [
+      {
+        t: "p",
+        text: "Sirven para no repetir el sustantivo y dar más información en la misma frase, como «que» o «donde» en español.",
+      },
+      {
+        t: "table",
+        head: ["Pronombre", "Para", "Ejemplo"],
+        rows: [
+          ["who", "personas", "The man who called is my uncle."],
+          ["which", "cosas y animales", "The book which I bought is great."],
+          ["that", "personas o cosas (más informal)", "The car that I sold was old."],
+          ["whose", "posesión (de quien)", "That's the girl whose dog got lost."],
+          ["where", "lugares", "This is the house where I grew up."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«That» puede sustituir a «who» o «which» en frases especificativas (las que identifican de quién o qué hablamos), y es la opción más natural al hablar.",
+      },
+      {
+        t: "p",
+        text: "Cuando el pronombre relativo NO es el sujeto de su propia frase, se puede omitir: «The book (that) I bought is great» — aquí «I» ya es el sujeto, así que «that» es opcional.",
+      },
+      {
+        t: "error",
+        wrong: "The woman which called was rude.",
+        right: "The woman who called was rude.",
+        why: "Para personas se usa who (o that), nunca which — which es solo para cosas y animales.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "That's the restaurant where we met.", pron: "dats de réstorant uér uí met", es: "Ese es el restaurante donde nos conocimos." },
+          { en: "I have a friend whose brother is a doctor.", pron: "ai jav a frend jus bráder is a dóctor", es: "Tengo un amigo cuyo hermano es médico." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«The man ___ lives next door is a teacher.»", options: ["which", "who", "where"], answer: 1, why: "Persona → who." },
+      { q: "«This is the café ___ we had our first date.»", options: ["who", "which", "where"], answer: 2, why: "Lugar → where." },
+      { q: "«I lost the keys ___ you gave me.»", options: ["who", "that", "whose"], answer: 1, why: "Cosa → that (o which); who es solo para personas." },
+      { q: "¿Se puede omitir el relativo en «The film (that) I watched was great»?", options: ["Sí, porque that no es el sujeto de su propia frase", "No, nunca se puede omitir", "Solo en preguntas"], answer: 0, why: "Cuando el relativo no hace de sujeto en su propia cláusula, es opcional." },
+      { q: "«That's the man ___ car was stolen.»", options: ["who", "whose", "which"], answer: 1, why: "Posesión (el coche DE ese hombre) → whose." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "used-to-would",
+    title: "Used to y would para hábitos pasados",
+    tag: "Pasado",
+    goal: "Hablar de cosas que hacías antes y ya no haces.",
+    blocks: [
+      {
+        t: "p",
+        text: "«Used to» describe algo que era verdad o pasaba habitualmente en el pasado, pero ya no. Se traduce como «solía» o «antes + imperfecto».",
+      },
+      {
+        t: "formula",
+        parts: ["Sujeto", "used to", "verbo base"],
+        example: "I used to play football every weekend.",
+      },
+      {
+        t: "table",
+        head: ["", "Estructura", "Ejemplo"],
+        rows: [
+          ["Afirmativa", "used to + base", "She used to smoke."],
+          ["Negativa", "didn't use to + base", "She didn't use to smoke."],
+          ["Pregunta", "Did…use to + base", "Did she use to smoke?"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "En negativa y pregunta se usa «use to» (sin d), porque el «did» ya marca el pasado — igual que con cualquier otro verbo detrás de did.",
+      },
+      {
+        t: "p",
+        text: "«Would» también sirve para hábitos pasados, pero solo para acciones repetidas, no para estados: se puede decir «I would visit my grandma every summer», pero no «I would live in Paris» — para estados hace falta used to.",
+      },
+      {
+        t: "error",
+        wrong: "I use to live in Paris.",
+        right: "I used to live in Paris.",
+        why: "En afirmativa siempre lleva la -d: used to. Sin ella, «use to» no es correcto ahí.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "We used to go camping every summer.", pron: "uí yuustu góu cámping évri sámer", es: "Antes íbamos de camping todos los veranos." },
+          { en: "I didn't use to like coffee.", pron: "ai dídent yuustu láik cófi", es: "Antes no me gustaba el café." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«I ___ hate vegetables, but now I love them.»", options: ["use to", "used to", "was used to"], answer: 1, why: "Afirmativa siempre con -d: used to." },
+      { q: "Negativa correcta:", options: ["She didn't used to travel much.", "She didn't use to travel much.", "She usedn't to travel much."], answer: 1, why: "Con did, el verbo vuelve a su forma base: use to (sin d)." },
+      { q: "¿Cuál NO se puede decir con would?", options: ["I would visit my cousins every August.", "I would live in a small village.", "We would play cards after dinner."], answer: 1, why: "Would no se usa para ESTADOS (vivir en un sitio), solo para acciones repetidas; ahí hace falta used to." },
+      { q: "«Did you ___ play an instrument as a kid?»", options: ["used to", "use to", "using to"], answer: 1, why: "Tras did, forma base: use to." },
+      { q: "¿Qué NO expresa «used to»?", options: ["Un hábito pasado que ya no ocurre", "Un estado pasado que ya no es cierto", "Algo que sigue pasando ahora"], answer: 2, why: "Used to siempre marca algo que ya NO es así; para lo que sigue pasando se usa presente." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "cuantificadores",
+    title: "Cuantificadores: much, many, some, any, a few, a little",
+    tag: "Palabras",
+    goal: "Elegir la palabra de cantidad correcta según el sustantivo y el tipo de frase.",
+    blocks: [
+      {
+        t: "p",
+        text: "Para decir «mucho/a», «poco/a» o «algo de» en inglés, hay que fijarse primero en si el sustantivo es contable (se puede contar: apples, books) o incontable (no se puede contar uno a uno: water, money, information).",
+      },
+      {
+        t: "table",
+        head: ["", "Contables (many)", "Incontables (much)"],
+        rows: [
+          ["Mucho/a", "many books", "much water"],
+          ["Poco/a (casi nada)", "few books", "little water"],
+          ["Un poco de (sí hay algo)", "a few books", "a little water"],
+          ["Un montón de (vale para los dos)", "a lot of books", "a lot of water"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«A few» y «few» no significan lo mismo: «a few» es positivo (tengo algunos, suficientes), «few» es negativo (casi no tengo). Lo mismo con «a little» y «little».",
+      },
+      {
+        t: "p",
+        text: "«Some» y «any» dependen del tipo de frase, no del sustantivo: some en afirmativas y ofrecimientos, any en negativas y preguntas normales.",
+      },
+      {
+        t: "table",
+        head: ["Tipo de frase", "Se usa", "Ejemplo"],
+        rows: [
+          ["Afirmativa", "some", "I have some money."],
+          ["Negativa", "any", "I don't have any money."],
+          ["Pregunta normal", "any", "Do you have any money?"],
+          ["Ofrecimiento o petición", "some", "Could I have some water?"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I have any friends here.",
+        right: "I have some friends here.",
+        why: "En afirmativa se usa some, no any. Any va con negativas y preguntas.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "There isn't much time left.", pron: "der ísent mach táim left", es: "No queda mucho tiempo." },
+          { en: "I have a few questions.", pron: "ai jav a fiú kuéschons", es: "Tengo algunas preguntas." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«How ___ sugar do you want?»", options: ["many", "much", "some"], answer: 1, why: "Sugar es incontable → much." },
+      { q: "«There are ___ people in the room.»", options: ["much", "many", "little"], answer: 1, why: "People es contable (plural) → many." },
+      { q: "«I have ___ money, so I can't buy it.» (casi nada)", options: ["a little", "little", "a few"], answer: 1, why: "«Little» (sin a) es negativo: casi no tengo." },
+      { q: "«Would you like ___ coffee?» (ofrecimiento)", options: ["any", "some", "much"], answer: 1, why: "En ofrecimientos y peticiones, some, aunque sea pregunta." },
+      { q: "«I don't have ___ questions.»", options: ["some", "any", "much"], answer: 1, why: "Negativa → any." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "preposiciones-tiempo-lugar",
+    title: "Preposiciones de tiempo y lugar: in, on, at",
+    tag: "Palabras",
+    goal: "Saber cuál de las tres usar sin tener que pensarlo.",
+    blocks: [
+      {
+        t: "p",
+        text: "Son de las palabras más pequeñas y más difíciles de acertar en inglés, porque no siguen la lógica del español. Van de lo más general (in) a lo más concreto (at).",
+      },
+      {
+        t: "table",
+        head: ["Preposición", "Se usa con", "Ejemplo"],
+        rows: [
+          ["in", "meses, años, estaciones, partes del día", "in July, in 2020, in the morning"],
+          ["on", "días y fechas concretas", "on Monday, on my birthday"],
+          ["at", "horas concretas y momentos puntuales", "at six o'clock, at night, at Christmas"],
+        ],
+      },
+      {
+        t: "table",
+        head: ["Preposición", "Se usa con (lugar)", "Ejemplo"],
+        rows: [
+          ["in", "espacios cerrados o grandes: ciudades, países", "in London, in the box"],
+          ["on", "superficies: encima de algo", "on the table, on the wall"],
+          ["at", "un punto concreto, una dirección", "at the bus stop, at 21 Baker Street"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«At night» es una excepción que conviene memorizar: aunque night parece parte del día (como morning/afternoon, que van con in), night va con at.",
+      },
+      {
+        t: "error",
+        wrong: "I'll see you in Monday.",
+        right: "I'll see you on Monday.",
+        why: "Los días de la semana siempre van con on, no in.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "The meeting is at three o'clock on Friday.", pron: "de míiting is at zrii oclók on fráidei", es: "La reunión es a las tres el viernes." },
+          { en: "I left my keys on the table.", pron: "ai left mai kiis on de téibol", es: "Dejé las llaves en la mesa." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«My birthday is ___ July.»", options: ["on", "in", "at"], answer: 1, why: "Meses → in." },
+      { q: "«See you ___ Monday!»", options: ["in", "on", "at"], answer: 1, why: "Días de la semana → on." },
+      { q: "«The shop closes ___ 9 pm.»", options: ["in", "on", "at"], answer: 2, why: "Horas concretas → at." },
+      { q: "«I was born ___ Madrid.»", options: ["at", "on", "in"], answer: 2, why: "Ciudades → in." },
+      { q: "«There's a picture ___ the wall.»", options: ["in", "on", "at"], answer: 1, why: "Superficie (encima de) → on." },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
+    id: "question-tags",
+    title: "Preguntas coletilla: isn't it?, don't you?",
+    tag: "Estructuras",
+    goal: "Añadir ese «¿verdad?» o «¿no?» final que tanto se usa al hablar.",
+    blocks: [
+      {
+        t: "p",
+        text: "Son esas mini-preguntas que se añaden al final de una frase para confirmar algo o buscar que el otro esté de acuerdo, como «¿verdad?» en español. La regla de oro: si la frase es afirmativa, la coletilla es negativa, y al revés.",
+      },
+      {
+        t: "formula",
+        parts: ["Frase afirmativa", "+", "auxiliar negativo + pronombre"],
+        example: "It's cold, isn't it?",
+      },
+      {
+        t: "table",
+        head: ["Frase", "Coletilla", "Por qué"],
+        rows: [
+          ["You're tired,", "aren't you?", "afirmativa → coletilla negativa"],
+          ["She isn't coming,", "is she?", "negativa → coletilla afirmativa"],
+          ["They can swim,", "can't they?", "usa el mismo auxiliar o modal de la frase"],
+          ["You like pizza,", "don't you?", "sin auxiliar visible: se usa do/does/did"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "El auxiliar de la coletilla es siempre el mismo que llevaría esa frase en pregunta normal: si la frase usa «can», la coletilla usa can; si no hay auxiliar (presente o pasado simple), se usa do/does/did.",
+      },
+      {
+        t: "error",
+        wrong: "You are from Spain, isn't it?",
+        right: "You are from Spain, aren't you?",
+        why: "La coletilla concuerda con el SUJETO de la frase (you → you); no es una fórmula fija como en español.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "This is delicious, isn't it?", pron: "dis is dilíshos, ísent it", es: "Esto está delicioso, ¿verdad?" },
+          { en: "You haven't finished yet, have you?", pron: "yu jávent fínisht yet, jav yu", es: "No has terminado todavía, ¿verdad?" },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«It's a beautiful day, ___?»", options: ["is it", "isn't it", "isn't he"], answer: 1, why: "Afirmativa → coletilla negativa, mismo sujeto (it)." },
+      { q: "«They don't live here, ___?»", options: ["do they", "don't they", "are they"], answer: 0, why: "Negativa → coletilla afirmativa: do they." },
+      { q: "«She can drive, ___?»", options: ["can't she", "doesn't she", "isn't she"], answer: 0, why: "Se repite el mismo auxiliar o modal de la frase: can." },
+      { q: "«You went to the party, ___?»", options: ["didn't you", "weren't you", "don't you"], answer: 0, why: "Pasado simple sin auxiliar visible → se usa did." },
+      { q: "«Let's go, ___?»", options: ["don't we", "shall we", "won't we"], answer: 1, why: "Con «let's», la coletilla fija es siempre «shall we?»." },
+    ],
+  },
 ];
 
 export const getLesson = (id) => LESSONS.find((l) => l.id === id);

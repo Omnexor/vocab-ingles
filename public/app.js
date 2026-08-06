@@ -578,6 +578,122 @@ function renderLista() {
 }
 
 /* ------------------------------------------------------------------ *
+ * Explorar: ojear vocabulario por categoría, sin límite, a tu ritmo.
+ * No es una lección ni un juego: no puntúa, no corrige, no presiona. Solo
+ * pasas palabras, y la que te interese la añades a tus palabras con un toque.
+ * ------------------------------------------------------------------ */
+
+let explorar = { cat: "mixto", pool: [], idx: 0, vueltas: 0 };
+let listaModo = "mis"; // "mis" | "explorar"
+
+/** Baraja del banco para una categoría. Vacío si esa categoría aún no tiene palabras. */
+function poolExplorar(cat) {
+  const base = listaLocal();
+  return mezclar(cat === "mixto" ? base : base.filter((w) => w.cat === cat));
+}
+
+function iniciarExplorar(cat = explorar.cat) {
+  explorar = { cat, pool: poolExplorar(cat), idx: 0, vueltas: 0 };
+  renderExplorarChips();
+  renderExplorarCard();
+}
+
+function renderExplorarChips() {
+  const cont = $("#chips-explorar");
+  cont.innerHTML = CATEGORIAS.map(
+    (c) =>
+      `<button class="chip ${explorar.cat === c.id ? "is-active" : ""}" data-cat="${c.id}" aria-pressed="${explorar.cat === c.id}">${esc(c.nombre)}</button>`,
+  ).join("");
+
+  $$(".chip", cont).forEach((b) => {
+    b.onclick = () => {
+      if (explorar.cat === b.dataset.cat) return;
+      iniciarExplorar(b.dataset.cat);
+    };
+  });
+}
+
+/** delta=+1 siguiente, -1 anterior. Al pasar del final, se reordena y sigue: nunca se acaba. */
+function moverExplorar(delta) {
+  if (!explorar.pool.length) return;
+  explorar.idx += delta;
+  if (explorar.idx >= explorar.pool.length) {
+    explorar.pool = poolExplorar(explorar.cat);
+    explorar.idx = 0;
+    explorar.vueltas += 1;
+  } else if (explorar.idx < 0) {
+    explorar.pool = poolExplorar(explorar.cat);
+    explorar.idx = explorar.pool.length - 1;
+  }
+  renderExplorarCard();
+}
+
+function renderExplorarCard() {
+  const box = $("#explorar-card");
+  if (!box) return;
+
+  if (!explorar.pool.length) {
+    box.innerHTML = `
+      <div class="empty">
+        <span class="big">🔍</span>
+        Aún no hay palabras de «${esc(nombreCategoria(explorar.cat))}» en la lista local.
+        <br />Prueba con otra categoría, o genera el banco completo con <code>npm run vocabulario</code>.
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-ghost" id="explorar-mixto">Ver «Un poco de todo»</button>
+      </div>`;
+    $("#explorar-mixto").onclick = () => iniciarExplorar("mixto");
+    return;
+  }
+
+  const w = explorar.pool[explorar.idx];
+  const yaLaTiene = store.words.some((x) => x.en === w.en);
+
+  box.innerHTML = `
+    <div class="game-hud">
+      <span class="hud-time">${explorar.idx + 1} / ${explorar.pool.length}${explorar.vueltas ? ` · vuelta ${explorar.vueltas + 1}` : ""}</span>
+      <span class="hud-score">${esc(nombreCategoria(explorar.cat))}</span>
+    </div>
+    ${wordCard(w)}
+    <div class="row-actions">
+      <button class="btn btn-ghost" id="explorar-anterior">← Anterior</button>
+      <button class="btn" id="explorar-siguiente">Siguiente →</button>
+    </div>
+    <button class="btn ${yaLaTiene ? "btn-ghost" : ""}" id="explorar-add" ${yaLaTiene ? "disabled" : ""}>
+      ${yaLaTiene ? "✓ Ya la tienes" : "+ Añadir a mis palabras"}
+    </button>`;
+
+  $("#explorar-anterior").onclick = () => moverExplorar(-1);
+  $("#explorar-siguiente").onclick = () => moverExplorar(1);
+  if (!yaLaTiene) {
+    $("#explorar-add").onclick = () => {
+      const nueva = addWord(w);
+      if (!nueva) return;
+      registerStudyDay();
+      save();
+      toast(`«${w.en}» añadida a tus palabras`);
+      renderExplorarCard();
+      updateChrome();
+    };
+  }
+}
+
+function cambiarModoLista(modo) {
+  listaModo = modo;
+  $("#modo-mis-palabras").classList.toggle("is-active", modo === "mis");
+  $("#modo-mis-palabras").setAttribute("aria-selected", String(modo === "mis"));
+  $("#modo-explorar").classList.toggle("is-active", modo === "explorar");
+  $("#modo-explorar").setAttribute("aria-selected", String(modo === "explorar"));
+  $("#panel-mis-palabras").hidden = modo !== "mis";
+  $("#panel-explorar").hidden = modo !== "explorar";
+
+  if (modo === "explorar") {
+    if (!explorar.pool.length) iniciarExplorar();
+    else renderExplorarCard(); // por si has añadido/borrado palabras mientras tanto
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * Vista: Juegos
  * ------------------------------------------------------------------ */
 
@@ -613,6 +729,22 @@ const JUEGOS = [
     desc: "Seis parejas inglés–español contra el reloj.",
     minimo: 6,
     record: "tiempo",
+  },
+  {
+    id: "escucha",
+    emoji: "🎧",
+    nombre: "Escucha y elige",
+    desc: "Oyes la palabra, sin verla escrita. Adivina qué significa entre cuatro opciones.",
+    minimo: 4,
+    record: "aciertos",
+  },
+  {
+    id: "ordena",
+    emoji: "🔤",
+    nombre: "Ordena las letras",
+    desc: "Toca las letras en el orden correcto para formar la palabra en inglés.",
+    minimo: 4,
+    record: "aciertos",
   },
 ];
 
@@ -723,6 +855,8 @@ function abrirJuego(id) {
   if (id === "hueco") iniciarHueco(pool);
   if (id === "escribe") iniciarEscribe(pool);
   if (id === "parejas") iniciarParejas(pool);
+  if (id === "escucha") iniciarEscucha(pool);
+  if (id === "ordena") iniciarOrdena(pool);
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1100,6 +1234,232 @@ function renderParejas() {
   });
 }
 
+/* ---------- 🎧 Escucha y elige ---------- */
+
+function iniciarEscucha(pool) {
+  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, elegida: null, audioIdx: -1 };
+  renderEscucha();
+}
+
+function renderEscucha() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("escucha", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarEscucha(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const w = items[i];
+  const respondida = juego.elegida !== null;
+  const noLaSabia = juego.elegida === NO_LO_SE;
+  const opciones = mezclar([w, ...mezclar(juego.pool.filter((x) => x.en !== w.en)).slice(0, 3)]);
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">Escucha y elige el significado</p>
+      <button class="speak speak-lg" id="repetir" aria-label="Volver a escuchar">🔊</button>
+      ${respondida ? `<p class="word" lang="en">${esc(w.en)}</p><span class="pron">${esc(w.pron || "—")}</span>` : `<p class="quiz-hint">Toca el altavoz cuantas veces quieras.</p>`}
+    </div>
+    <div class="options" id="op-escucha">
+      ${opciones
+        .map((o) => {
+          let cls = "option";
+          if (respondida && o.en === w.en) cls += " is-right";
+          else if (respondida && o.en === juego.elegida) cls += " is-wrong";
+          return `<button class="${cls}" data-en="${esc(o.en)}" ${respondida ? "disabled" : ""}>${esc(o.es)}</button>`;
+        })
+        .join("")}
+    </div>
+    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}">
+             <b>${noLaSabia ? "Bien reconocerlo — vuelve al repaso" : juego.elegida === w.en ? "Correcto" : `Era: ${esc(w.en)}`}</b>
+             <p>${esc(w.example || "")}${w.exampleEs ? `<br><em>${esc(w.exampleEs)}</em>` : ""}</p>
+           </div>
+           <button class="btn" id="next-escucha">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : ""
+    }`;
+
+  // Se reproduce sola al entrar en una pregunta nueva, nunca al repintar la respuesta.
+  if (juego.audioIdx !== i) {
+    juego.audioIdx = i;
+    speak(w.en);
+  }
+  $("#repetir").onclick = () => speak(w.en);
+
+  if (!respondida) {
+    $$("#op-escucha .option").forEach((b) => {
+      b.onclick = () => {
+        juego.elegida = b.dataset.en;
+        if (juego.elegida === w.en) juego.aciertos += 1;
+        else {
+          juego.fallos += 1;
+          penalizar(w);
+        }
+        renderEscucha();
+      };
+    });
+    $("#nose").onclick = () => {
+      juego.elegida = NO_LO_SE;
+      juego.nose += 1;
+      penalizar(w);
+      renderEscucha();
+    };
+  } else {
+    $("#next-escucha").onclick = () => {
+      juego.i += 1;
+      juego.elegida = null;
+      renderEscucha();
+    };
+  }
+}
+
+/* ---------- 🔤 Ordena las letras ---------- */
+
+// Solo palabras de un único token, letras inglesas: las expresiones con
+// espacios o apóstrofes no encajan bien en fichas de letras sueltas.
+const esOrdenable = (w) => /^[a-z]{3,14}$/i.test(w.en.trim());
+
+function iniciarOrdena(pool) {
+  const validas = pool.filter(esOrdenable);
+  if (validas.length < 4) {
+    $("#game-box").innerHTML = `<div class="empty">Aún no hay suficientes palabras cortas de una sola pieza. Añade más palabras o prueba otro juego.</div>`;
+    return;
+  }
+  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, disponibles: [], construida: [], resultado: null };
+  prepararLetras();
+  renderOrdena();
+}
+
+/** Baraja las letras de la palabra actual, evitando que salga en su orden real. */
+function prepararLetras() {
+  const w = juego.items[juego.i];
+  const letras = w.en.trim().toLowerCase().split("");
+  let barajadas = mezclar(letras);
+  if (letras.length > 3) {
+    let intentos = 0;
+    while (barajadas.join("") === letras.join("") && intentos < 10) {
+      barajadas = mezclar(letras);
+      intentos += 1;
+    }
+  }
+  juego.disponibles = barajadas.map((char, idx) => ({ char, idx }));
+  juego.construida = [];
+}
+
+function renderOrdena() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("ordena", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarOrdena(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const w = items[i];
+  const r = juego.resultado;
+  const palabraObjetivo = w.en.trim().toLowerCase();
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">Ordena las letras</p>
+      <p class="word">${esc(w.es)}</p>
+      <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>
+    </div>
+    <div class="scramble-built" id="construida" aria-label="Palabra que estás formando">
+      ${
+        juego.construida.length
+          ? juego.construida
+              .map((f, pos) => `<button class="letter-tile is-filled" data-pos="${pos}" ${r ? "disabled" : ""}>${esc(f.char)}</button>`)
+              .join("")
+          : `<span class="scramble-empty">Toca las letras de abajo</span>`
+      }
+    </div>
+    <div class="scramble-pool" id="disponibles">
+      ${juego.disponibles.map((f) => `<button class="letter-tile" data-idx="${f.idx}" ${r ? "disabled" : ""}>${esc(f.char)}</button>`).join("")}
+    </div>
+    <div class="row-actions">
+      <button class="btn btn-ghost" id="borrar-letra" ${juego.construida.length && !r ? "" : "disabled"}>⌫ Borrar letra</button>
+      ${r ? "" : `<button class="btn btn-nose" id="nose">🤷 No la sé</button>`}
+    </div>
+    ${
+      r
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+             <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(w.en)}</b>
+             <p>${esc(w.pron ? "(" + w.pron + ") " : "")}${esc(w.example || "")}</p>
+           </div>
+           <button class="btn" id="next-ordena">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : ""
+    }`;
+
+  const terminar = (rendida = false) => {
+    const bien = !rendida && juego.construida.map((f) => f.char).join("") === palabraObjetivo;
+    if (bien) juego.aciertos += 1;
+    else {
+      if (rendida) juego.nose += 1;
+      else juego.fallos += 1;
+      penalizar(w);
+    }
+    juego.resultado = { bien, rendida };
+    renderOrdena();
+  };
+
+  if (!r) {
+    $$("#disponibles [data-idx]").forEach((b) => {
+      b.onclick = () => {
+        const idx = Number(b.dataset.idx);
+        const ficha = juego.disponibles.find((f) => f.idx === idx);
+        if (!ficha) return;
+        juego.disponibles = juego.disponibles.filter((f) => f.idx !== idx);
+        juego.construida.push(ficha);
+        if (juego.construida.length === palabraObjetivo.length) terminar(false);
+        else renderOrdena();
+      };
+    });
+    $$("#construida [data-pos]").forEach((b) => {
+      b.onclick = () => {
+        const pos = Number(b.dataset.pos);
+        const [ficha] = juego.construida.splice(pos, 1);
+        if (ficha) juego.disponibles.push(ficha);
+        renderOrdena();
+      };
+    });
+    $("#borrar-letra").onclick = () => {
+      const ficha = juego.construida.pop();
+      if (ficha) juego.disponibles.push(ficha);
+      renderOrdena();
+    };
+    $("#nose").onclick = () => terminar(true);
+  } else {
+    $("#next-ordena").onclick = () => {
+      juego.i += 1;
+      juego.resultado = null;
+      if (juego.i < items.length) prepararLetras();
+      renderOrdena();
+    };
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Vista: Lecciones
  * ------------------------------------------------------------------ */
@@ -1388,7 +1748,10 @@ function showView(name) {
   if (name === "repaso") renderRepaso(true);
   if (name === "juegos") renderJuegosIndex();
   if (name === "lecciones") renderLeccionesIndex();
-  if (name === "lista") renderLista();
+  if (name === "lista") {
+    renderLista();
+    if (listaModo === "explorar") renderExplorarCard();
+  }
   if (name === "ajustes") renderAjustes();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1465,6 +1828,8 @@ function borrarPalabra(id) {
 
 $("#buscador").addEventListener("input", renderLista);
 $("#filtro-lista").addEventListener("change", renderLista);
+$("#modo-mis-palabras").addEventListener("click", () => cambiarModoLista("mis"));
+$("#modo-explorar").addEventListener("click", () => cambiarModoLista("explorar"));
 
 $("#set-level").addEventListener("change", (e) => {
   store.settings.level = e.target.value;
@@ -1546,6 +1911,26 @@ $("#btn-reset").addEventListener("click", () => {
  */
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea, select")) return;
+
+  const explorarVisible =
+    $('.view[data-view="lista"]').classList.contains("is-active") && listaModo === "explorar";
+  if (explorarVisible) {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      moverExplorar(1);
+      return;
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      moverExplorar(-1);
+      return;
+    }
+    if (e.key.toLowerCase() === "a") {
+      e.preventDefault();
+      $("#explorar-add")?.click();
+      return;
+    }
+  }
 
   const repasoVisible = $('.view[data-view="repaso"]').classList.contains("is-active");
 

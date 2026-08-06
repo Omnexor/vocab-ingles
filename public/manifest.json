@@ -1,0 +1,16 @@
+{
+  "name": "Vocab — inglés cada día",
+  "short_name": "Vocab",
+  "description": "Aprende vocabulario en inglés con pronunciación en español, repaso espaciado, juegos y lecciones de gramática.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

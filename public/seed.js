@@ -69,7 +69,7 @@ export const SEED_WORDS = [
   { en: "since", cat: "conectores", es: "ya que", pron: "sins", example: "Since you're here, let's start.", exampleEs: "Ya que estás aquí, empecemos." },
   { en: "because of", cat: "conectores", es: "debido a", pron: "bikás ov", example: "We're late because of the traffic.", exampleEs: "Llegamos tarde debido al tráfico." },
   { en: "due to", cat: "conectores", es: "debido a", pron: "diu tu", example: "The flight was cancelled due to the storm.", exampleEs: "El vuelo se canceló debido a la tormenta." },
-  { en: "so that", cat: "conectores", es: "para que", pron: "sou dat", example: "Speak slowly so that everyone understands.", exampleEs: "Habla despacio para que todos entiendan." },
+  { en: "so that", cat: "conectores", es: "para que", pron: "sóu dat", example: "Speak slowly so that everyone understands.", exampleEs: "Habla despacio para que todos entiendan." },
   { en: "in order to", cat: "conectores", es: "para / con el fin de", pron: "in órder tu", example: "He moved in order to find a better job.", exampleEs: "Se mudó para encontrar un trabajo mejor." },
   { en: "as a result", cat: "conectores", es: "como resultado", pron: "as a risált", example: "As a result, sales went up.", exampleEs: "Como resultado, las ventas subieron." },
   { en: "therefore", cat: "conectores", es: "por lo tanto", pron: "dérfor", example: "It's cheaper; therefore, we'll buy it.", exampleEs: "Es más barato; por lo tanto, lo compraremos." },

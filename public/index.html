@@ -3,10 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f1220" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Vocab" />
     <title>Vocab — inglés cada día</title>
     <link rel="stylesheet" href="./styles.css" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📘</text></svg>" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
   </head>
   <body>
     <header class="topbar">
@@ -105,27 +110,50 @@
           <h2>Mis palabras</h2>
           <p class="muted" id="lista-sub"></p>
         </div>
-        <div class="filtros">
-          <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" />
-          <select id="filtro-lista" class="input">
-            <option value="todas">Todas</option>
-            <option value="hoy">Toca repasarlas</option>
-            <option value="dificiles">Se me resisten</option>
-            <option value="dominadas">Ya dominadas</option>
-          </select>
+
+        <div class="seg" role="tablist" aria-label="Modo de la sección Palabras">
+          <button class="seg-btn is-active" id="modo-mis-palabras" role="tab" aria-selected="true">
+            Mis palabras
+          </button>
+          <button class="seg-btn" id="modo-explorar" role="tab" aria-selected="false">
+            Explorar por categorías
+          </button>
         </div>
-        <div class="table-wrap">
-          <table class="word-table">
-            <thead>
-              <tr>
-                <th>Inglés</th>
-                <th>Pronunciación</th>
-                <th>Significado</th>
-                <th><span class="sr-only">Acciones</span></th>
-              </tr>
-            </thead>
-            <tbody id="lista"></tbody>
-          </table>
+
+        <!-- Mis palabras: las que ya sigues en tu repaso -->
+        <div id="panel-mis-palabras">
+          <div class="filtros">
+            <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" />
+            <select id="filtro-lista" class="input">
+              <option value="todas">Todas</option>
+              <option value="hoy">Toca repasarlas</option>
+              <option value="dificiles">Se me resisten</option>
+              <option value="dominadas">Ya dominadas</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="word-table">
+              <thead>
+                <tr>
+                  <th>Inglés</th>
+                  <th>Pronunciación</th>
+                  <th>Significado</th>
+                  <th><span class="sr-only">Acciones</span></th>
+                </tr>
+              </thead>
+              <tbody id="lista"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Explorar: ojear vocabulario por categoría, sin límite, a tu ritmo -->
+        <div id="panel-explorar" hidden>
+          <p class="hint-line">
+            Elige una categoría y ve pasando palabras a tu ritmo. No se acaban: al llegar
+            al final se vuelven a barajar. Lo que te interese, lo añades a tus palabras.
+          </p>
+          <div class="chips" id="chips-explorar" role="group" aria-label="Categoría a explorar"></div>
+          <div id="explorar-card"></div>
         </div>
       </section>
 
