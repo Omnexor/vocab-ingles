@@ -441,7 +441,51 @@ async function addMoreWords() {
 
 let queue = [];
 let queueTotal = 0;
-let revealed = false;
+let repaso = null; // pregunta en curso: { escribir, opciones, resuelto, acertada… }
+
+/**
+ * A partir de esta caja la palabra deja de salir con opciones y hay que
+ * escribirla.
+ *
+ * Elegir entre tres es reconocer; escribirla de cero es recordar, que graba
+ * mucho más. Pero recordar de cero una palabra que viste ayer solo produce
+ * bloqueo. Así que las nuevas salen con opciones y, según se asientan, se
+ * retira la ayuda.
+ */
+const CAJA_ESCRIBIR = 3;
+
+function prepararPregunta() {
+  const w = queue[0].w;
+  repaso = {
+    escribir: w.box >= CAJA_ESCRIBIR,
+    opciones: null,
+    resuelto: false,
+    acertada: false,
+    rendida: false,
+    texto: "",
+    sinonimo: null,
+  };
+  // Dos opciones falsas de significado distinto: si saliera un sinónimo,
+  // habría dos respuestas buenas y una contaría como fallo.
+  if (!repaso.escribir) repaso.opciones = mezclar([w, ...distractores(gamePool(), w, 2)]);
+}
+
+/** Pasa a la siguiente. nivel 0 = fallada (vuelve a la cola), 1 = bien, 2 = fácil. */
+function avanzarRepaso(nivel) {
+  grade(queue[0].w, nivel);
+  if (nivel === 0) queue.push(queue.shift());
+  else queue.shift();
+  repaso = null;
+  renderRepaso(false);
+}
+
+function resolverRepaso({ acertada, rendida = false, texto = "", sinonimo = null }) {
+  Object.assign(repaso, { resuelto: true, acertada, rendida, texto, sinonimo });
+  const w = queue[0].w;
+  if (!acertada) penalizar(w);
+  renderRepaso(false);
+  speak(w.en); // oír la palabra justo al descubrirla ayuda a fijarla
+}
 
 function renderRepaso(restart = true) {
   const box = $("#quiz");
@@ -454,7 +498,7 @@ function renderRepaso(restart = true) {
       .sort(() => Math.random() - 0.5)
       .map((w) => ({ w, dir: w.box > 0 && Math.random() < 0.34 ? "es-en" : "en-es" }));
     queueTotal = queue.length;
-    revealed = false;
+    repaso = null;
   }
 
   if (!queue.length) {
@@ -473,61 +517,112 @@ function renderRepaso(restart = true) {
     return;
   }
 
+  if (!repaso) prepararPregunta();
+
   const { w, dir } = queue[0];
   const hechas = queueTotal - queue.length;
-  const alReves = dir === "es-en"; // te doy el español y tú recuerdas el inglés
+  // Escribir siempre va del español al inglés: producir la palabra es lo que cuesta.
+  const alReves = repaso.escribir || dir === "es-en";
   sub.textContent = `${hechas + 1} de ${queueTotal}`;
 
-  const cara = alReves
-    ? `<p class="word">${esc(w.es)}</p>
-       <p class="quiz-dir">español → inglés</p>`
-    : `<p class="word" lang="en">${esc(w.en)}</p>`;
+  const progreso = `<div class="quiz-progress"><span style="width:${(hechas / queueTotal) * 100}%"></span></div>`;
 
-  const dorso = alReves
-    ? `<p class="translation" lang="en">${esc(w.en)}</p>
-       <span class="pron">${esc(w.pron || "—")}</span>`
-    : `<span class="pron">${esc(w.pron || "—")}</span>
-       <p class="translation">${esc(w.es)}</p>`;
+  // Cara vista mientras respondes
+  const pregunta = alReves
+    ? `<p class="quiz-dir">español → inglés</p>
+       <p class="word">${esc(w.es)}</p>`
+    : `<p class="word" lang="en">${esc(w.en)}</p>
+       <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>`;
+
+  // Ficha completa, ya resuelta
+  const ficha = `
+    <p class="word" lang="en">${esc(w.en)}</p>
+    <span class="pron">${esc(w.pron || "—")}</span>
+    <p class="translation">${esc(w.es)}</p>
+    ${w.example ? `<p class="example" lang="en">${esc(w.example)}<em lang="es">${esc(w.exampleEs)}</em></p>` : ""}
+    <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>`;
+
+  if (!repaso.resuelto) {
+    box.innerHTML = `
+      ${progreso}
+      <article class="card quiz-card" data-id="${w.id}">
+        ${pregunta}
+        <p class="quiz-hint">${repaso.escribir ? "Ya la dominas: escríbela sin ayuda." : alReves ? "¿Cómo se dice en inglés?" : "¿Qué significa?"}</p>
+      </article>
+      ${
+        repaso.escribir
+          ? `<input id="resp-repaso" class="input input-big" type="text" placeholder="Escribe aquí…"
+                    autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+             <div class="row-actions">
+               <button class="btn" id="comprobar-repaso">Comprobar</button>
+               <button class="btn btn-nose" id="nose">🤷 No la sé</button>
+             </div>`
+          : `<div class="options" id="op-repaso">
+               ${repaso.opciones
+                 .map((o) => `<button class="option" data-en="${esc(o.en)}">${esc(alReves ? o.en : o.es)}</button>`)
+                 .join("")}
+             </div>
+             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>`
+      }`;
+
+    if (repaso.escribir) {
+      const input = $("#resp-repaso");
+      input.focus({ preventScroll: true });
+      // Vale cualquier palabra con el mismo significado: para "casi" valen
+      // "almost" y "nearly", y dar una por fallo sería injusto.
+      const validas = [w, ...gamePool().filter((x) => x.en !== w.en && mismoEs(x, w))];
+      const comprobar = () => {
+        const acierto = validas.find((x) => norm(input.value) === norm(x.en));
+        resolverRepaso({
+          acertada: Boolean(acierto),
+          texto: input.value,
+          sinonimo: acierto && acierto.en !== w.en ? w.en : null,
+        });
+      };
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") comprobar();
+      };
+      $("#comprobar-repaso").onclick = comprobar;
+    } else {
+      $$("#op-repaso .option").forEach((b) => {
+        b.onclick = () => resolverRepaso({ acertada: b.dataset.en === w.en });
+      });
+    }
+    $("#nose").onclick = () => resolverRepaso({ acertada: false, rendida: true });
+    return;
+  }
+
+  // --- Resuelta ---
+  const tono = repaso.acertada ? "ok" : repaso.rendida ? "nose" : "ko";
+  const titulo = repaso.acertada
+    ? "Correcto"
+    : repaso.rendida
+      ? "Bien reconocerlo — la repites hoy"
+      : "No era esa — la repites hoy";
 
   box.innerHTML = `
-    <div class="quiz-progress"><span style="width:${(hechas / queueTotal) * 100}%"></span></div>
-    <article class="card quiz-card" data-id="${w.id}">
-      ${cara}
-      ${revealed ? dorso : ""}
-      ${revealed && w.example ? `<p class="example" lang="en">${esc(w.example)}<em lang="es">${esc(w.exampleEs)}</em></p>` : ""}
-      ${
-        revealed
-          ? ""
-          : `<p class="quiz-hint">${alReves ? "¿Cómo se dice en inglés?" : "¿Qué significa?"} Piénsalo antes de darle la vuelta.</p>`
-      }
-    </article>
+    ${progreso}
+    <article class="card quiz-card" data-id="${w.id}">${ficha}</article>
+    <div class="explain ${tono}">
+      <b>${titulo}</b>
+      ${repaso.sinonimo ? `<p>También vale <b lang="en">${esc(repaso.sinonimo)}</b>.</p>` : ""}
+      ${!repaso.acertada && repaso.texto ? `<p>Escribiste «${esc(repaso.texto)}».</p>` : ""}
+    </div>
     <div class="row-actions">
       ${
-        revealed
-          ? `<button class="btn btn-again" data-grade="0">Otra vez</button>
-             <button class="btn btn-good" data-grade="1">Bien</button>
+        repaso.acertada
+          ? `<button class="btn btn-good" data-grade="1">Bien</button>
              <button class="btn btn-easy" data-grade="2">Fácil</button>`
-          : `<button class="btn" id="reveal">Ver respuesta</button>
-             ${alReves ? "" : `<button class="btn btn-ghost" data-speak="${esc(w.en)}">🔊 Escuchar</button>`}`
+          : `<button class="btn" id="next-repaso">Siguiente</button>`
       }
     </div>`;
 
-  if (!revealed) {
-    $("#reveal").onclick = () => {
-      revealed = true;
-      renderRepaso(false);
-      if (alReves) speak(w.en); // al girarla, oyes cómo suena la que buscabas
-    };
-  } else {
+  if (repaso.acertada) {
     $$("[data-grade]", box).forEach((btn) => {
-      btn.onclick = () => {
-        grade(w, Number(btn.dataset.grade));
-        if (Number(btn.dataset.grade) === 0) queue.push(queue.shift());
-        else queue.shift();
-        revealed = false;
-        renderRepaso(false);
-      };
+      btn.onclick = () => avanzarRepaso(Number(btn.dataset.grade));
     });
+  } else {
+    $("#next-repaso").onclick = () => avanzarRepaso(0);
   }
 }
 
@@ -1969,12 +2064,20 @@ $("#btn-reset").addEventListener("click", () => {
 
 /**
  * Atajos de teclado:
- *   espacio  → dar la vuelta a la tarjeta del repaso
- *   1 2 3    → calificar en el repaso, o elegir opción en tests y juegos
+ *   1 2 3    → elegir opción (repaso, tests y juegos) o calificar
+ *   0        → no lo sé
  *   enter    → siguiente
+ *   ← → a    → moverse por Explorar y añadir la palabra
+ *
+ * Las vistas inactivas siguen en el DOM con su último contenido, así que todo
+ * se busca dentro de la vista activa. Si no, el botón de una pantalla oculta
+ * se queda con la tecla: el «Comprobar» del repaso robaba el Enter del test
+ * de las lecciones.
  */
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea, select")) return;
+  const vista = $(".view.is-active");
+  if (!vista) return;
 
   const explorarVisible =
     $('.view[data-view="lista"]').classList.contains("is-active") && listaModo === "explorar";
@@ -1996,17 +2099,11 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  const repasoVisible = $('.view[data-view="repaso"]').classList.contains("is-active");
-
-  if (e.code === "Space" && repasoVisible && queue.length && !revealed) {
-    e.preventDefault();
-    revealed = true;
-    renderRepaso(false);
-    return;
-  }
-
   if (e.key === "Enter") {
-    const seguir = $("#next-q, #next-hueco, #next-escribe, #reveal, #rejugar");
+    const seguir = $(
+      "#next-q, #next-hueco, #next-escribe, #next-repaso, #comprobar-repaso, #rejugar",
+      vista,
+    );
     if (seguir) {
       e.preventDefault();
       seguir.click();
@@ -2015,7 +2112,7 @@ document.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "0") {
-    const nose = $("#nose, #paso");
+    const nose = $("#nose, #paso", vista);
     if (nose) {
       e.preventDefault();
       nose.click();
@@ -2025,7 +2122,7 @@ document.addEventListener("keydown", (e) => {
 
   if (["1", "2", "3", "4"].includes(e.key)) {
     const n = Number(e.key) - 1;
-    const opciones = $$(".options .option:not([disabled]), [data-grade]");
+    const opciones = $$(".options .option:not([disabled]), [data-grade]", vista);
     if (opciones[n]) {
       e.preventDefault();
       opciones[n].click();
