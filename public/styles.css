@@ -366,6 +366,106 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 }
 .seg-3 .seg-btn { padding: 0 8px; white-space: nowrap; }
 
+/* Lecturas */
+.lectura { margin: 0 0 20px; }
+.lect-frase {
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 17px;
+  line-height: 1.85;
+  cursor: pointer;
+}
+.lect-frase:hover { background: var(--bg-soft); }
+.rword {
+  border: 0;
+  padding: 1px 1px 2px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-bottom: 1px dotted transparent;
+}
+.rword:hover,
+.rword:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  outline: none;
+}
+.lect-audio {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+  padding: 0 4px;
+}
+.lect-audio:hover { opacity: 1; }
+.lect-es {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Ficha flotante al tocar una palabra del texto */
+.wordpop {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 20;
+  width: min(440px, calc(100vw - 24px));
+  padding: 16px 18px;
+  background: var(--card-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.wordpop-x {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.wordpop-en { margin: 0 0 2px; font-size: 20px; font-weight: 750; }
+.wordpop-en .pron { font-size: 14px; font-weight: 500; }
+.wordpop-es { margin: 0 0 12px; color: var(--muted); }
+@media (min-width: 861px) {
+  .wordpop { bottom: 24px; }
+}
+
+/* Botón de micrófono */
+.btn-mic { width: 100%; margin-bottom: 12px; }
+.btn-mic.is-listening {
+  background: var(--danger);
+  border-color: var(--danger);
+  animation: latido 1.1s ease-in-out infinite;
+}
+@keyframes latido {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 45%, transparent); }
+  50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--danger) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-mic.is-listening { animation: none; }
+}
+
+/* Dictado: la frase corregida palabra a palabra */
+.dictado-frase { line-height: 2; }
+.dic-ok { color: var(--ok); font-weight: 650; }
+.dic-ko {
+  color: var(--danger);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
+}
+
 /* Bloques de juegos por destreza */
 .game-group { margin: 0 0 22px; }
 .game-group-title {
@@ -934,7 +1034,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 /* ---------- lecciones ---------- */
 .lesson-grid { display: grid; gap: 14px; }
 
-.lesson-card {
+.lesson-card,
+.reading-card {
   position: relative;
   display: grid;
   gap: 3px;
@@ -949,8 +1050,10 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
   box-shadow: var(--shadow-sm);
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.lesson-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
-.lesson-card:active { transform: scale(0.995); }
+.lesson-card:hover,
+.reading-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+.lesson-card:active,
+.reading-card:active { transform: scale(0.995); }
 
 .lesson-tag {
   display: inline-block;

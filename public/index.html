@@ -106,12 +106,34 @@
       <section class="view" data-view="lecciones">
         <div id="lecciones-index">
           <div class="view-head">
-            <h2>Lecciones</h2>
+            <h2>Aprender</h2>
             <p class="muted" id="lecciones-sub"></p>
           </div>
-          <div id="lecciones-lista" class="lesson-grid"></div>
+
+          <div class="seg" role="tablist" aria-label="Tipo de contenido">
+            <button class="seg-btn is-active" id="modo-gramatica" role="tab" aria-selected="true">
+              Gramática
+            </button>
+            <button class="seg-btn" id="modo-lecturas" role="tab" aria-selected="false">
+              Lecturas
+            </button>
+          </div>
+
+          <div id="panel-gramatica">
+            <div id="lecciones-lista" class="lesson-grid"></div>
+          </div>
+
+          <div id="panel-lecturas" hidden>
+            <p class="hint-line">
+              Texto seguido, no palabras sueltas. Toca cualquier palabra que no
+              conozcas para ver qué significa y añadirla a tus palabras. Toca la
+              frase para ver la traducción entera.
+            </p>
+            <div id="lecturas-lista" class="lesson-grid"></div>
+          </div>
         </div>
         <div id="leccion-detalle" hidden></div>
+        <div id="lectura-detalle" hidden></div>
       </section>
 
       <!-- LISTA -->

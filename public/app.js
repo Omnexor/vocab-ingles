@@ -1,6 +1,7 @@
 import { SEED_WORDS, CATEGORIAS, nombreCategoria } from "./seed.js";
 import { LESSONS, getLesson } from "./lessons.js";
 import { FALSOS_AMIGOS } from "./false-friends.js";
+import { LECTURAS, getLectura } from "./readings.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -17,6 +18,7 @@ const defaults = () => ({
   daily: { date: null, ids: [], done: 0 },
   words: [],
   lessons: {}, // id -> { best: 0-100, done: bool, last: "YYYY-MM-DD" }
+  lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
   confusiones: {}, // "palabra|palabra" -> veces que has cambiado una por otra
 });
@@ -853,6 +855,22 @@ const JUEGOS = [
     record: "aciertos",
   },
   {
+    id: "hablar",
+    emoji: "🎤",
+    nombre: "Pronúncialo",
+    desc: "La lees en voz alta y el móvil te dice si te ha entendido. Y qué ha oído en su lugar.",
+    minimo: 4,
+    record: "aciertos",
+  },
+  {
+    id: "dictado",
+    emoji: "✏️",
+    nombre: "Dictado",
+    desc: "Escuchas una frase entera y la escribes. Aquí es donde el inglés se encadena y cuesta.",
+    minimo: 4,
+    record: "aciertos",
+  },
+  {
     id: "falsos",
     emoji: "🎭",
     nombre: "Falsos amigos",
@@ -873,7 +891,7 @@ const JUEGOS = [
 /** Los juegos, ordenados por la destreza que entrenan. */
 const GRUPOS_JUEGOS = [
   { nombre: "Significado", pista: "saber qué quiere decir", juegos: ["rapida", "hueco"] },
-  { nombre: "Oído y pronunciación", pista: "reconocerla al oírla", juegos: ["escucha"] },
+  { nombre: "Oído y pronunciación", pista: "reconocerla y decirla", juegos: ["escucha", "hablar", "dictado"] },
   { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
   { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
   { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
@@ -885,8 +903,76 @@ let gameTimer = null;
 function pararJuego() {
   clearInterval(gameTimer);
   gameTimer = null;
+  pararEscucha();
   juego = null;
 }
+
+/* ---------- Reconocimiento de voz ---------- */
+
+// Lo trae el propio navegador: no hay API de pago ni se envía nada a ningún
+// sitio nuestro. En Chrome y Safari va con prefijo.
+const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
+const hayMicrofono = Boolean(Reconocimiento);
+let oyente = null;
+
+function pararEscucha() {
+  if (!oyente) return;
+  try {
+    oyente.onresult = oyente.onerror = oyente.onend = null;
+    oyente.abort();
+  } catch {
+    /* ya estaba parado */
+  }
+  oyente = null;
+}
+
+/**
+ * Escucha una vez y devuelve lo que ha entendido.
+ * Pide varias alternativas: si la primera no cuadra, a lo mejor lo dijiste
+ * bien y el motor se quedó con otra interpretación.
+ */
+function escucharUnaVez() {
+  return new Promise((resolve) => {
+    pararEscucha();
+    speechSynthesis.cancel(); // no puede oírte mientras habla él
+    const r = new Reconocimiento();
+    oyente = r;
+    r.lang = "en-US";
+    r.interimResults = false;
+    r.maxAlternatives = 5;
+    r.continuous = false;
+
+    let resuelto = false;
+    const acabar = (res) => {
+      if (resuelto) return;
+      resuelto = true;
+      oyente = null;
+      resolve(res);
+    };
+
+    r.onresult = (ev) => {
+      const alternativas = [...ev.results[0]].map((a) => a.transcript.trim()).filter(Boolean);
+      acabar({ alternativas });
+    };
+    r.onerror = (ev) => acabar({ error: ev.error });
+    r.onend = () => acabar({ alternativas: [] });
+
+    try {
+      r.start();
+    } catch (err) {
+      acabar({ error: "no-start" });
+    }
+  });
+}
+
+const MENSAJE_MICRO = {
+  "not-allowed": "No has dado permiso al micrófono. Actívalo en el candado de la barra de direcciones.",
+  "service-not-allowed": "El navegador ha bloqueado el micrófono.",
+  "no-speech": "No he oído nada. Acerca el móvil y habla un poco más fuerte.",
+  "audio-capture": "No encuentro ningún micrófono.",
+  network: "El reconocimiento necesita conexión.",
+  "no-start": "No he podido encender el micrófono. Prueba a recargar.",
+};
 
 /** Material para jugar: tus palabras y, si tienes pocas, se completa con la lista base. */
 function gamePool() {
@@ -1080,6 +1166,8 @@ function abrirJuego(id) {
   if (id === "parejas") iniciarParejas(pool);
   if (id === "escucha") iniciarEscucha(pool);
   if (id === "ordena") iniciarOrdena(pool);
+  if (id === "hablar") iniciarHablar(pool);
+  if (id === "dictado") iniciarDictado(pool);
   if (id === "falsos") iniciarFalsos(pool);
   if (id === "confusas") iniciarConfusas(pool);
 
@@ -1702,6 +1790,240 @@ function renderOrdena() {
   }
 }
 
+/* ---------- 🎤 Pronúncialo ---------- */
+
+// Frases enteras no las reconoce bien; una palabra o dos sí.
+const esDecible = (w) => /^[a-z][a-z' ]{1,18}$/i.test(w.en.trim()) && w.en.trim().split(" ").length <= 2;
+
+function iniciarHablar(pool) {
+  if (!hayMicrofono) {
+    $("#game-box").innerHTML = `
+      <div class="empty">
+        <span class="big">🎤</span>
+        Este navegador no trae reconocimiento de voz.
+        <br />Funciona en Chrome (Android y ordenador) y en Safari (iPhone).
+        Ábrela ahí y podrás practicar en voz alta.
+      </div>`;
+    return;
+  }
+
+  const validas = pool.filter(esDecible);
+  if (validas.length < 4) {
+    $("#game-box").innerHTML = `<div class="empty">Aún no hay suficientes palabras cortas para este juego.</div>`;
+    return;
+  }
+
+  juego = {
+    pool,
+    items: mezclar(validas).slice(0, 8),
+    i: 0,
+    aciertos: 0,
+    fallos: 0,
+    nose: 0,
+    estado: "listo", // listo | oyendo | resuelto
+    oido: null,
+    error: null,
+  };
+  renderHablar();
+}
+
+function renderHablar() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("hablar", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarHablar(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const w = items[i];
+  const resuelto = juego.estado === "resuelto";
+  const oyendo = juego.estado === "oyendo";
+  const acerto = resuelto && juego.acertada;
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">Léela en voz alta</p>
+      <p class="word" lang="en">${esc(w.en)}</p>
+      <span class="pron">${esc(w.pron || "—")}</span>
+      <p class="translation">${esc(w.es)}</p>
+      <button class="speak" data-speak="${esc(w.en)}" aria-label="Oírla primero">🔊 Oírla primero</button>
+    </div>
+    <button class="btn btn-mic ${oyendo ? "is-listening" : ""}" id="hablar-btn" ${oyendo || resuelto ? "disabled" : ""}>
+      ${oyendo ? "🎙️ Escuchando… habla ahora" : "🎤 Hablar"}
+    </button>
+    ${
+      resuelto
+        ? `<div class="explain ${acerto ? "ok" : juego.rendida ? "nose" : "ko"}">
+             <b>${acerto ? "¡Te ha entendido!" : juego.rendida ? "La saltas" : "No te ha entendido"}</b>
+             ${juego.oido ? `<p>He oído: «<b lang="en">${esc(juego.oido)}</b>»</p>` : ""}
+             ${juego.error ? `<p>${esc(MENSAJE_MICRO[juego.error] || "No he podido escucharte.")}</p>` : ""}
+             ${!acerto && !juego.error ? `<p>Fíjate en la pronunciación figurada: <b>${esc(w.pron || "—")}</b>. Vuelve a oírla y repite.</p>` : ""}
+           </div>
+           <button class="btn" id="next-hablar">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : `<button class="btn btn-nose" id="nose" ${oyendo ? "disabled" : ""}>🤷 Saltar esta</button>`
+    }`;
+
+  if (resuelto) {
+    $("#next-hablar").onclick = () => {
+      juego.i += 1;
+      Object.assign(juego, { estado: "listo", oido: null, error: null, acertada: false, rendida: false });
+      renderHablar();
+    };
+    return;
+  }
+
+  $("#hablar-btn").onclick = async () => {
+    if (!juego || juego.estado !== "listo") return;
+    juego.estado = "oyendo";
+    renderHablar();
+
+    const res = await escucharUnaVez();
+    if (!juego) return; // te has salido del juego mientras escuchaba
+
+    const objetivo = norm(w.en);
+    const dichas = (res.alternativas || []).map(norm);
+    const acertada = dichas.includes(objetivo);
+
+    juego.estado = "resuelto";
+    juego.acertada = acertada;
+    juego.rendida = false;
+    juego.oido = res.alternativas?.[0] || null;
+    juego.error = res.error || null;
+
+    if (acertada) juego.aciertos += 1;
+    else if (!res.error) {
+      juego.fallos += 1;
+      penalizar(w);
+    }
+    renderHablar();
+  };
+
+  $("#nose").onclick = () => {
+    juego.estado = "resuelto";
+    juego.acertada = false;
+    juego.rendida = true;
+    juego.nose += 1;
+    penalizar(w);
+    renderHablar();
+  };
+}
+
+/* ---------- ✏️ Dictado ---------- */
+
+const palabrasDe = (frase) => norm(frase).split(" ").filter(Boolean);
+
+function iniciarDictado(pool) {
+  // Frases de verdad, ni de una palabra ni kilométricas.
+  const validas = pool.filter((w) => {
+    const n = w.example ? palabrasDe(w.example).length : 0;
+    return n >= 3 && n <= 9;
+  });
+  if (validas.length < 4) {
+    $("#game-box").innerHTML = `<div class="empty">Aún no hay suficientes frases de ejemplo para este juego.</div>`;
+    return;
+  }
+  juego = { pool, items: mezclar(validas).slice(0, 8), i: 0, aciertos: 0, fallos: 0, nose: 0, resultado: null, audioIdx: -1 };
+  renderDictado();
+}
+
+function renderDictado() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("dictado", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarDictado(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const w = items[i];
+  const r = juego.resultado;
+
+  // Palabra a palabra: así ves cuál se te escapó, que suele ser la átona.
+  const marcado = r
+    ? palabrasDe(w.example)
+        .map((p, n) => `<span class="${r.tuyas[n] === p ? "dic-ok" : "dic-ko"}">${esc(p)}</span>`)
+        .join(" ")
+    : "";
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">Escucha la frase y escríbela</p>
+      <button class="speak speak-lg" id="repetir" aria-label="Volver a escuchar">🔊</button>
+      <p class="quiz-hint">Escúchala las veces que quieras.</p>
+    </div>
+    <input id="resp-dictado" class="input input-big" type="text" placeholder="Escribe la frase…"
+           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+           ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
+    ${
+      r
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+             <b>${r.bien ? "¡Clavada!" : r.rendida ? "La frase era:" : `${r.aciertos} de ${r.total} palabras`}</b>
+             <p class="dictado-frase">${marcado}</p>
+             <p><em>${esc(w.exampleEs || "")}</em></p>
+           </div>
+           <button class="btn" id="next-dictado">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : `<div class="row-actions">
+             <button class="btn" id="comprobar-dictado">Comprobar</button>
+             <button class="btn btn-nose" id="nose">🤷 No la pillo</button>
+           </div>`
+    }`;
+
+  if (juego.audioIdx !== i) {
+    juego.audioIdx = i;
+    speak(w.example);
+  }
+  $("#repetir").onclick = () => speak(w.example);
+
+  if (!r) {
+    const input = $("#resp-dictado");
+    input.focus({ preventScroll: true });
+    const comprobar = (rendida = false) => {
+      const objetivo = palabrasDe(w.example);
+      const tuyas = palabrasDe(input.value);
+      const aciertos = rendida ? 0 : objetivo.filter((p, n) => tuyas[n] === p).length;
+      const bien = !rendida && aciertos === objetivo.length && tuyas.length === objetivo.length;
+      if (bien) juego.aciertos += 1;
+      else {
+        if (rendida) juego.nose += 1;
+        else juego.fallos += 1;
+        penalizar(w);
+      }
+      juego.resultado = { bien, rendida, texto: input.value, tuyas, aciertos, total: objetivo.length };
+      renderDictado();
+    };
+    input.onkeydown = (e) => {
+      if (e.key === "Enter") comprobar();
+    };
+    $("#comprobar-dictado").onclick = () => comprobar();
+    $("#nose").onclick = () => comprobar(true);
+  } else {
+    $("#next-dictado").onclick = () => {
+      juego.i += 1;
+      juego.resultado = null;
+      renderDictado();
+    };
+  }
+}
+
 /* ---------- 🎭 Falsos amigos ---------- */
 
 function iniciarFalsos(pool) {
@@ -1945,11 +2267,14 @@ function lessonProgress(id) {
 
 function renderLeccionesIndex() {
   $("#leccion-detalle").hidden = true;
+  $("#lectura-detalle").hidden = true;
   $("#lecciones-index").hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
-  $("#lecciones-sub").textContent = `${hechas} de ${LESSONS.length} superadas · gramática explicada en español`;
+  $("#lecciones-sub").textContent =
+    `${hechas} de ${LESSONS.length} lecciones superadas · ${LECTURAS.length} lecturas`;
+  renderLecturasIndex();
 
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
     const p = lessonProgress(l.id);
@@ -2182,6 +2507,205 @@ function renderQuiz() {
 }
 
 /* ------------------------------------------------------------------ *
+ * Lecturas: input comprensible
+ *
+ * El resto de la app te hace recuperar lo que ya viste. Esto es lo contrario:
+ * texto seguido donde las palabras aparecen en contexto. Tocas la que no
+ * conoces, la ves, y si te interesa se va a tu repaso.
+ * ------------------------------------------------------------------ */
+
+let modoAprender = "gramatica"; // "gramatica" | "lecturas"
+let lecturaAbierta = null;
+
+function cambiarModoAprender(modo) {
+  modoAprender = modo;
+  $("#modo-gramatica").classList.toggle("is-active", modo === "gramatica");
+  $("#modo-gramatica").setAttribute("aria-selected", String(modo === "gramatica"));
+  $("#modo-lecturas").classList.toggle("is-active", modo === "lecturas");
+  $("#modo-lecturas").setAttribute("aria-selected", String(modo === "lecturas"));
+  $("#panel-gramatica").hidden = modo !== "gramatica";
+  $("#panel-lecturas").hidden = modo !== "lecturas";
+}
+
+const NIVEL_NOMBRE = { basico: "Básico", intermedio: "Intermedio", avanzado: "Avanzado" };
+
+function renderLecturasIndex() {
+  $("#lecturas-lista").innerHTML = LECTURAS.map((l) => {
+    const leida = store.lecturas?.[l.id];
+    return `<button class="reading-card" data-lectura="${l.id}">
+      <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
+      <span class="lesson-title">${esc(l.titulo)}</span>
+      <span class="lesson-goal">${esc(l.resumen)}</span>
+      ${leida ? `<span class="lesson-score is-done">✓ leída</span>` : ""}
+    </button>`;
+  }).join("");
+}
+
+/**
+ * Busca una palabra del texto en tus palabras o en el banco.
+ * Los textos llevan formas conjugadas ("arrived", "boxes"), así que si no
+ * está tal cual se prueban las terminaciones típicas antes de rendirse.
+ */
+function buscarPalabra(token) {
+  const base = norm(token);
+  if (!base) return null;
+  const fuentes = [...store.words, ...listaLocal()];
+  const exacta = fuentes.find((w) => norm(w.en) === base);
+  if (exacta) return exacta;
+
+  const variantes = [
+    base.replace(/ies$/, "y"),
+    base.replace(/ied$/, "y"),
+    base.replace(/es$/, ""),
+    base.replace(/s$/, ""),
+    base.replace(/ed$/, ""),
+    base.replace(/ed$/, "e"),
+    base.replace(/ing$/, ""),
+    base.replace(/ing$/, "e"),
+    base.replace(/(.)\1(ed|ing)$/, "$1"),
+  ];
+  for (const v of variantes) {
+    if (v.length < 3 || v === base) continue;
+    const m = fuentes.find((w) => norm(w.en) === v);
+    if (m) return m;
+  }
+  return null;
+}
+
+/** Parte la frase en palabras (tocables) y el resto (comas, puntos, espacios). */
+const trocearFrase = (frase) =>
+  frase
+    .split(/([A-Za-z']+)/)
+    .filter(Boolean)
+    .map((t) => (/^[A-Za-z']+$/.test(t) ? `<button class="rword">${esc(t)}</button>` : esc(t)))
+    .join("");
+
+function abrirLectura(id) {
+  const l = getLectura(id);
+  if (!l) return;
+  lecturaAbierta = l;
+
+  $("#lecciones-index").hidden = true;
+  $("#leccion-detalle").hidden = true;
+  const box = $("#lectura-detalle");
+  box.hidden = false;
+
+  box.innerHTML = `
+    <button class="btn-back" id="back-lecturas">← Lecturas</button>
+    <div class="view-head">
+      <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
+      <h2>${esc(l.titulo)}</h2>
+      <p class="muted">Toca una palabra para verla. Toca la frase para traducirla entera.</p>
+    </div>
+    <article class="lectura">
+      ${l.frases
+        .map(
+          ([en, es], n) => `<p class="lect-frase" data-n="${n}">
+            <span class="lect-en" lang="en">${trocearFrase(en)}</span>
+            <button class="lect-audio" data-speak="${esc(en)}" aria-label="Escuchar la frase">🔊</button>
+            <em class="lect-es" hidden>${esc(es)}</em>
+          </p>`,
+        )
+        .join("")}
+    </article>
+    <div class="row-actions">
+      <button class="btn btn-ghost" id="lect-todo">Ver todas las traducciones</button>
+      <button class="btn" id="lect-hecha">✓ Marcar como leída</button>
+    </div>
+    <div id="lect-pop" class="wordpop" hidden></div>`;
+
+  $("#back-lecturas").onclick = () => {
+    lecturaAbierta = null;
+    cerrarPop();
+    renderLeccionesIndex();
+    cambiarModoAprender("lecturas");
+  };
+
+  $("#lect-todo").onclick = () => {
+    const ocultas = $$(".lect-es", box).some((e) => e.hidden);
+    $$(".lect-es", box).forEach((e) => (e.hidden = !ocultas));
+    $("#lect-todo").textContent = ocultas ? "Ocultar traducciones" : "Ver todas las traducciones";
+  };
+
+  $("#lect-hecha").onclick = () => {
+    store.lecturas = store.lecturas || {};
+    store.lecturas[l.id] = todayStr();
+    registerStudyDay();
+    save();
+    toast("Lectura marcada como leída");
+    lecturaAbierta = null;
+    renderLeccionesIndex();
+    cambiarModoAprender("lecturas");
+    updateChrome();
+  };
+
+  // Tocar palabra: la busca. Tocar el resto de la frase: traduce esa frase.
+  box.addEventListener("click", (e) => {
+    const palabra = e.target.closest(".rword");
+    if (palabra) {
+      mostrarPalabra(palabra.textContent);
+      return;
+    }
+    if (e.target.closest(".lect-audio") || e.target.closest("button")) return;
+    const frase = e.target.closest(".lect-frase");
+    if (frase) {
+      const es = $(".lect-es", frase);
+      es.hidden = !es.hidden;
+    }
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function cerrarPop() {
+  const pop = $("#lect-pop");
+  if (pop) pop.hidden = true;
+}
+
+function mostrarPalabra(token) {
+  const pop = $("#lect-pop");
+  if (!pop) return;
+  const w = buscarPalabra(token);
+
+  if (!w) {
+    pop.innerHTML = `
+      <button class="wordpop-x" id="pop-x" aria-label="Cerrar">✕</button>
+      <p class="wordpop-en" lang="en">${esc(token)}</p>
+      <p class="muted">No la tengo en el banco. Puedes oírla igualmente.</p>
+      <div class="row-actions">
+        <button class="btn btn-ghost" data-speak="${esc(token)}">🔊 Escuchar</button>
+      </div>`;
+    pop.hidden = false;
+    $("#pop-x").onclick = cerrarPop;
+    return;
+  }
+
+  const yaLaTiene = store.words.some((x) => x.en === w.en);
+  pop.innerHTML = `
+    <button class="wordpop-x" id="pop-x" aria-label="Cerrar">✕</button>
+    <p class="wordpop-en" lang="en">${esc(w.en)} <span class="pron">${esc(w.pron || "—")}</span></p>
+    <p class="wordpop-es">${esc(w.es)}</p>
+    <div class="row-actions">
+      <button class="btn btn-ghost" data-speak="${esc(w.en)}">🔊 Escuchar</button>
+      <button class="btn ${yaLaTiene ? "btn-ghost" : ""}" id="pop-add" ${yaLaTiene ? "disabled" : ""}>
+        ${yaLaTiene ? "✓ Ya la tienes" : "+ Añadir a mis palabras"}
+      </button>
+    </div>`;
+  pop.hidden = false;
+  $("#pop-x").onclick = cerrarPop;
+  if (!yaLaTiene) {
+    $("#pop-add").onclick = () => {
+      if (!addWord(w)) return;
+      registerStudyDay();
+      save();
+      toast(`«${w.en}» añadida a tus palabras`);
+      mostrarPalabra(token);
+      updateChrome();
+    };
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * Vista: Ajustes
  * ------------------------------------------------------------------ */
 
@@ -2294,6 +2818,9 @@ document.addEventListener("click", (e) => {
   const card = e.target.closest("[data-lesson]");
   if (card) openLeccion(card.dataset.lesson);
 
+  const lect = e.target.closest("[data-lectura]");
+  if (lect) abrirLectura(lect.dataset.lectura);
+
   const game = e.target.closest("[data-juego]");
   if (game) abrirJuego(game.dataset.juego);
 
@@ -2325,6 +2852,8 @@ $("#buscador").addEventListener("input", renderLista);
 $("#filtro-lista").addEventListener("change", renderLista);
 $("#modo-mis-palabras").addEventListener("click", () => cambiarModoLista("mis"));
 $("#modo-explorar").addEventListener("click", () => cambiarModoLista("explorar"));
+$("#modo-gramatica").addEventListener("click", () => cambiarModoAprender("gramatica"));
+$("#modo-lecturas").addEventListener("click", () => cambiarModoAprender("lecturas"));
 
 $("#set-level").addEventListener("change", (e) => {
   store.settings.level = e.target.value;
@@ -2488,3 +3017,10 @@ aplicarTema();
 await cargarBanco();
 updateChrome();
 renderHoy();
+
+// Sin conexión: hace falta contexto seguro (https o localhost).
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {
+    /* si falla, la app va igual, solo que sin modo offline */
+  });
+}
