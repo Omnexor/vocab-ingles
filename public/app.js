@@ -920,9 +920,18 @@ function pararJuego() {
 /* ---------- Reconocimiento de voz ---------- */
 
 // Lo trae el propio navegador: no hay API de pago ni se envía nada a ningún
-// sitio nuestro. En Chrome y Safari va con prefijo.
+// sitio nuestro. En Chrome va con prefijo.
 const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
-const hayMicrofono = Boolean(Reconocimiento);
+
+// En iOS (iPhone y iPad), Apple obliga a TODOS los navegadores —Safari,
+// Chrome, Firefox— a usar su mismo motor interno, que no tiene terminado el
+// reconocimiento de voz para páginas web. El objeto webkitSpeechRecognition
+// existe igualmente (por eso Boolean(Reconocimiento) solo no basta), pero
+// falla nada más pulsar en vez de avisar de que no está disponible.
+const esIOS =
+  /iP(hone|od|ad)/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); // iPad moderno se identifica como Mac
+const hayMicrofono = Boolean(Reconocimiento) && !esIOS;
 let oyente = null;
 
 function pararEscucha() {
@@ -1841,9 +1850,16 @@ function iniciarHablar(pool) {
     $("#game-box").innerHTML = `
       <div class="empty">
         <span class="big">🎤</span>
-        Este navegador no trae reconocimiento de voz.
-        <br />Funciona en Chrome (Android y ordenador) y en Safari (iPhone).
-        Ábrela ahí y podrás practicar en voz alta.
+        ${
+          esIOS
+            ? `En iPhone y iPad no está disponible: Apple no ha añadido el
+               reconocimiento de voz a su motor de navegador, y afecta por
+               igual a Safari, Chrome y cualquier otro que uses en iOS.
+               No es un permiso que falte, es que ahí no existe.`
+            : `Este navegador no trae reconocimiento de voz.`
+        }
+        <br />Funciona en Chrome o Edge, tanto en Android como en ordenador
+        (Windows, Mac o Linux). Ábrela ahí y podrás practicar en voz alta.
       </div>`;
     return;
   }
