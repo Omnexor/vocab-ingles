@@ -993,15 +993,22 @@ const MENSAJE_MICRO = {
   "no-start": "No he podido encender el micrófono. Prueba a recargar.",
 };
 
-/** Material para jugar: tus palabras y, si tienes pocas, se completa con la lista base. */
+// Categoría con la que se juega ahora mismo. "mixto" = todas mezcladas.
+// No se guarda entre sesiones a propósito: es un filtro de "ahora quiero
+// practicar esto", no un ajuste permanente como el de la sección Hoy.
+let juegoCat = "mixto";
+
+/** Material para jugar: tus palabras (de esa categoría) y, si tienes pocas, se completa con la lista base. */
 function gamePool() {
-  if (store.words.length >= 12) return store.words;
+  const porCategoria = (arr) => (juegoCat === "mixto" ? arr : arr.filter((w) => w.cat === juegoCat));
+  const propias = porCategoria(store.words);
+  if (propias.length >= 12) return propias;
   const known = new Set(store.words.map((w) => w.en));
-  const extra = listaLocal()
+  const extra = porCategoria(listaLocal())
     .filter((w) => !known.has(w.en))
     .slice(0, 60)
     .map((w) => ({ ...w, id: null }));
-  return [...store.words, ...extra];
+  return [...propias, ...extra];
 }
 
 const mezclar = (arr) => [...arr].sort(() => Math.random() - 0.5);
@@ -1126,16 +1133,35 @@ function sinSinonimos(pool, n) {
   return elegidas;
 }
 
+function renderChipsJuegos() {
+  const cont = $("#chips-juegos");
+  cont.innerHTML = CATEGORIAS.map(
+    (c) =>
+      `<button class="chip ${juegoCat === c.id ? "is-active" : ""}" data-cat="${c.id}" aria-pressed="${juegoCat === c.id}">${esc(c.nombre)}</button>`,
+  ).join("");
+
+  $$(".chip", cont).forEach((b) => {
+    b.onclick = () => {
+      if (juegoCat === b.dataset.cat) return;
+      juegoCat = b.dataset.cat;
+      renderJuegosIndex();
+    };
+  });
+}
+
 function renderJuegosIndex() {
   pararJuego();
   $("#juego-activo").hidden = true;
   $("#juegos-index").hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 
+  renderChipsJuegos();
+
   const pool = gamePool().length;
   const lios = paresConfusos().length;
+  const filtro = juegoCat === "mixto" ? "" : ` de ${nombreCategoria(juegoCat).toLowerCase()}`;
   $("#juegos-sub").textContent =
-    `${pool} palabras en juego · fallar una la devuelve al repaso` +
+    `${pool} palabras${filtro} en juego · fallar una la devuelve al repaso` +
     (lios ? ` · ${lios} ${lios === 1 ? "pareja que mezclas" : "parejas que mezclas"}` : "");
 
   const tarjeta = (g) => {
@@ -1169,7 +1195,11 @@ function abrirJuego(id) {
   const def = JUEGOS.find((g) => g.id === id);
   const pool = gamePool();
   if (pool.length < def.minimo) {
-    toast(`Necesitas al menos ${def.minimo} palabras para este juego.`);
+    toast(
+      juegoCat === "mixto"
+        ? `Necesitas al menos ${def.minimo} palabras para este juego.`
+        : `Muy pocas palabras de «${nombreCategoria(juegoCat).toLowerCase()}» para este juego. Prueba con «Un poco de todo».`,
+    );
     return;
   }
 
@@ -1332,11 +1362,20 @@ function siguienteRapida() {
 
 /* ---------- 🎯 Completa la frase ---------- */
 
+/**
+ * ¿Aparece la palabra ENTERA en la frase, no como trozo de otra?
+ *
+ * Sin límites de palabra, "a" hacía huecos dentro de "break" y "make" dejaba
+ * suelta la "s" de "makes": la frase quedaba destrozada y de paso se filtraba
+ * parte de la respuesta. Los phrasal verbs con espacio ("give up") funcionan
+ * igual: \b también delimita en los espacios.
+ */
+const regexPalabra = (palabra) => new RegExp(`\\b${escRegex(palabra)}\\b`, "ig");
+const contienePalabra = (frase, palabra) => regexPalabra(palabra).test(frase);
+
 function iniciarHueco(pool) {
-  // Solo sirven las palabras cuya frase de ejemplo las contiene.
-  const validas = pool.filter(
-    (w) => w.example && w.example.toLowerCase().includes(w.en.toLowerCase()),
-  );
+  // Solo sirven las palabras cuya frase de ejemplo las contiene ENTERAS.
+  const validas = pool.filter((w) => w.example && contienePalabra(w.example, w.en));
   if (validas.length < 4) {
     $("#game-box").innerHTML = `<div class="empty">Aún no hay frases suficientes. Añade más palabras.</div>`;
     return;
@@ -1363,7 +1402,7 @@ function renderHueco() {
   }
 
   const w = items[i];
-  const hueco = w.example.replace(new RegExp(escRegex(w.en), "ig"), "______");
+  const hueco = w.example.replace(regexPalabra(w.en), "______");
   const opciones = mezclar([w, ...distractores(juego.pool, w, 2)]);
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
