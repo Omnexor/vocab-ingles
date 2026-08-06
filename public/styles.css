@@ -440,6 +440,43 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
   .wordpop { bottom: 24px; }
 }
 
+/* Verbos irregulares: las tres formas en columnas */
+.irr-tabla {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0 10px;
+  text-align: center;
+}
+.irr-col { display: grid; gap: 2px; }
+.irr-col small {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.irr-forma { font-size: 18px; font-weight: 750; word-break: break-word; }
+.irr-pron { font-size: 12px; color: var(--muted); }
+.irr-hueco { color: var(--accent); }
+.irr-ok { color: var(--ok); }
+.irr-ko { color: var(--danger); }
+
+/* Resumen final: qué has fallado */
+.repasar-luego { margin-top: 14px; }
+.repasar-luego ul { list-style: none; margin: 10px 0 6px; padding: 0; }
+.repasar-luego li {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.rl-en { font-weight: 700; }
+.rl-pron { color: var(--muted); font-size: 13px; }
+.rl-es { color: var(--muted); font-size: 14px; }
+
 /* Botón de micrófono */
 .btn-mic { width: 100%; margin-bottom: 12px; }
 .btn-mic.is-listening {
@@ -467,8 +504,10 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 }
 
 /* Bloques de juegos por destreza */
-.game-group { margin: 0 0 22px; }
-.game-group-title {
+.game-group,
+.text-group { margin: 0 0 22px; }
+.game-group-title,
+.text-group-title {
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -479,7 +518,8 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
   text-transform: uppercase;
   color: var(--muted);
 }
-.game-group-title small {
+.game-group-title small,
+.text-group-title small {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0;

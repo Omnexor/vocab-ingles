@@ -1,7 +1,9 @@
 import { SEED_WORDS, CATEGORIAS, nombreCategoria } from "./seed.js";
 import { LESSONS, getLesson } from "./lessons.js";
 import { FALSOS_AMIGOS } from "./false-friends.js";
-import { LECTURAS, getLectura } from "./readings.js";
+import { LECTURAS } from "./readings.js";
+import { CUENTOS } from "./stories.js";
+import { IRREGULARES, FORMA_A_BASE, CONTRACCIONES } from "./irregulars.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -871,6 +873,14 @@ const JUEGOS = [
     record: "aciertos",
   },
   {
+    id: "irregulares",
+    emoji: "🧩",
+    nombre: "Verbos irregulares",
+    desc: "go · went · gone. Te falta una forma y la escribes. El hueso clásico.",
+    minimo: 0,
+    record: "aciertos",
+  },
+  {
     id: "falsos",
     emoji: "🎭",
     nombre: "Falsos amigos",
@@ -892,7 +902,7 @@ const JUEGOS = [
 const GRUPOS_JUEGOS = [
   { nombre: "Significado", pista: "saber qué quiere decir", juegos: ["rapida", "hueco"] },
   { nombre: "Oído y pronunciación", pista: "reconocerla y decirla", juegos: ["escucha", "hablar", "dictado"] },
-  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
+  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena", "irregulares"] },
   { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
   { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
 ];
@@ -1010,6 +1020,14 @@ function guardarRecord(id, valor, menorEsMejor = false) {
  */
 function penalizar(w) {
   if (!w?.en) return;
+  // Se apunta para el resumen del final: terminar una partida sabiendo el
+  // marcador pero no QUÉ fallaste no sirve de nada.
+  if (juego) {
+    juego.falladas = juego.falladas || [];
+    if (!juego.falladas.some((x) => x.en === w.en)) {
+      juego.falladas.push({ en: w.en, es: w.es, pron: w.pron });
+    }
+  }
   const real = (w.id ? byId(w.id) : store.words.find((x) => x.en === w.en)) || addWord(w);
   if (!real) return;
   real.box = 0;
@@ -1168,6 +1186,7 @@ function abrirJuego(id) {
   if (id === "ordena") iniciarOrdena(pool);
   if (id === "hablar") iniciarHablar(pool);
   if (id === "dictado") iniciarDictado(pool);
+  if (id === "irregulares") iniciarIrregulares(pool);
   if (id === "falsos") iniciarFalsos(pool);
   if (id === "confusas") iniciarConfusas(pool);
 
@@ -1184,6 +1203,8 @@ function detalle(j, esRecord) {
 }
 
 function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
+  const falladas = (juego?.falladas || []).slice(0, 10);
+
   $("#game-box").innerHTML = `
     <div class="card quiz-result">
       <p class="result-emoji">${esRecord ? "🏆" : "👏"}</p>
@@ -1193,7 +1214,27 @@ function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
         <button class="btn" id="rejugar">Otra partida</button>
         <button class="btn btn-ghost" id="volver-juegos">Otros juegos</button>
       </div>
-    </div>`;
+    </div>
+    ${
+      falladas.length
+        ? `<div class="card repasar-luego">
+             <b>Las que se te han resistido</b>
+             <ul>
+               ${falladas
+                 .map(
+                   (w) => `<li>
+                     <span class="rl-en" lang="en">${esc(w.en)}</span>
+                     <span class="rl-pron">${esc(w.pron || "—")}</span>
+                     <span class="rl-es">${esc(w.es)}</span>
+                     <button class="speak speak-sm" data-speak="${esc(w.en)}" aria-label="Escuchar ${esc(w.en)}">🔊</button>
+                   </li>`,
+                 )
+                 .join("")}
+             </ul>
+             <p class="muted">Ya están en tu cola de repaso para hoy.</p>
+           </div>`
+        : ""
+    }`;
   $("#rejugar").onclick = reiniciar;
   $("#volver-juegos").onclick = () => renderJuegosIndex();
   updateChrome();
@@ -2024,6 +2065,116 @@ function renderDictado() {
   }
 }
 
+/* ---------- 🧩 Verbos irregulares ---------- */
+
+function iniciarIrregulares(pool) {
+  juego = {
+    pool,
+    items: mezclar(IRREGULARES)
+      .slice(0, 10)
+      // Se esconde el pasado o el participio, al azar: saberse uno no es
+      // saberse el otro, y en "have been" el que falla es el segundo.
+      .map((v) => ({ v, hueco: Math.random() < 0.5 ? "pasado" : "participio" })),
+    i: 0,
+    aciertos: 0,
+    fallos: 0,
+    nose: 0,
+    falladas: [],
+    resultado: null,
+  };
+  renderIrregulares();
+}
+
+function renderIrregulares() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("irregulares", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarIrregulares(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const { v, hueco } = items[i];
+  const r = juego.resultado;
+  const prons = v.pron.split(" · ");
+  const esperado = hueco === "pasado" ? v.pasado : v.participio;
+
+  const celda = (valor, cual, n) => {
+    if (cual !== hueco) return `<span class="irr-forma" lang="en">${esc(valor)}</span><span class="irr-pron">${esc(prons[n] || "")}</span>`;
+    if (r) return `<span class="irr-forma ${r.bien ? "irr-ok" : "irr-ko"}" lang="en">${esc(valor)}</span><span class="irr-pron">${esc(prons[n] || "")}</span>`;
+    return `<span class="irr-forma irr-hueco">?</span><span class="irr-pron">&nbsp;</span>`;
+  };
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">${hueco === "pasado" ? "Falta el pasado simple" : "Falta el participio"}</p>
+      <p class="translation">${esc(v.es)}</p>
+      <div class="irr-tabla">
+        <div class="irr-col"><small>infinitivo</small>${celda(v.base, "base", 0)}</div>
+        <div class="irr-col"><small>pasado</small>${celda(v.pasado, "pasado", 1)}</div>
+        <div class="irr-col"><small>participio</small>${celda(v.participio, "participio", 2)}</div>
+      </div>
+      <button class="speak" data-speak="${esc(v.base)}" aria-label="Escuchar">🔊</button>
+    </div>
+    <input id="resp-irr" class="input input-big" type="text" placeholder="Escribe la forma que falta…"
+           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+           ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
+    ${
+      r
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+             <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(esperado)}</b>
+             <p><b lang="en">${esc(v.base)}</b> · <b lang="en">${esc(v.pasado)}</b> · <b lang="en">${esc(v.participio)}</b></p>
+             <p>${esc(v.pron)}</p>
+           </div>
+           <div class="row-actions">
+             <button class="btn btn-ghost" data-speak="${esc(v.base)} , ${esc(v.pasado.replace("/", " or "))} , ${esc(v.participio)}">🔊 Oír las tres</button>
+             <button class="btn" id="next-irr">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>
+           </div>`
+        : `<div class="row-actions">
+             <button class="btn" id="comprobar-irr">Comprobar</button>
+             <button class="btn btn-nose" id="nose">🤷 No la sé</button>
+           </div>`
+    }`;
+
+  if (!r) {
+    const input = $("#resp-irr");
+    input.focus({ preventScroll: true });
+    const comprobar = (rendida = false) => {
+      // "was/were" vale entero o cualquiera de las dos por separado.
+      const validas = [esperado, ...esperado.split("/")].map((s) => norm(s));
+      const bien = !rendida && validas.includes(norm(input.value));
+      if (bien) juego.aciertos += 1;
+      else {
+        if (rendida) juego.nose += 1;
+        else juego.fallos += 1;
+        juego.falladas.push({ en: `${v.base} · ${v.pasado} · ${v.participio}`, es: v.es, pron: v.pron });
+      }
+      juego.resultado = { bien, rendida, texto: input.value };
+      renderIrregulares();
+    };
+    input.onkeydown = (e) => {
+      if (e.key === "Enter") comprobar();
+    };
+    $("#comprobar-irr").onclick = () => comprobar();
+    $("#nose").onclick = () => comprobar(true);
+  } else {
+    $("#next-irr").onclick = () => {
+      juego.i += 1;
+      juego.resultado = null;
+      renderIrregulares();
+    };
+  }
+}
+
 /* ---------- 🎭 Falsos amigos ---------- */
 
 function iniciarFalsos(pool) {
@@ -2273,7 +2424,7 @@ function renderLeccionesIndex() {
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
   $("#lecciones-sub").textContent =
-    `${hechas} de ${LESSONS.length} lecciones superadas · ${LECTURAS.length} lecturas`;
+    `${hechas} de ${LESSONS.length} lecciones superadas · ${CUENTOS.length} cuentos y ${LECTURAS.length} lecturas`;
   renderLecturasIndex();
 
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
@@ -2529,45 +2680,122 @@ function cambiarModoAprender(modo) {
 
 const NIVEL_NOMBRE = { basico: "Básico", intermedio: "Intermedio", avanzado: "Avanzado" };
 
+// Cuentos y lecturas comparten pantalla porque se leen igual; lo que cambia es
+// el formato: el cuento tiene principio, giro y final, y eso tira de ti hasta
+// el último párrafo aunque no entiendas todas las palabras.
+const TEXTOS = [
+  ...CUENTOS.map((c) => ({ ...c, tipo: "cuento" })),
+  ...LECTURAS.map((l) => ({ ...l, tipo: "lectura" })),
+];
+const getTexto = (id) => TEXTOS.find((t) => t.id === id);
+
+const GRUPOS_TEXTO = [
+  { tipo: "cuento", nombre: "Cuentos", pista: "con historia: engancha y arrastra" },
+  { tipo: "lectura", nombre: "Textos cortos", pista: "escenas del día a día" },
+];
+
+function tarjetaTexto(l) {
+  const leida = store.lecturas?.[l.id];
+  const frases = l.frases.length;
+  return `<button class="reading-card" data-lectura="${l.id}">
+    <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)} · ${frases} frases</span>
+    <span class="lesson-title">${esc(l.titulo)}</span>
+    <span class="lesson-goal">${esc(l.resumen)}</span>
+    ${leida ? `<span class="lesson-score is-done">✓ leída</span>` : ""}
+  </button>`;
+}
+
 function renderLecturasIndex() {
-  $("#lecturas-lista").innerHTML = LECTURAS.map((l) => {
-    const leida = store.lecturas?.[l.id];
-    return `<button class="reading-card" data-lectura="${l.id}">
-      <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
-      <span class="lesson-title">${esc(l.titulo)}</span>
-      <span class="lesson-goal">${esc(l.resumen)}</span>
-      ${leida ? `<span class="lesson-score is-done">✓ leída</span>` : ""}
-    </button>`;
+  $("#lecturas-lista").innerHTML = GRUPOS_TEXTO.map((g) => {
+    const suyos = TEXTOS.filter((t) => t.tipo === g.tipo);
+    if (!suyos.length) return "";
+    return `<section class="text-group">
+      <h3 class="text-group-title">${esc(g.nombre)} <small>${esc(g.pista)}</small></h3>
+      <div class="lesson-grid">${suyos.map(tarjetaTexto).join("")}</div>
+    </section>`;
   }).join("");
 }
 
 /**
  * Busca una palabra del texto en tus palabras o en el banco.
- * Los textos llevan formas conjugadas ("arrived", "boxes"), así que si no
- * está tal cual se prueban las terminaciones típicas antes de rendirse.
+ *
+ * Un texto real no trae infinitivos: trae "went", "told", "couldn't",
+ * "boxes". Y resulta que los verbos irregulares son justo los más frecuentes,
+ * así que sin resolverlos media lectura se quedaba sin encontrar.
+ *
+ * Orden: la palabra tal cual → sin contracción → forma irregular →
+ * terminaciones regulares.
  */
 function buscarPalabra(token) {
-  const base = norm(token);
-  if (!base) return null;
-  const fuentes = [...store.words, ...listaLocal()];
-  const exacta = fuentes.find((w) => norm(w.en) === base);
-  if (exacta) return exacta;
-
-  const variantes = [
-    base.replace(/ies$/, "y"),
-    base.replace(/ied$/, "y"),
-    base.replace(/es$/, ""),
-    base.replace(/s$/, ""),
-    base.replace(/ed$/, ""),
-    base.replace(/ed$/, "e"),
-    base.replace(/ing$/, ""),
-    base.replace(/ing$/, "e"),
-    base.replace(/(.)\1(ed|ing)$/, "$1"),
+  // Los falsos amigos también son vocabulario: si sale "carpet" en un texto,
+  // lo suyo es que puedas tocarlo y ver la trampa, no que no aparezca.
+  const fuentes = [
+    ...store.words,
+    ...listaLocal(),
+    ...FALSOS_AMIGOS.map((f) => ({ en: f.en, es: f.es, pron: f.pron, example: f.example, exampleEs: f.exampleEs, cat: "mixto" })),
+    ...IRREGULARES.map((v) => ({ en: v.base, es: v.es, pron: v.pron.split(" · ")[0], example: "", exampleEs: "", cat: "verbos" })),
   ];
-  for (const v of variantes) {
-    if (v.length < 3 || v === base) continue;
-    const m = fuentes.find((w) => norm(w.en) === v);
-    if (m) return m;
+  const halla = (t) => {
+    const n = norm(t);
+    return n ? fuentes.find((w) => norm(w.en) === n) : null;
+  };
+
+  const crudo = String(token).toLowerCase().replace(/^['']+|['']+$/g, "").trim();
+  if (!crudo) return null;
+
+  // Candidatos por contracción: "couldn't" → "could", "they're" → "they".
+  // Algunas no salen de quitar lo de detrás del apóstrofo ("won't" → "will").
+  const candidatos = [crudo];
+  if (CONTRACCIONES[crudo]) candidatos.push(CONTRACCIONES[crudo]);
+  const corte = crudo.match(/^(.+?)(?:n['']?t|['](?:s|re|ve|ll|d|m))$/);
+  if (corte) candidatos.push(corte[1]);
+
+  for (const c of candidatos) {
+    const directa = halla(c);
+    if (directa) return directa;
+
+    // Irregulares: "went" → "go", "understood" → "understand".
+    const base = FORMA_A_BASE.get(norm(c));
+    if (base) {
+      const porBase = halla(base);
+      if (porBase) return porBase;
+    }
+
+    const n = norm(c);
+    const variantes = [
+      // plurales y tercera persona
+      n.replace(/ies$/, "y"),
+      n.replace(/es$/, ""),
+      n.replace(/s$/, ""),
+      // pasados y gerundios regulares
+      n.replace(/ied$/, "y"),
+      n.replace(/ed$/, ""),
+      n.replace(/ed$/, "e"),
+      n.replace(/ing$/, ""),
+      n.replace(/ing$/, "e"),
+      n.replace(/(.)\1(ed|ing)$/, "$1"),
+      // comparativos y superlativos: harder, easier, biggest
+      n.replace(/ier$/, "y"),
+      n.replace(/iest$/, "y"),
+      n.replace(/er$/, ""),
+      n.replace(/er$/, "e"),
+      n.replace(/est$/, ""),
+      n.replace(/est$/, "e"),
+      n.replace(/(.)\1(er|est)$/, "$1"),
+      // adverbios: genuinely, entirely, easily
+      n.replace(/ily$/, "y"),
+      n.replace(/ly$/, ""),
+      n.replace(/ly$/, "le"),
+      // sustantivos derivados: connection → connect, education → educate
+      n.replace(/ation$/, "ate"),
+      n.replace(/ion$/, ""),
+      n.replace(/ment$/, ""),
+    ];
+    for (const v of variantes) {
+      if (v.length < 3 || v === n) continue;
+      const m = halla(v);
+      if (m) return m;
+    }
   }
   return null;
 }
@@ -2581,7 +2809,7 @@ const trocearFrase = (frase) =>
     .join("");
 
 function abrirLectura(id) {
-  const l = getLectura(id);
+  const l = getTexto(id);
   if (!l) return;
   lecturaAbierta = l;
 
@@ -2640,7 +2868,11 @@ function abrirLectura(id) {
   };
 
   // Tocar palabra: la busca. Tocar el resto de la frase: traduce esa frase.
-  box.addEventListener("click", (e) => {
+  //
+  // Con addEventListener se acumulaba uno por cada lectura abierta: a la
+  // segunda, el clic alternaba la traducción dos veces y parecía no hacer
+  // nada. onclick sustituye al anterior en vez de sumarse.
+  box.onclick = (e) => {
     const palabra = e.target.closest(".rword");
     if (palabra) {
       mostrarPalabra(palabra.textContent);
@@ -2652,7 +2884,7 @@ function abrirLectura(id) {
       const es = $(".lect-es", frase);
       es.hidden = !es.hidden;
     }
-  });
+  };
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }

@@ -1568,6 +1568,533 @@ export const LESSONS = [
       { q: "«Let's go, ___?»", options: ["don't we", "shall we", "won't we"], answer: 1, why: "Con «let's», la coletilla fija es siempre «shall we?»." },
     ],
   },
+  {
+    id: "there-is-are",
+    title: "«Hay»: there is / there are",
+    tag: "Estructuras",
+    goal: "Dejar de decir «it has» cuando quieres decir «hay».",
+    blocks: [
+      {
+        t: "p",
+        text: "En español «hay» vale para uno y para muchos: hay un coche, hay tres coches. En inglés hay que elegir según lo que venga detrás, y además nunca se usa «have» para esto. «It has a problem» significa «él tiene un problema», no «hay un problema».",
+      },
+      {
+        t: "formula",
+        parts: ["There is", "singular / incontable"],
+        example: "There is a problem with the car.",
+      },
+      {
+        t: "formula",
+        parts: ["There are", "plural"],
+        example: "There are three people waiting.",
+      },
+      {
+        t: "table",
+        head: ["Tiempo", "Singular", "Plural"],
+        rows: [
+          ["Presente", "there is / there's", "there are"],
+          ["Pasado", "there was", "there were"],
+          ["Futuro", "there will be", "there will be"],
+          ["Perfecto", "there has been", "there have been"],
+          ["Con modal", "there might be", "there might be"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "En una lista, el verbo concuerda con lo PRIMERO que nombras: «There is a table and four chairs» (empieza en singular) pero «There are four chairs and a table».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "There's no milk left.", pron: "ders nóu milk left", es: "No queda leche." },
+          { en: "There were a lot of people.", pron: "der uer a lot ov píipol", es: "Había mucha gente." },
+          { en: "There will be a meeting on Friday.", pron: "der uil bi a míiting on fráidei", es: "Habrá una reunión el viernes." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "It has a lot of traffic today. / Have a problem.",
+        right: "There is a lot of traffic today. / There is a problem.",
+        why: "«Hay» nunca es «have». Se traduce por «there is/are», y el sujeto es siempre «there».",
+      },
+    ],
+    quiz: [
+      { q: "«___ two messages for you.»", options: ["There is", "There are", "It has"], answer: 1, why: "«two messages» es plural → there are." },
+      { q: "«___ a lot of noise last night.»", options: ["There was", "There were", "There is"], answer: 0, why: "«noise» es incontable y es pasado → there was." },
+      { q: "¿Cómo se dice «Hay un problema»?", options: ["It has a problem", "There is a problem", "Have a problem"], answer: 1, why: "«Hay» es there is, nunca have." },
+      { q: "«___ a table and six chairs in the room.»", options: ["There are", "There is", "There have"], answer: 1, why: "Concuerda con lo primero de la lista: «a table», singular." },
+      { q: "«___ been three complaints this week.»", options: ["There has", "There have", "There is"], answer: 1, why: "«three complaints» es plural → there have been." },
+    ],
+  },
+
+  {
+    id: "say-tell",
+    title: "say, tell, speak y talk",
+    tag: "Palabras",
+    goal: "Cuatro verbos ingleses para lo que en español son dos.",
+    blocks: [
+      {
+        t: "p",
+        text: "«Decir» y «hablar» se reparten en cuatro verbos, y la diferencia no es de significado sino de qué va detrás. Lo que decide es si mencionas a la persona a la que hablas.",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "Qué lleva detrás", "Ejemplo"],
+        rows: [
+          ["say", "lo dicho (sin persona)", "He said hello."],
+          ["say to", "lo dicho + to + persona", "He said hello to me."],
+          ["tell", "persona + lo dicho", "He told me the truth."],
+          ["speak", "idiomas, formal, hablar con", "I speak English."],
+          ["talk", "conversar, informal", "We talked about work."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco: TELL lleva a alguien pegado detrás sin preposición (tell me, tell him). SAY no: si quieres la persona, necesitas «to» (say to me). Si dudas, mira si hay persona justo después del verbo.",
+      },
+      {
+        t: "p",
+        text: "Hay combinaciones fijas que hay que aprenderse tal cual: tell a story, tell a lie, tell the truth, tell the time, say sorry, say a word, say your name.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "She told me she was tired.", pron: "shi tóuld mi shi uós táierd", es: "Me dijo que estaba cansada." },
+          { en: "What did he say?", pron: "uót did ji séi", es: "¿Qué dijo?" },
+          { en: "Can I speak to the manager?", pron: "kan ai spiik tu de mániyer", es: "¿Puedo hablar con el encargado?" },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "He said me the truth. / She told that she was late.",
+        right: "He told me the truth. / She said that she was late.",
+        why: "Con persona detrás: tell. Sin persona: say. Es lo único que hay que mirar.",
+      },
+    ],
+    quiz: [
+      { q: "«She ___ me she was leaving.»", options: ["said", "told", "spoke"], answer: 1, why: "Va seguido de «me» (persona) sin preposición → tell." },
+      { q: "«He didn't ___ anything.»", options: ["tell", "say", "talk"], answer: 1, why: "No hay persona detrás, solo lo dicho → say." },
+      { q: "«Do you ___ French?»", options: ["talk", "say", "speak"], answer: 2, why: "Con idiomas siempre speak." },
+      { q: "«We ___ about the project for an hour.»", options: ["talked", "told", "said"], answer: 0, why: "Conversar sobre algo: talk about." },
+      { q: "«Please ___ the truth.»", options: ["say", "tell", "speak"], answer: 1, why: "«tell the truth» es una combinación fija." },
+    ],
+  },
+
+  {
+    id: "make-do",
+    title: "make y do: los dos «hacer»",
+    tag: "Palabras",
+    goal: "Saber cuál toca sin ir probando.",
+    blocks: [
+      {
+        t: "p",
+        text: "«Hacer» se parte en dos. La idea general: MAKE es crear algo que antes no existía; DO es realizar una actividad o una tarea. No siempre encaja, pero acierta la mayoría de las veces.",
+      },
+      {
+        t: "table",
+        head: ["MAKE (crear, producir)", "DO (actividad, tarea)"],
+        rows: [
+          ["make a mistake", "do your homework"],
+          ["make a decision", "do the shopping"],
+          ["make a noise", "do the dishes"],
+          ["make money", "do exercise"],
+          ["make a plan", "do business"],
+          ["make friends", "do a favor"],
+          ["make dinner", "do your best"],
+          ["make an effort", "do nothing"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si al final queda algo nuevo que puedes señalar (una cena, un plan, un ruido, un error), es MAKE. Si es una tarea que se hace y ya está (los deberes, la compra, ejercicio), es DO.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I made a mistake in the email.", pron: "ai méid a mistéik in di íimeil", es: "Cometí un error en el correo." },
+          { en: "Can you do me a favor?", pron: "kan yu du mi a féivor", es: "¿Me haces un favor?" },
+          { en: "We need to make a decision today.", pron: "ui niid tu méik a disíshon tudéi", es: "Tenemos que tomar una decisión hoy." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I did a mistake. / Let's make the shopping.",
+        right: "I made a mistake. / Let's do the shopping.",
+        why: "Un error se «crea» sin querer: make. La compra es una tarea: do.",
+      },
+    ],
+    quiz: [
+      { q: "«I ___ a mistake.»", options: ["did", "made", "make"], answer: 1, why: "make a mistake, siempre." },
+      { q: "«Can you ___ me a favor?»", options: ["make", "do", "give"], answer: 1, why: "do someone a favor es fijo." },
+      { q: "«She ___ the dishes every night.»", options: ["makes", "does", "make"], answer: 1, why: "Tarea de casa → do the dishes." },
+      { q: "«They want to ___ a decision.»", options: ["do", "make", "take"], answer: 1, why: "En inglés la decisión se «hace»: make a decision (no take)." },
+      { q: "«He is ___ his homework.»", options: ["making", "doing", "does"], answer: 1, why: "do your homework, y en continuo: doing." },
+    ],
+  },
+
+  {
+    id: "for-since-ago",
+    title: "for, since y ago",
+    tag: "Pasado",
+    goal: "Traducir «desde» y «hace» sin equivocarte.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español usamos «hace» y «desde» con bastante libertad. En inglés cada uno pide una cosa distinta detrás y un tiempo verbal distinto, así que confundirlos cambia la frase entera.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Qué lleva detrás", "Significa", "Ejemplo"],
+        rows: [
+          ["for", "cuánto tiempo (duración)", "durante / desde hace", "for three years"],
+          ["since", "cuándo empezó (punto)", "desde", "since 2019, since Monday"],
+          ["ago", "va DETRÁS del tiempo", "hace", "three years ago"],
+        ],
+      },
+      {
+        t: "formula",
+        parts: ["have/has", "participio", "for / since"],
+        example: "I have lived here for ten years.",
+      },
+      {
+        t: "tip",
+        text: "«ago» va siempre con pasado simple y siempre detrás: «two hours ago», nunca «ago two hours». Y no se mezcla con present perfect: se dice «I saw her two days ago», no «I have seen her two days ago».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I have worked here since 2020.", pron: "ai jav uérkt jíer sins tuénti tuénti", es: "Trabajo aquí desde 2020." },
+          { en: "We waited for two hours.", pron: "ui uéited for tuu áuers", es: "Esperamos dos horas." },
+          { en: "She called me ten minutes ago.", pron: "shi kold mi ten mínits agóu", es: "Me llamó hace diez minutos." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I live here since three years. / Ago two days I saw him.",
+        right: "I have lived here for three years. / I saw him two days ago.",
+        why: "«three years» es duración → for. Y «ago» va detrás del tiempo, con pasado simple.",
+      },
+    ],
+    quiz: [
+      { q: "«I have known her ___ 2015.»", options: ["for", "since", "ago"], answer: 1, why: "2015 es un punto en el tiempo → since." },
+      { q: "«We talked ___ an hour.»", options: ["since", "ago", "for"], answer: 2, why: "«an hour» es duración → for." },
+      { q: "«He left the company two months ___.»", options: ["ago", "since", "before"], answer: 0, why: "«hace dos meses» → two months ago, detrás." },
+      { q: "«She has been ill ___ Monday.»", options: ["for", "since", "ago"], answer: 1, why: "Monday es cuándo empezó → since." },
+      { q: "¿Cuál es correcta?", options: ["I have seen him yesterday", "I saw him yesterday", "I have saw him yesterday"], answer: 1, why: "Un momento pasado y cerrado pide pasado simple, no present perfect." },
+    ],
+  },
+
+  {
+    id: "some-any",
+    title: "some, any y no",
+    tag: "Palabras",
+    goal: "Cuándo va «some» y cuándo «any».",
+    blocks: [
+      {
+        t: "p",
+        text: "En español muchas veces no ponemos nada: «¿Tienes hermanos?», «Quiero agua». En inglés casi siempre hay que poner algo delante, y elegir entre some y any.",
+      },
+      {
+        t: "table",
+        head: ["Frase", "Se usa", "Ejemplo"],
+        rows: [
+          ["Afirmativa", "some", "I have some questions."],
+          ["Negativa", "any", "I don't have any questions."],
+          ["Pregunta", "any", "Do you have any questions?"],
+          ["Ofrecer o pedir", "some", "Would you like some coffee?"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "La excepción importante: en preguntas que son un ofrecimiento o una petición se usa SOME, no any. «Would you like some tea?» suena amable; «any tea» suena a que dudas de que quede té.",
+      },
+      {
+        t: "p",
+        text: "«no» equivale a «not any» y es más corto: «I have no money» = «I don't have any money». Ojo: no se pueden usar los dos a la vez.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "There are some messages for you.", pron: "der ar sam mésichis for yu", es: "Hay algunos mensajes para ti." },
+          { en: "I didn't buy anything.", pron: "ai dídent bái énizing", es: "No compré nada." },
+          { en: "Would you like some help?", pron: "uúd yu láik sam jelp", es: "¿Quieres ayuda?" },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I don't have no money. / Do you have some time?",
+        right: "I don't have any money. / Do you have any time?",
+        why: "En inglés no se doblan las negaciones. Y en preguntas normales va any.",
+      },
+    ],
+    quiz: [
+      { q: "«I need ___ help.»", options: ["any", "some", "no any"], answer: 1, why: "Frase afirmativa → some." },
+      { q: "«Is there ___ milk left?»", options: ["some", "any", "no"], answer: 1, why: "Pregunta normal → any." },
+      { q: "«Would you like ___ water?»", options: ["any", "some", "no"], answer: 1, why: "Es un ofrecimiento → some, aunque sea pregunta." },
+      { q: "«We don't have ___ time.»", options: ["some", "any", "no any"], answer: 1, why: "Negativa → any (o «we have no time»)." },
+      { q: "¿Cuál es correcta?", options: ["I don't know nothing", "I don't know anything", "I don't know no thing"], answer: 1, why: "Una sola negación por frase: don't + anything." },
+    ],
+  },
+
+  {
+    id: "verbos-preposicion",
+    title: "Verbos con su preposición fija",
+    tag: "Palabras",
+    goal: "Dejar de traducir la preposición del español.",
+    blocks: [
+      {
+        t: "p",
+        text: "Muchos verbos ingleses llevan siempre la misma preposición pegada, y casi nunca es la que usaríamos en español. «Depender de» no es «depend of», es «depend on». Estas hay que memorizarlas con el verbo, como si fueran una sola palabra.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Trampa"],
+        rows: [
+          ["depend on", "depender de", "no «of»"],
+          ["listen to", "escuchar", "el español no lleva nada"],
+          ["wait for", "esperar a", "no «wait to»"],
+          ["look for", "buscar", "el español no lleva nada"],
+          ["think about", "pensar en", "no «in»"],
+          ["ask for", "pedir", "no «ask por»"],
+          ["belong to", "pertenecer a", "igual que en español"],
+          ["arrive in / at", "llegar a", "nunca «arrive to»"],
+          ["laugh at", "reírse de", "no «of»"],
+          ["dream about", "soñar con", "no «with»"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Con adjetivos pasa lo mismo: good at (no «good in»), interested in (no «interested for»), afraid of, married to, proud of, responsible for. Apréndelos como bloque cerrado.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "It depends on the price.", pron: "it dipénds on de práis", es: "Depende del precio." },
+          { en: "I am waiting for the bus.", pron: "ai am uéiting for de bas", es: "Estoy esperando el autobús." },
+          { en: "She is good at math.", pron: "shi is gud at maz", es: "Se le dan bien las matemáticas." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "It depends of you. / I am listening the radio. / We arrived to Madrid.",
+        right: "It depends on you. / I am listening to the radio. / We arrived in Madrid.",
+        why: "La preposición inglesa no se deduce de la española: va aprendida con el verbo.",
+      },
+    ],
+    quiz: [
+      { q: "«It depends ___ the weather.»", options: ["of", "on", "in"], answer: 1, why: "depend on, siempre." },
+      { q: "«I'm looking ___ my keys.»", options: ["for", "to", "at"], answer: 0, why: "look for = buscar." },
+      { q: "«She is very good ___ drawing.»", options: ["in", "on", "at"], answer: 2, why: "good at + actividad." },
+      { q: "«We arrived ___ the airport at six.»", options: ["to", "at", "in"], answer: 1, why: "arrive at con lugares concretos; arrive in con ciudades. Nunca «arrive to»." },
+      { q: "«Are you interested ___ the job?»", options: ["for", "in", "on"], answer: 1, why: "interested in, fijo." },
+    ],
+  },
+
+  {
+    id: "genitivo-sajon",
+    title: "El apóstrofo posesivo ('s)",
+    tag: "Estructuras",
+    goal: "Decir «el coche de mi hermano» al revés, como se dice en inglés.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español el poseedor va detrás: «el coche DE MI HERMANO». En inglés va delante y lleva 's: «my brother's car». Traducir con «of» suena raro cuando el poseedor es una persona.",
+      },
+      {
+        t: "formula",
+        parts: ["poseedor", "+ 's", "cosa poseída"],
+        example: "My brother's car is new.",
+      },
+      {
+        t: "table",
+        head: ["Caso", "Cómo se escribe", "Ejemplo"],
+        rows: [
+          ["Singular", "+ 's", "the dog's name"],
+          ["Plural acabado en -s", "solo apóstrofo", "the students' books"],
+          ["Plural irregular", "+ 's", "the children's room"],
+          ["Nombre propio", "+ 's", "Anna's phone"],
+          ["Dos poseedores juntos", "'s solo en el último", "Anna and Paul's house"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Para cosas y conceptos se sigue usando «of»: the end of the street, the name of the book. El apóstrofo es sobre todo para personas, animales y expresiones de tiempo (today's news, a week's holiday).",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "That's my sister's bag.", pron: "dats mái sísters bag", es: "Esa es la bolsa de mi hermana." },
+          { en: "The children's school is closed.", pron: "de chíldrens skuul is klóusd", es: "El colegio de los niños está cerrado." },
+          { en: "It's a five minutes' walk.", pron: "its a fáiv mínits uok", es: "Está a cinco minutos andando." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "The car of my brother. / The book of Anna.",
+        right: "My brother's car. / Anna's book.",
+        why: "Con personas, el poseedor va delante con 's. «of» suena a traducción literal.",
+      },
+    ],
+    quiz: [
+      { q: "¿Cómo se dice «el perro de Ana»?", options: ["the dog of Ana", "Ana's dog", "Ana dog's"], answer: 1, why: "Poseedor delante + 's." },
+      { q: "«The ___ toys are on the floor.» (de los niños)", options: ["childrens'", "children's", "childrens"], answer: 1, why: "«children» ya es plural irregular → children's." },
+      { q: "«The ___ books» (de los alumnos, en plural)", options: ["students's", "student's", "students'"], answer: 2, why: "Plural que ya acaba en -s: solo apóstrofo." },
+      { q: "¿Cuál suena natural?", options: ["the end of the street", "the street's end", "the street of end"], answer: 0, why: "Con cosas se prefiere «of»." },
+      { q: "«___ house is big.» (de Ana y Pablo, la misma casa)", options: ["Ana's and Paul's", "Ana and Paul's", "Ana and Paul"], answer: 1, why: "Si la casa es de los dos, el 's va solo en el último." },
+    ],
+  },
+
+  {
+    id: "phrasal-separables",
+    title: "Phrasal verbs: dónde va el objeto",
+    tag: "Verbos",
+    goal: "Saber si es «turn it off» o «turn off it».",
+    blocks: [
+      {
+        t: "p",
+        text: "Un phrasal verb es un verbo con una partícula (up, off, out…) que juntos significan otra cosa. Lo que más se falla no es el significado: es dónde colocar el objeto.",
+      },
+      {
+        t: "table",
+        head: ["Tipo", "Regla", "Ejemplo"],
+        rows: [
+          ["Separable", "el objeto puede ir en medio", "turn the TV off / turn off the TV"],
+          ["Separable + pronombre", "OBLIGATORIO en medio", "turn it off (nunca «turn off it»)"],
+          ["Inseparable", "el objeto va siempre detrás", "look after the baby"],
+          ["Sin objeto", "no lleva nada", "The car broke down."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "La regla que salva: si el objeto es un pronombre (it, them, him, her), en los separables va SIEMPRE en medio. «Pick it up», «turn them off», «throw it away». Decir «pick up it» suena mal a cualquier nativo.",
+      },
+      {
+        t: "p",
+        text: "Los que llevan dos partículas (look forward to, put up with, run out of, get along with) son inseparables: el objeto va siempre al final.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Can you turn it off?", pron: "kan yu tern it of", es: "¿Puedes apagarlo?" },
+          { en: "I'll pick you up at eight.", pron: "áil pik yu ap at éit", es: "Te recojo a las ocho." },
+          { en: "I can't put up with the noise.", pron: "ai kant put ap uid de nóis", es: "No aguanto el ruido." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "Turn off it. / Pick up me at nine. / I look after it the baby.",
+        right: "Turn it off. / Pick me up at nine. / I look after the baby.",
+        why: "Con pronombre y phrasal separable, el pronombre va en medio. Los inseparables no se parten nunca.",
+      },
+    ],
+    quiz: [
+      { q: "¿Cuál es correcta?", options: ["Turn off it", "Turn it off", "It turn off"], answer: 1, why: "Pronombre + separable → siempre en medio." },
+      { q: "«I'll ___ at seven.» (recogerte)", options: ["pick up you", "pick you up", "pick you"], answer: 1, why: "«you» es pronombre → en medio." },
+      { q: "«She ___ her little brother.» (cuida de)", options: ["looks after", "looks him after", "after looks"], answer: 0, why: "look after es inseparable: el objeto va detrás." },
+      { q: "¿Cuál es correcta?", options: ["I can't put up with it", "I can't put it up with", "I can't put up it with"], answer: 0, why: "Con dos partículas es inseparable: el objeto al final." },
+      { q: "«The car ___ on the highway.»", options: ["broke it down", "broke down", "broke down it"], answer: 1, why: "break down aquí no lleva objeto." },
+    ],
+  },
+
+  {
+    id: "pronunciacion-ed",
+    title: "Cómo suena la terminación -ed",
+    tag: "Empieza aquí",
+    goal: "Tres sonidos distintos, y ninguno es «ed» como lo lees.",
+    blocks: [
+      {
+        t: "p",
+        text: "En pasado casi todos los verbos acaban en -ed, pero eso NO se pronuncia «ed» salvo en un caso concreto. Un español que lee «worked» como «uórked» se delata en la primera frase. Suena «uérkt».",
+      },
+      {
+        t: "table",
+        head: ["Si el verbo acaba en...", "-ed suena", "Ejemplo"],
+        rows: [
+          ["sonido sordo (p, k, f, s, sh, ch)", "t", "worked = uérkt"],
+          ["sonido sonoro (b, g, v, m, n, l, r, vocal)", "d", "played = pléid"],
+          ["t o d", "id (sílaba aparte)", "wanted = uónted"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Regla práctica: solo añade una sílaba cuando el verbo ya acaba en T o D. En todos los demás casos, -ed es un sonido pegado al final, no una sílaba nueva. «Stopped» tiene UNA sílaba, no dos.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I stopped at the corner.", pron: "ai stopt at de kórner", es: "Paré en la esquina." },
+          { en: "She called me yesterday.", pron: "shi kold mi yésterdei", es: "Me llamó ayer." },
+          { en: "We needed more time.", pron: "ui níided mor táim", es: "Necesitábamos más tiempo." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "«asked» leído «ásked» / «finished» leído «fínished»",
+        right: "«asked» = «askt» / «finished» = «fínisht»",
+        why: "Tras sonido sordo, -ed suena T y no añade sílaba. Es el error de pronunciación más frecuente en español.",
+      },
+    ],
+    quiz: [
+      { q: "¿Cómo suena «worked»?", options: ["uórked", "uérkt", "uérked"], answer: 1, why: "Acaba en sonido sordo (k) → -ed suena T, sin sílaba nueva." },
+      { q: "¿Cómo suena «played»?", options: ["pléided", "pléit", "pléid"], answer: 2, why: "Acaba en vocal (sonora) → -ed suena D." },
+      { q: "¿Cómo suena «wanted»?", options: ["uónt", "uónted", "uónd"], answer: 1, why: "Acaba en T → -ed añade sílaba: «id»." },
+      { q: "¿Cuántas sílabas tiene «stopped»?", options: ["una", "dos", "tres"], answer: 0, why: "«stopt»: -ed no añade sílaba salvo tras T o D." },
+      { q: "¿Cuál añade sílaba al pasado?", options: ["watched", "decided", "loved"], answer: 1, why: "«decide» acaba en D → decided suena «disáided», con sílaba nueva." },
+    ],
+  },
+
+  {
+    id: "acento-palabra",
+    title: "La sílaba fuerte de cada palabra",
+    tag: "Empieza aquí",
+    goal: "Colocar el acento donde va, que cambia más que los sonidos.",
+    blocks: [
+      {
+        t: "p",
+        text: "En inglés una sílaba manda y las demás se comen. Si pones el acento donde no va, no te entienden aunque los sonidos sean correctos. Es más importante que pronunciar bien la th.",
+      },
+      {
+        t: "p",
+        text: "Además, las sílabas sin acento se relajan casi todas al mismo sonido flojo, una especie de «a» sorda. Por eso «banana» no suena «ba-na-na» con tres aes iguales, sino «banána», con la del medio fuerte y las otras dos apagadas.",
+      },
+      {
+        t: "table",
+        head: ["Tipo de palabra", "Dónde cae el acento", "Ejemplo"],
+        rows: [
+          ["2 sílabas, sustantivo", "en la primera", "TAble, OFFice, PROblem"],
+          ["2 sílabas, verbo", "en la segunda", "reLAX, deCIDE, forGET"],
+          ["Acaba en -tion, -sion", "justo antes", "informAtion, deciSion"],
+          ["Acaba en -ity, -ical", "dos antes del final", "abIlity, poLItical"],
+          ["Palabra compuesta", "en la primera parte", "AIRport, HOMEwork"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Hay parejas que solo se distinguen por el acento: PREsent (regalo) frente a preSENT (presentar); REcord (disco) frente a reCORD (grabar). Regla general: sustantivo delante, verbo detrás.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I need more information.", pron: "ai niid mor informéishon", es: "Necesito más información." },
+          { en: "Let me present the report.", pron: "let mi prisént de ripórt", es: "Déjame presentar el informe." },
+          { en: "The airport is closed.", pron: "di érport is klóusd", es: "El aeropuerto está cerrado." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "«HOtel» / «inforMAtion» / «comFORtable»",
+        right: "«hoTEL» / «informAtion» / «COMfortable»",
+        why: "El español tiende a acentuar donde acentuaría en español. En la app, la tilde de la pronunciación te marca siempre la sílaba fuerte: fíjate en ella.",
+      },
+    ],
+    quiz: [
+      { q: "¿Dónde va el acento en «information»?", options: ["INformation", "informAtion", "informatION"], answer: 1, why: "Las acabadas en -tion acentúan la sílaba justo anterior." },
+      { q: "«REcord» con acento delante es...", options: ["grabar (verbo)", "un disco (sustantivo)", "lo mismo"], answer: 1, why: "Sustantivo delante, verbo detrás: REcord / reCORD." },
+      { q: "¿Dónde va el acento en «hotel»?", options: ["HOtel", "hoTEL", "da igual"], answer: 1, why: "hoTEL, en la segunda. En español lo diríamos al revés." },
+      { q: "¿Y en «airport»?", options: ["AIRport", "airPORT", "las dos"], answer: 0, why: "En las palabras compuestas manda la primera parte." },
+      { q: "¿Por qué importa el acento?", options: ["Por elegancia", "Porque sin él pueden no entenderte", "Solo importa en exámenes"], answer: 1, why: "Un acento mal puesto rompe la palabra para el oído nativo, más que un sonido regular." },
+    ],
+  },
 ];
 
 export const getLesson = (id) => LESSONS.find((l) => l.id === id);
