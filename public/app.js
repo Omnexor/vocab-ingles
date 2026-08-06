@@ -784,10 +784,16 @@ function guardarRecord(id, valor, menorEsMejor = false) {
   return mejor;
 }
 
-/** Fallar una palabra en un juego la devuelve a la cola de repaso. */
+/**
+ * Fallar una palabra en un juego la devuelve a la cola de repaso.
+ *
+ * Si venía del banco y aún no la seguías, se añade ahora a tus palabras. Así
+ * jugar también sirve para descubrir vocabulario: lo que fallas se queda, y la
+ * promesa de "fallar una la devuelve al repaso" se cumple siempre.
+ */
 function penalizar(w) {
-  if (!w?.id) return;
-  const real = byId(w.id);
+  if (!w?.en) return;
+  const real = (w.id ? byId(w.id) : store.words.find((x) => x.en === w.en)) || addWord(w);
   if (!real) return;
   real.box = 0;
   real.due = todayStr();
@@ -803,6 +809,50 @@ const norm = (s) =>
     .replace(/[^a-z0-9 ]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+
+/**
+ * Dos palabras "significan lo mismo" si comparten alguna acepción. Las
+ * traducciones vienen con varias separadas por / o coma ("problema / asunto"),
+ * así que se comparan una a una.
+ */
+function mismoEs(a, b) {
+  const trocear = (t) =>
+    String(t)
+      .split(/[\/,;]| o /)
+      .map(norm)
+      .filter(Boolean);
+  const unos = trocear(a.es);
+  return trocear(b.es).some((x) => unos.includes(x));
+}
+
+/**
+ * Opciones falsas para una pregunta de test.
+ *
+ * Descarta las que significan lo mismo que la correcta. Sin esto la pregunta
+ * puede no tener respuesta única: "though", "although" y "even though" son las
+ * tres "aunque", así que salían dos opciones idénticas y una contaba como fallo.
+ */
+function distractores(pool, correcta, n) {
+  const elegidas = [];
+  for (const w of mezclar(pool)) {
+    if (w.en === correcta.en || mismoEs(w, correcta)) continue;
+    if (elegidas.some((x) => x.en === w.en || mismoEs(x, w))) continue;
+    elegidas.push(w);
+    if (elegidas.length === n) break;
+  }
+  return elegidas;
+}
+
+/** Elige n palabras con significados distintos entre sí. */
+function sinSinonimos(pool, n) {
+  const elegidas = [];
+  for (const w of mezclar(pool)) {
+    if (elegidas.some((x) => x.en === w.en || mismoEs(x, w))) continue;
+    elegidas.push(w);
+    if (elegidas.length === n) break;
+  }
+  return elegidas;
+}
 
 function renderJuegosIndex() {
   pararJuego();
@@ -915,10 +965,7 @@ function siguienteRapida() {
   if (!juego) return;
   const candidatas = juego.pool.filter((x) => x.en !== juego.actual?.en);
   const w = mezclar(candidatas.length ? candidatas : juego.pool)[0];
-  const opciones = mezclar([
-    w,
-    ...mezclar(juego.pool.filter((x) => x.en !== w.en)).slice(0, 3),
-  ]);
+  const opciones = mezclar([w, ...distractores(juego.pool, w, 3)]);
   juego.actual = w;
   juego.bloqueado = false;
 
@@ -1003,7 +1050,7 @@ function renderHueco() {
 
   const w = items[i];
   const hueco = w.example.replace(new RegExp(escRegex(w.en), "ig"), "______");
-  const opciones = mezclar([w, ...mezclar(juego.pool.filter((x) => x.en !== w.en)).slice(0, 2)]);
+  const opciones = mezclar([w, ...distractores(juego.pool, w, 2)]);
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
 
@@ -1103,6 +1150,7 @@ function renderEscribe() {
       r
         ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
              <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(w.en)}</b>
+             ${r.sinonimo ? `<p>También vale <b lang="en">${esc(r.sinonimo)}</b>.</p>` : ""}
              <p>${esc(w.pron ? "(" + w.pron + ") " : "")}${esc(w.example || "")}</p>
            </div>
            <button class="btn" id="next-escribe">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
@@ -1117,15 +1165,25 @@ function renderEscribe() {
     // Sin preventScroll el navegador desplaza la página para centrar el campo,
     // y la vista pega un salto en cada pregunta.
     input.focus({ preventScroll: true });
+    // Te doy el español y escribes el inglés, pero puede haber varias palabras
+    // válidas: para "casi" valen "almost" y "nearly". Marcar fallo por escribir
+    // el sinónimo sería injusto, así que se aceptan todas las del banco.
+    const validas = [w, ...juego.pool.filter((x) => x.en !== w.en && mismoEs(x, w))];
     const comprobar = (texto, rendida = false) => {
-      const bien = !rendida && norm(texto) === norm(w.en);
+      const acertada = rendida ? null : validas.find((x) => norm(texto) === norm(x.en));
+      const bien = Boolean(acertada);
       if (bien) juego.aciertos += 1;
       else {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
         penalizar(w);
       }
-      juego.resultado = { bien, texto, rendida };
+      juego.resultado = {
+        bien,
+        texto,
+        rendida,
+        sinonimo: bien && acertada.en !== w.en ? w.en : null,
+      };
       renderEscribe();
     };
     input.onkeydown = (e) => {
@@ -1145,7 +1203,13 @@ function renderEscribe() {
 /* ---------- 🔗 Emparejar ---------- */
 
 function iniciarParejas(pool) {
-  const elegidas = mezclar(pool).slice(0, 6);
+  // Sin sinónimos: si salen "big" y "large" (ambas "grande"), hay dos fichas
+  // españolas iguales y emparejar bien pasa a ser cuestión de suerte.
+  const elegidas = sinSinonimos(pool, 6);
+  if (elegidas.length < 6) {
+    $("#game-box").innerHTML = `<div class="empty">Necesitas más palabras con significados distintos para este juego.</div>`;
+    return;
+  }
   const fichas = mezclar([
     ...elegidas.map((w, n) => ({ par: n, cara: "en", texto: w.en, w })),
     ...elegidas.map((w, n) => ({ par: n, cara: "es", texto: w.es, w })),
@@ -1261,7 +1325,7 @@ function renderEscucha() {
   const w = items[i];
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
-  const opciones = mezclar([w, ...mezclar(juego.pool.filter((x) => x.en !== w.en)).slice(0, 3)]);
+  const opciones = mezclar([w, ...distractores(juego.pool, w, 3)]);
 
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>

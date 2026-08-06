@@ -4,9 +4,8 @@ node_modules/
 .env.local
 *.log
 
-# Banco grande de vocabulario: se genera con `npm run vocabulario` y puede
-# pesar varios MB. No hace falta versionarlo; cada quien lo genera o lo copia.
-public/vocabulario.json
+# El banco de vocabulario SÍ se versiona: es el contenido de la app, no un
+# archivo generado que sobre. `npm run vocabulario` lo amplía con la API.
 
 .vercel
 .env*
