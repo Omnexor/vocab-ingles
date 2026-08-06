@@ -217,12 +217,35 @@ async function ensureDailyBatch() {
 
 let voice = null;
 let speechRun = 0;
+let vozRevisada = false; // evita avisar varias veces mientras cargan las voces
 function pickVoice() {
   const voices = speechSynthesis.getVoices();
+  if (!voices.length) return; // aún no han cargado; volverá a llamarse con onvoiceschanged
+
   voice =
     voices.find((v) => v.lang === "en-US") ||
     voices.find((v) => v.lang?.startsWith("en")) ||
     null;
+
+  // Sin voz, el navegador lee el texto igualmente pero con la voz que tenga
+  // puesta por defecto (a menudo la del sistema en español), sin avisar de
+  // nada. Para una app que va justo de pronunciación, eso es peor que un
+  // error: suena a inglés real y no lo es. Algunos móviles Android vienen
+  // sin ningún paquete de voz en inglés instalado.
+  //
+  // Ojo: esta primera llamada a pickVoice() ocurre nada más cargar el
+  // script, antes de que toast()/$ estén definidos más abajo en el archivo.
+  // En Chrome de escritorio getVoices() suele devolver vacío la primera vez
+  // (de ahí el "return" de arriba) y las voces llegan luego por
+  // onvoiceschanged, ya con todo cargado. Pero en algunos navegadores
+  // (WebKit, ciertos Android) getVoices() responde ya lleno en la primera
+  // llamada síncrona, y llamar a toast() en ese instante rompía la app
+  // entera con "Cannot access '$' before initialization". Con setTimeout se
+  // aplaza a la cola de tareas, cuando el módulo ya ha terminado de cargar.
+  if (!voice && !vozRevisada) {
+    vozRevisada = true;
+    setTimeout(() => toast("Este dispositivo no tiene voz en inglés. Instálala en Ajustes → Accesibilidad → Texto a voz."), 0);
+  }
 }
 if ("speechSynthesis" in window) {
   pickVoice();
@@ -618,7 +641,7 @@ function renderRepaso(restart = true) {
   box.innerHTML = `
     ${progreso}
     <article class="card quiz-card" data-id="${w.id}">${ficha}</article>
-    <div class="explain ${tono}">
+    <div class="explain ${tono}" aria-live="polite">
       <b>${titulo}</b>
       ${repaso.sinonimo ? `<p>También vale <b lang="en">${esc(repaso.sinonimo)}</b>.</p>` : ""}
       ${!repaso.acertada && repaso.texto ? `<p>Escribiste «${esc(repaso.texto)}».</p>` : ""}
@@ -1245,7 +1268,7 @@ function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
   const falladas = (juego?.falladas || []).slice(0, 10);
 
   $("#game-box").innerHTML = `
-    <div class="card quiz-result">
+    <div class="card quiz-result" aria-live="polite">
       <p class="result-emoji">${esRecord ? "🏆" : "👏"}</p>
       <p class="result-score">${esc(titulo)}</p>
       <p class="muted">${esc(detalle)}</p>
@@ -1426,7 +1449,7 @@ function renderHueco() {
     ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
     ${
       respondida
-        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}">
+        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
              <b>${noLaSabia ? "Bien reconocerlo — vuelve al repaso" : `${w.en} — ${esc(w.es)}`}</b>
              <p>${noLaSabia ? `<b>${esc(w.en)}</b> (${esc(w.pron || "—")}) — ${esc(w.es)}` : ""}</p>
              <p>${esc(w.example)}<br><em>${esc(w.exampleEs)}</em></p>
@@ -1502,7 +1525,7 @@ function renderEscribe() {
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
     ${
       r
-        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(w.en)}</b>
              ${r.sinonimo ? `<p>También vale <b lang="en">${esc(r.sinonimo)}</b>.</p>` : ""}
              <p>${esc(w.pron ? "(" + w.pron + ") " : "")}${esc(w.example || "")}</p>
@@ -1701,7 +1724,7 @@ function renderEscucha() {
     ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
     ${
       respondida
-        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}">
+        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
              <b>${noLaSabia ? "Bien reconocerlo — vuelve al repaso" : juego.elegida === w.en ? "Correcto" : `Era: ${esc(w.en)}`}</b>
              <p>${esc(w.example || "")}${w.exampleEs ? `<br><em>${esc(w.exampleEs)}</em>` : ""}</p>
            </div>
@@ -1823,7 +1846,7 @@ function renderOrdena() {
     </div>
     ${
       r
-        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(w.en)}</b>
              <p>${esc(w.pron ? "(" + w.pron + ") " : "")}${esc(w.example || "")}</p>
            </div>
@@ -1959,7 +1982,7 @@ function renderHablar() {
     </button>
     ${
       resuelto
-        ? `<div class="explain ${acerto ? "ok" : juego.rendida ? "nose" : "ko"}">
+        ? `<div class="explain ${acerto ? "ok" : juego.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${acerto ? "¡Te ha entendido!" : juego.rendida ? "La saltas" : "No te ha entendido"}</b>
              ${juego.oido ? `<p>He oído: «<b lang="en">${esc(juego.oido)}</b>»</p>` : ""}
              ${juego.error ? `<p>${esc(MENSAJE_MICRO[juego.error] || "No he podido escucharte.")}</p>` : ""}
@@ -2071,7 +2094,7 @@ function renderDictado() {
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
     ${
       r
-        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${r.bien ? "¡Clavada!" : r.rendida ? "La frase era:" : `${r.aciertos} de ${r.total} palabras`}</b>
              <p class="dictado-frase">${marcado}</p>
              <p><em>${esc(w.exampleEs || "")}</em></p>
@@ -2185,7 +2208,7 @@ function renderIrregulares() {
            ${r ? "disabled" : ""} value="${r ? esc(r.texto) : ""}" />
     ${
       r
-        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}">
+        ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${r.bien ? "¡Correcto!" : (r.rendida ? "Es: " : "Era: ") + esc(esperado)}</b>
              <p><b lang="en">${esc(v.base)}</b> · <b lang="en">${esc(v.pasado)}</b> · <b lang="en">${esc(v.participio)}</b></p>
              <p>${esc(v.pron)}</p>
@@ -2302,7 +2325,7 @@ function renderFalsos() {
     ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
     ${
       respondida
-        ? `<div class="explain ${juego.elegida === "bien" ? "ok" : noLaSabia ? "nose" : "ko"}">
+        ? `<div class="explain ${juego.elegida === "bien" ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
              <b>${juego.elegida === "bien" ? "Correcto" : cayo ? "Ahí está la trampa" : noLaSabia ? "Bien reconocerlo" : "No es eso"}</b>
              <p><b lang="en">${esc(f.en)}</b> (${esc(f.pron)}) significa <b>${esc(f.es)}</b>.</p>
              <p>«${esc(f.trampa)}» se dice <b lang="en">${esc(f.real)}</b> (${esc(f.realPron)}).</p>
@@ -2418,7 +2441,7 @@ function renderConfusas() {
     ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
     ${
       respondida
-        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}">
+        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
              <b>${juego.elegida === w.en ? "Correcto" : "Justo al revés"}</b>
              <p><b lang="en">${esc(w.en)}</b> = ${esc(w.es)}</p>
              <p><b lang="en">${esc(otra.en)}</b> = ${esc(otra.es)}</p>
@@ -2639,7 +2662,7 @@ function renderQuiz() {
     save();
 
     box.innerHTML = `
-      <div class="card quiz-result">
+      <div class="card quiz-result" aria-live="polite">
         <p class="result-emoji">${pct >= 80 ? "🎉" : pct >= 50 ? "👍" : "💪"}</p>
         <p class="result-score">${quiz.aciertos} de ${items.length} · ${pct}%</p>
         <p class="muted">${pct >= 80 ? "Lección superada." : "Repasa la teoría y vuelve a intentarlo."}${
@@ -2681,7 +2704,7 @@ function renderQuiz() {
       ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
       ${
         respondida
-          ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}">
+          ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
                <b>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(item.options[item.answer])}` : "No exactamente"}</b>
                <p>${esc(item.why || "")}</p>
              </div>

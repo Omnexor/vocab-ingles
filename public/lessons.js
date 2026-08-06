@@ -708,7 +708,7 @@ export const LESSONS = [
     ],
     quiz: [
       { q: "«This bag is ___ than that one.» (cheap)", options: ["more cheap", "cheaper", "cheapest"], answer: 1, why: "«Cheap» tiene una sílaba: se le añade -er." },
-      { q: "«It's the ___ film of the year.» (interesting)", options: ["interestingest", "most interesting", "more interesting"], answer: 1, why: "Adjetivo largo: superlativo con «the most»." },
+      { q: "«It's the ___ movie of the year.» (interesting)", options: ["interestingest", "most interesting", "more interesting"], answer: 1, why: "Adjetivo largo: superlativo con «the most»." },
       { q: "Comparativo de «big»:", options: ["biger", "bigger", "more big"], answer: 1, why: "Consonante + vocal + consonante: se dobla la última letra." },
       { q: "Comparativo de «good»:", options: ["gooder", "more good", "better"], answer: 2, why: "Es irregular: good → better → the best." },
       { q: "«He isn't ___ as his sister.» (fast)", options: ["as fast", "faster", "more fast"], answer: 0, why: "La estructura de igualdad es «as + adjetivo + as»." },
@@ -791,7 +791,7 @@ export const LESSONS = [
       {
         t: "formula",
         parts: ["-ed = cómo me siento", "-ing = cómo es la cosa"],
-        example: "I'm bored because the film is boring.",
+        example: "I'm bored because the movie is boring.",
       },
       {
         t: "table",
@@ -983,8 +983,8 @@ export const LESSONS = [
       },
       {
         t: "error",
-        wrong: "The life is hard. / I like the music. / I play the football.",
-        right: "Life is hard. / I like music. / I play football.",
+        wrong: "The life is hard. / I like the music. / I play the soccer.",
+        right: "Life is hard. / I like music. / I play soccer.",
         why: "Generalizaciones, incontables y plurales genéricos van sin artículo. Ojo con los instrumentos, que sí lo llevan: «I play the piano».",
       },
       {
@@ -1046,8 +1046,8 @@ export const LESSONS = [
       },
       {
         t: "error",
-        wrong: "When I arrived, the film already started.",
-        right: "When I arrived, the film had already started.",
+        wrong: "When I arrived, the movie already started.",
+        right: "When I arrived, the movie had already started.",
         why: "Dos pasados simples no dejan claro cuál ocurrió antes. «Had» marca sin ambigüedad la acción anterior.",
       },
       {
@@ -1059,7 +1059,7 @@ export const LESSONS = [
       },
     ],
     quiz: [
-      { q: "«By the time we arrived, the film ___.» (start)", options: ["started", "had started", "has started"], answer: 1, why: "La película empezó ANTES de que llegáramos: had + participio." },
+      { q: "«By the time we arrived, the movie ___.» (start)", options: ["started", "had started", "has started"], answer: 1, why: "La película empezó ANTES de que llegáramos: had + participio." },
       { q: "Elige el orden correcto:", options: ["I had already eaten breakfast.", "I already had eaten breakfast.", "I had eaten already breakfast."], answer: 0, why: "«Already» va entre had y el participio." },
       { q: "Past perfect de «go» (ella):", options: ["she had went", "she had gone", "she has gone"], answer: 1, why: "El participio de go es gone, no went (que es el pasado simple)." },
       { q: "«She had left before I arrived.» ¿Qué pasó primero?", options: ["Ella se fue", "Yo llegué", "Pasaron a la vez"], answer: 0, why: "Had + participio marca la acción anterior: ella se fue primero." },
@@ -1337,7 +1337,7 @@ export const LESSONS = [
       { q: "«The man ___ lives next door is a teacher.»", options: ["which", "who", "where"], answer: 1, why: "Persona → who." },
       { q: "«This is the café ___ we had our first date.»", options: ["who", "which", "where"], answer: 2, why: "Lugar → where." },
       { q: "«I lost the keys ___ you gave me.»", options: ["who", "that", "whose"], answer: 1, why: "Cosa → that (o which); who es solo para personas." },
-      { q: "¿Se puede omitir el relativo en «The film (that) I watched was great»?", options: ["Sí, porque that no es el sujeto de su propia frase", "No, nunca se puede omitir", "Solo en preguntas"], answer: 0, why: "Cuando el relativo no hace de sujeto en su propia cláusula, es opcional." },
+      { q: "¿Se puede omitir el relativo en «The movie (that) I watched was great»?", options: ["Sí, porque that no es el sujeto de su propia frase", "No, nunca se puede omitir", "Solo en preguntas"], answer: 0, why: "Cuando el relativo no hace de sujeto en su propia cláusula, es opcional." },
       { q: "«That's the man ___ car was stolen.»", options: ["who", "whose", "which"], answer: 1, why: "Posesión (el coche DE ese hombre) → whose." },
     ],
   },
@@ -1356,7 +1356,7 @@ export const LESSONS = [
       {
         t: "formula",
         parts: ["Sujeto", "used to", "verbo base"],
-        example: "I used to play football every weekend.",
+        example: "I used to play soccer every weekend.",
       },
       {
         t: "table",
@@ -1918,7 +1918,7 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Para cosas y conceptos se sigue usando «of»: the end of the street, the name of the book. El apóstrofo es sobre todo para personas, animales y expresiones de tiempo (today's news, a week's holiday).",
+        text: "Para cosas y conceptos se sigue usando «of»: the end of the street, the name of the book. El apóstrofo es sobre todo para personas, animales y expresiones de tiempo (today's news, a week's vacation).",
       },
       {
         t: "examples",
