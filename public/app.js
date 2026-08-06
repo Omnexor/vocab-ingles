@@ -4,6 +4,8 @@ import { FALSOS_AMIGOS } from "./false-friends.js";
 import { LECTURAS } from "./readings.js";
 import { CUENTOS } from "./stories.js";
 import { IRREGULARES, FORMA_A_BASE, CONTRACCIONES } from "./irregulars.js";
+import { conjugar, verbosConjugables } from "./conjugar.js";
+import { EJERCICIOS_MODALES } from "./modals.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -170,11 +172,35 @@ async function cargarBanco() {
 
 const listaLocal = () => (BANCO.length ? BANCO : SEED_WORDS);
 
+/**
+ * Los verbos irregulares como si fueran palabras del banco.
+ *
+ * No están en vocabulario.json a propósito: allí duplicarían los verbos que ya
+ * existen (go, have, take…). Se montan aquí para poder enseñar las tres formas
+ * juntas, que es como de verdad se aprenden.
+ */
+const irregularesComoPalabras = () =>
+  IRREGULARES.map((v) => ({
+    en: v.base,
+    es: v.es,
+    pron: v.pron.split(" · ")[0],
+    example: `${v.base} · ${v.pasado} · ${v.participio}`,
+    exampleEs: v.pron,
+    cat: "irregulares",
+  }));
+
+/** Vocabulario local de una categoría, sea del banco o de los irregulares. */
+function listaLocalPorCat(cat) {
+  if (cat === "irregulares") return irregularesComoPalabras();
+  const base = listaLocal();
+  return cat === "mixto" ? base : base.filter((w) => w.cat === cat);
+}
+
 function fetchSeedWords(count) {
   const known = new Set(knownWords());
   const cat = store.settings.category;
   const libres = listaLocal().filter((w) => !known.has(w.en));
-  const deLaCategoria = cat === "mixto" ? libres : libres.filter((w) => w.cat === cat);
+  const deLaCategoria = listaLocalPorCat(cat).filter((w) => !known.has(w.en));
   const fuente = deLaCategoria.length ? deLaCategoria : libres;
   // Con un banco grande no interesa ir siempre por el principio de la lista:
   // se coge un tramo al azar para que no salgan siempre las mismas.
@@ -187,6 +213,11 @@ function fetchSeedWords(count) {
 
 /** Pide palabras a la API y, si no se puede, tira de la lista local. */
 async function obtenerPalabras(count) {
+  // Los irregulares son una lista cerrada y conocida: pedírselos a la API sería
+  // tirar dinero y arriesgarse a que invente formas que no existen.
+  if (store.settings.category === "irregulares") {
+    return { words: fetchSeedWords(count), source: "seed" };
+  }
   try {
     return { words: await fetchNewWords(count), source: "api" };
   } catch (err) {
@@ -471,6 +502,7 @@ async function addMoreWords() {
 let queue = [];
 let queueTotal = 0;
 let repaso = null; // pregunta en curso: { escribir, opciones, resuelto, acertada… }
+let repasoExtra = false; // vuelta voluntaria: no toca las fechas de repaso
 
 /**
  * A partir de esta caja la palabra deja de salir con opciones y hay que
@@ -499,11 +531,31 @@ function prepararPregunta() {
   if (!repaso.escribir) repaso.opciones = mezclar([w, ...distractores(gamePool(), w, 2)]);
 }
 
-/** Pasa a la siguiente. nivel 0 = fallada (vuelve a la cola), 1 = bien, 2 = fácil. */
+/**
+ * Pasa a la siguiente. nivel 0 = fallada (vuelve a la cola), 1 = bien, 2 = fácil.
+ *
+ * En repaso extra no se califica al acertar: adelantar la fecha de una palabra
+ * solo porque la repasas de más rompería el espaciado, que es justo lo que
+ * hace que funcione. Fallar sí cuenta siempre (ya lo hizo penalizar): si no la
+ * sabes, no la sabes, y da igual que sea una vuelta voluntaria.
+ */
 function avanzarRepaso(nivel) {
-  grade(queue[0].w, nivel);
+  if (!repasoExtra) grade(queue[0].w, nivel);
   if (nivel === 0) queue.push(queue.shift());
   else queue.shift();
+  repaso = null;
+  renderRepaso(false);
+}
+
+/** Monta una vuelta extra con palabras que ya sabes, sin tocar sus fechas. */
+function iniciarRepasoExtra() {
+  const suyas = store.words.filter((w) => w.en);
+  if (!suyas.length) return;
+  repasoExtra = true;
+  queue = mezclar(suyas)
+    .slice(0, 20)
+    .map((w) => ({ w, dir: w.box > 0 && Math.random() < 0.34 ? "es-en" : "en-es" }));
+  queueTotal = queue.length;
   repaso = null;
   renderRepaso(false);
 }
@@ -521,6 +573,7 @@ function renderRepaso(restart = true) {
   const sub = $("#repaso-sub");
 
   if (restart) {
+    repasoExtra = false;
     // Una de cada tres sale al revés (español → inglés), que cuesta más y fija mejor.
     // Las palabras nuevas (caja 0) siempre salen de inglés a español.
     //
@@ -540,13 +593,27 @@ function renderRepaso(restart = true) {
       .map((w) => w.due)
       .sort()
       .find((d) => d > todayStr());
+    const puedeRepetir = store.words.length >= 4;
     sub.textContent = "";
     box.innerHTML = `
       <div class="empty">
         <span class="big">✅</span>
-        Repaso al día.
+        ${repasoExtra ? "Vuelta extra terminada." : "Repaso al día."}
         ${proxima ? `<br />Vuelve el ${new Date(proxima).toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}.` : ""}
-      </div>`;
+      </div>
+      ${
+        puedeRepetir
+          ? `<div class="row-actions">
+               <button class="btn" id="repetir-repaso">🔁 Repasar otra vez</button>
+             </div>
+             <p class="hint-line">
+               Una vuelta voluntaria con tus palabras. No cambia las fechas de
+               repaso: acertar aquí no aleja la palabra, pero fallarla sí la
+               devuelve a la cola de hoy.
+             </p>`
+          : ""
+      }`;
+    if (puedeRepetir) $("#repetir-repaso").onclick = () => iniciarRepasoExtra();
     updateChrome();
     return;
   }
@@ -557,7 +624,7 @@ function renderRepaso(restart = true) {
   const hechas = queueTotal - queue.length;
   // Escribir siempre va del español al inglés: producir la palabra es lo que cuesta.
   const alReves = repaso.escribir || dir === "es-en";
-  sub.textContent = `${hechas + 1} de ${queueTotal}`;
+  sub.textContent = `${hechas + 1} de ${queueTotal}${repasoExtra ? " · vuelta extra, no cuenta para las fechas" : ""}`;
 
   const progreso = `<div class="quiz-progress"><span style="width:${(hechas / queueTotal) * 100}%"></span></div>`;
 
@@ -721,8 +788,7 @@ let listaModo = "mis"; // "mis" | "explorar"
 
 /** Baraja del banco para una categoría. Vacío si esa categoría aún no tiene palabras. */
 function poolExplorar(cat) {
-  const base = listaLocal();
-  return mezclar(cat === "mixto" ? base : base.filter((w) => w.cat === cat));
+  return mezclar(listaLocalPorCat(cat));
 }
 
 function iniciarExplorar(cat = explorar.cat) {
@@ -813,17 +879,111 @@ function renderExplorarCard() {
 
 function cambiarModoLista(modo) {
   listaModo = modo;
-  $("#modo-mis-palabras").classList.toggle("is-active", modo === "mis");
-  $("#modo-mis-palabras").setAttribute("aria-selected", String(modo === "mis"));
-  $("#modo-explorar").classList.toggle("is-active", modo === "explorar");
-  $("#modo-explorar").setAttribute("aria-selected", String(modo === "explorar"));
+  const modos = { mis: "#modo-mis-palabras", explorar: "#modo-explorar", verbos: "#modo-verbos" };
+  for (const [id, sel] of Object.entries(modos)) {
+    $(sel).classList.toggle("is-active", modo === id);
+    $(sel).setAttribute("aria-selected", String(modo === id));
+  }
   $("#panel-mis-palabras").hidden = modo !== "mis";
   $("#panel-explorar").hidden = modo !== "explorar";
+  $("#panel-verbos").hidden = modo !== "verbos";
 
   if (modo === "explorar") {
     if (!explorar.pool.length) iniciarExplorar();
     else renderExplorarCard(); // por si has añadido/borrado palabras mientras tanto
   }
+  if (modo === "verbos") renderPanelVerbos();
+}
+
+/* ------------------------------------------------------------------ *
+ * Verbos: irregulares y tabla de tiempos
+ *
+ * Un español ve "he goes" y "he went" como dos cosas sueltas. Verlas en una
+ * sola tabla enseña de golpe lo que de verdad pasa: el inglés casi no
+ * conjuga, monta los tiempos con auxiliares y solo cambian cinco formas.
+ * ------------------------------------------------------------------ */
+
+let verboAbierto = null;
+let filtroVerbo = "";
+
+function renderPanelVerbos() {
+  const lista = verbosConjugables(listaLocal());
+  const q = norm(filtroVerbo);
+  const visibles = (q ? lista.filter((v) => v.base.startsWith(q) || norm(v.es).includes(q)) : lista).slice(0, 60);
+
+  $("#lista-verbos").innerHTML = visibles.length
+    ? visibles
+        .map(
+          (v) =>
+            `<button class="verb-chip ${v.base === verboAbierto ? "is-active" : ""} ${v.irregular ? "is-irregular" : ""}" data-verbo="${esc(v.base)}">
+               ${esc(v.base)}${v.irregular ? '<span class="verb-mark" title="Irregular">★</span>' : ""}
+             </button>`,
+        )
+        .join("")
+    : `<p class="muted">Ningún verbo con «${esc(filtroVerbo)}».</p>`;
+
+  $$("#lista-verbos [data-verbo]").forEach((b) => {
+    b.onclick = () => {
+      verboAbierto = b.dataset.verbo;
+      renderPanelVerbos();
+      $("#verbo-detalle").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+  });
+
+  renderVerboDetalle(lista);
+}
+
+function renderVerboDetalle(lista) {
+  const box = $("#verbo-detalle");
+  if (!verboAbierto) {
+    box.innerHTML = `<div class="empty"><span class="big">🔤</span>Toca un verbo para ver todos sus tiempos.<br />Los marcados con ★ son irregulares.</div>`;
+    return;
+  }
+
+  const meta = lista.find((v) => v.base === verboAbierto);
+  const c = conjugar(verboAbierto, { es: meta?.es || "" });
+  if (!c) return;
+
+  const f = c.formas;
+  box.innerHTML = `
+    <article class="card verbo-card">
+      <div class="verbo-head">
+        <div>
+          <p class="word" lang="en">${esc(c.base)}</p>
+          <p class="translation">${esc(c.es)}</p>
+        </div>
+        <span class="verbo-tag ${c.irregular ? "is-irregular" : c.modal ? "is-modal" : ""}">
+          ${c.modal ? "Modal" : c.irregular ? "★ Irregular" : "Regular"}
+        </span>
+      </div>
+
+      <div class="verbo-formas">
+        <div><small>infinitivo</small><b lang="en">${esc(c.base)}</b></div>
+        <div><small>3ª persona</small><b lang="en">${esc(f.tercera)}</b></div>
+        <div><small>gerundio</small><b lang="en">${esc(f.gerundio || "—")}</b></div>
+        <div><small>pasado</small><b lang="en">${esc(f.pasado)}</b></div>
+        <div><small>participio</small><b lang="en">${esc(f.participio)}</b></div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="word-table verbo-tabla">
+          <thead>
+            <tr><th>Tiempo</th><th>yo</th><th>él / ella</th></tr>
+          </thead>
+          <tbody>
+            ${c.tiempos
+              .map(
+                (t) => `<tr>
+                  <td class="cell-en">${esc(t.nombre)}<small class="verbo-nota">${esc(t.nota)}</small></td>
+                  <td lang="en">${esc(t.yo)}<button class="speak speak-sm" data-speak="${esc(t.yo)}" aria-label="Escuchar">🔊</button></td>
+                  <td lang="en">${esc(t.el)}<button class="speak speak-sm" data-speak="${esc(t.el)}" aria-label="Escuchar">🔊</button></td>
+                </tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </article>`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -904,6 +1064,14 @@ const JUEGOS = [
     record: "aciertos",
   },
   {
+    id: "modales",
+    emoji: "🔑",
+    nombre: "Verbos modales",
+    desc: "can, must, should, would… Las tres opciones son posibles: decide el sentido.",
+    minimo: 0,
+    record: "aciertos",
+  },
+  {
     id: "falsos",
     emoji: "🎭",
     nombre: "Falsos amigos",
@@ -925,7 +1093,8 @@ const JUEGOS = [
 const GRUPOS_JUEGOS = [
   { nombre: "Significado", pista: "saber qué quiere decir", juegos: ["rapida", "hueco"] },
   { nombre: "Oído y pronunciación", pista: "reconocerla y decirla", juegos: ["escucha", "hablar", "dictado"] },
-  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena", "irregulares"] },
+  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
+  { nombre: "Gramática", pista: "las formas que no se deducen", juegos: ["irregulares", "modales"] },
   { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
   { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
 ];
@@ -1023,11 +1192,11 @@ let juegoCat = "mixto";
 
 /** Material para jugar: tus palabras (de esa categoría) y, si tienes pocas, se completa con la lista base. */
 function gamePool() {
-  const porCategoria = (arr) => (juegoCat === "mixto" ? arr : arr.filter((w) => w.cat === juegoCat));
-  const propias = porCategoria(store.words);
+  const propias =
+    juegoCat === "mixto" ? store.words : store.words.filter((w) => w.cat === juegoCat);
   if (propias.length >= 12) return propias;
   const known = new Set(store.words.map((w) => w.en));
-  const extra = porCategoria(listaLocal())
+  const extra = listaLocalPorCat(juegoCat)
     .filter((w) => !known.has(w.en))
     .slice(0, 60)
     .map((w) => ({ ...w, id: null }));
@@ -1249,6 +1418,7 @@ function abrirJuego(id) {
   if (id === "hablar") iniciarHablar(pool);
   if (id === "dictado") iniciarDictado(pool);
   if (id === "irregulares") iniciarIrregulares(pool);
+  if (id === "modales") iniciarModales(pool);
   if (id === "falsos") iniciarFalsos(pool);
   if (id === "confusas") iniciarConfusas(pool);
 
@@ -2253,6 +2423,105 @@ function renderIrregulares() {
   }
 }
 
+/* ---------- 🔑 Verbos modales ---------- */
+
+function iniciarModales(pool) {
+  juego = {
+    pool,
+    items: mezclar(EJERCICIOS_MODALES).slice(0, 10),
+    i: 0,
+    aciertos: 0,
+    fallos: 0,
+    nose: 0,
+    falladas: [],
+    elegida: null,
+  };
+  renderModales();
+}
+
+function renderModales() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("modales", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarModales(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const ej = items[i];
+  const respondida = juego.elegida !== null;
+  const noLaSabia = juego.elegida === NO_LO_SE;
+  const acerto = juego.elegida === ej.correcta;
+  // La frase completa, con el modal correcto puesto, para oírla bien dicha.
+  const completa = ej.frase.replace("___", ej.opciones[ej.correcta]);
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card">
+      <p class="quiz-count">¿Qué modal encaja?</p>
+      <p class="quiz-q" lang="en">${esc(ej.frase)}</p>
+      ${respondida ? `<p class="muted">${esc(ej.es)}</p>` : ""}
+    </div>
+    <div class="options" id="op-modales">
+      ${ej.opciones
+        .map((o, n) => {
+          let cls = "option";
+          if (respondida && n === ej.correcta) cls += " is-right";
+          else if (respondida && n === juego.elegida) cls += " is-wrong";
+          return `<button class="${cls}" data-op="${n}" ${respondida ? "disabled" : ""} lang="en">${esc(o)}</button>`;
+        })
+        .join("")}
+    </div>
+    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? `<div class="explain ${acerto ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
+             <b>${acerto ? "Correcto" : noLaSabia ? `Es «${esc(ej.opciones[ej.correcta])}»` : `Era «${esc(ej.opciones[ej.correcta])}»`}</b>
+             <p>${esc(ej.why)}</p>
+             <p lang="en">${esc(completa)}<br><em lang="es">${esc(ej.es)}</em></p>
+           </div>
+           <div class="row-actions">
+             <button class="btn btn-ghost" data-speak="${esc(completa)}">🔊 Oír la frase</button>
+             <button class="btn" id="next-modales">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>
+           </div>`
+        : ""
+    }`;
+
+  if (!respondida) {
+    $$("#op-modales .option").forEach((b) => {
+      b.onclick = () => {
+        juego.elegida = Number(b.dataset.op);
+        if (juego.elegida === ej.correcta) juego.aciertos += 1;
+        else {
+          juego.fallos += 1;
+          juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
+        }
+        renderModales();
+      };
+    });
+    $("#nose").onclick = () => {
+      juego.elegida = NO_LO_SE;
+      juego.nose += 1;
+      juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
+      renderModales();
+    };
+  } else {
+    $("#next-modales").onclick = () => {
+      juego.i += 1;
+      juego.elegida = null;
+      renderModales();
+    };
+  }
+}
+
 /* ---------- 🎭 Falsos amigos ---------- */
 
 function iniciarFalsos(pool) {
@@ -3162,6 +3431,11 @@ $("#buscador").addEventListener("input", renderLista);
 $("#filtro-lista").addEventListener("change", renderLista);
 $("#modo-mis-palabras").addEventListener("click", () => cambiarModoLista("mis"));
 $("#modo-explorar").addEventListener("click", () => cambiarModoLista("explorar"));
+$("#modo-verbos").addEventListener("click", () => cambiarModoLista("verbos"));
+$("#buscar-verbo").addEventListener("input", (e) => {
+  filtroVerbo = e.target.value;
+  renderPanelVerbos();
+});
 $("#modo-gramatica").addEventListener("click", () => cambiarModoAprender("gramatica"));
 $("#modo-lecturas").addEventListener("click", () => cambiarModoAprender("lecturas"));
 

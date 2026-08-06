@@ -2,6 +2,9 @@
 export const CATEGORIAS = [
   { id: "mixto", nombre: "Un poco de todo" },
   { id: "verbos", nombre: "Verbos" },
+  // No sale del banco: se arma desde irregulars.js con las tres formas, que es
+  // como hay que aprenderlos. Por eso no duplica los verbos ya listados arriba.
+  { id: "irregulares", nombre: "Verbos irregulares" },
   { id: "phrasal", nombre: "Phrasal verbs" },
   { id: "sustantivos", nombre: "Sustantivos" },
   { id: "adjetivos", nombre: "Adjetivos" },

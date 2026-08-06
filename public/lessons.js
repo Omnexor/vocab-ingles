@@ -56,6 +56,18 @@ export const LESSONS = [
         t: "p",
         text: "La tilde marca dónde va el golpe de voz. En inglés la sílaba fuerte importa muchísimo: si la pones donde no es, cuesta entenderte aunque los sonidos estén bien.",
       },
+      {
+        t: "examples",
+        items: [
+          { en: "Think about the weather.", pron: "zink abáut de uéder", es: "Piensa en el tiempo." },
+          { en: "My brother has a house.", pron: "mái bráder jas a jáus", es: "Mi hermano tiene una casa." },
+          { en: "We work every week.", pron: "ui uérk évri uiik", es: "Trabajamos todas las semanas." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Las tres que más te delatan: la H se pronuncia (jáus, no «aus»), la V no es B (very, no «beri») y la TH nunca es T ni D española pura: saca la lengua entre los dientes.",
+      },
     ],
     quiz: [
       { q: "«think» se escribe…", options: ["dink", "zink", "sink"], answer: 1, why: "Es th sorda: se escribe con z, que en España suena exactamente así." },
@@ -406,6 +418,18 @@ export const LESSONS = [
           { en: "I haven't seen him for weeks.", pron: "ai jávent siin jim for uíiks", es: "Hace semanas que no lo veo." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "I have lost my keys.", pron: "ai jav lost mái kiis", es: "He perdido las llaves (y sigo sin ellas)." },
+          { en: "She has just arrived.", pron: "shi jas yast aráivd", es: "Acaba de llegar." },
+          { en: "Have you ever tried sushi?", pron: "jav yu éver tráid súshi", es: "¿Has probado sushi alguna vez?" },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si puedes añadir «cuándo» exacto (ayer, en 2019, a las cinco), NO es present perfect: es pasado simple. El present perfect vive en el «alguna vez / todavía / ya», sin fecha.",
+      },
     ],
     quiz: [
       { q: "«I ___ my keys. I can't open the door.»", options: ["lost", "have lost", "was losing"], answer: 1, why: "El resultado afecta al presente: sigues sin poder abrir." },
@@ -564,6 +588,18 @@ export const LESSONS = [
         t: "tip",
         text: "En el condicional 2 se dice «If I were» para todas las personas, no «If I was». Es la fórmula fija para dar consejos: «If I were you…».",
       },
+      {
+        t: "examples",
+        items: [
+          { en: "If it rains, we stay home.", pron: "if it réins ui stéi jóum", es: "Si llueve, nos quedamos en casa." },
+          { en: "If I had money, I would travel.", pron: "if ai jad máni ai uúd trável", es: "Si tuviera dinero, viajaría." },
+          { en: "If I had studied, I would have passed.", pron: "if ai jad stádid ai uúd jav past", es: "Si hubiera estudiado, habría aprobado." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Nunca metas «will» en la parte del «if». Se dice «If it rains», no «If it will rain». El futuro va solo en la otra mitad de la frase.",
+      },
     ],
     quiz: [
       { q: "«If it ___ tomorrow, we'll cancel.»", options: ["will rain", "rains", "rained"], answer: 1, why: "Condicional 1: if + presente, will + base." },
@@ -630,6 +666,18 @@ export const LESSONS = [
           { en: "How long have you been waiting?", pron: "jáu long jav yu bin uéiting", es: "¿Cuánto tiempo llevas esperando?" },
           { en: "What time does the meeting start?", pron: "uót táim das de míiting start", es: "¿A qué hora empieza la reunión?" },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Where do you live?", pron: "uér du yu liv", es: "¿Dónde vives?" },
+          { en: "What time does it start?", pron: "uót táim das it start", es: "¿A qué hora empieza?" },
+          { en: "Why didn't you call me?", pron: "uái dídent yu kol mi", es: "¿Por qué no me llamaste?" },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Orden fijo: pregunta + auxiliar + sujeto + verbo. «Where DO YOU live». Si te sale «Where you live?», te falta el auxiliar, que es lo que más se olvida.",
       },
     ],
     quiz: [
@@ -767,6 +815,18 @@ export const LESSONS = [
           { en: "I have a lot of homework.", pron: "ai jav a lot ov jóumuerk", es: "Tengo muchos deberes." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "The children are playing.", pron: "de chíldren ar pléiing", es: "Los niños están jugando." },
+          { en: "I need two knives.", pron: "ai niid tuu náivs", es: "Necesito dos cuchillos." },
+          { en: "The news is good.", pron: "de niús is gud", es: "La noticia es buena." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "«News», «information», «advice» y «furniture» son incontables: no llevan -s y van con verbo en singular. Decir «informations» es de los errores que más suenan a español.",
+      },
     ],
     quiz: [
       { q: "Plural de «city»:", options: ["citys", "cities", "cityes"], answer: 1, why: "Consonante + y → se cambia por -ies." },
@@ -822,6 +882,18 @@ export const LESSONS = [
           { en: "I'm interested in this job.", pron: "aim íntrestid in dis yob", es: "Me interesa este trabajo." },
           { en: "The trip was tiring.", pron: "de trip uós táiring", es: "El viaje fue agotador." },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I'm interested in history.", pron: "aim íntrested in jístori", es: "Me interesa la historia." },
+          { en: "The trip was tiring.", pron: "de trip uós táiring", es: "El viaje fue agotador." },
+          { en: "She looked surprised.", pron: "shi lukt sopráisd", es: "Parecía sorprendida." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "-ED es lo que sientes tú (persona), -ING es lo que provoca la cosa. «I am bored» = me aburro; «I am boring» = soy aburrido. Confundirlos cambia mucho lo que dices de ti.",
       },
     ],
     quiz: [
@@ -888,6 +960,18 @@ export const LESSONS = [
           { en: "I misunderstood the question.", pron: "ai misanderstúd de kuéschon", es: "Entendí mal la pregunta." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "That's impossible to fix.", pron: "dats impósibol tu fiks", es: "Eso es imposible de arreglar." },
+          { en: "He was very careless.", pron: "ji uós véri kérles", es: "Fue muy descuidado." },
+          { en: "Happiness is a choice.", pron: "jápines is a chóis", es: "La felicidad es una elección." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "-FUL es «lleno de» y -LESS es «sin»: careful (con cuidado) y careless (sin cuidado) son opuestos y solo cambian al final. Fíjate en la última sílaba antes de traducir.",
+      },
     ],
     quiz: [
       { q: "Adverbio de «careful»:", options: ["carefuly", "carefully", "carefull"], answer: 1, why: "Se añade -ly a la palabra completa: careful + ly." },
@@ -946,6 +1030,18 @@ export const LESSONS = [
           { en: "A nice little Spanish restaurant.", pron: "a náis lítel spánish réstorant", es: "Un bonito restaurante español pequeño." },
           { en: "Those old wooden doors are heavy.", pron: "dóus óuld uúden dors ar jévi", es: "Esas viejas puertas de madera pesan." },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "A beautiful old wooden table.", pron: "a biúutiful óuld uúden téibol", es: "Una mesa de madera antigua y preciosa." },
+          { en: "She has long dark hair.", pron: "shi jas long dark jer", es: "Tiene el pelo largo y oscuro." },
+          { en: "It's a small red car.", pron: "its a smol red kar", es: "Es un coche rojo pequeño." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Orden: opinión → tamaño → edad → color → material. «Nice big old brown leather bag». Si dudas, la opinión («nice», «beautiful») va siempre la primera.",
       },
     ],
     quiz: [
@@ -1006,6 +1102,18 @@ export const LESSONS = [
           { en: "Money isn't everything.", pron: "máni ísent évrizing", es: "El dinero no lo es todo." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "I go to school by bus.", pron: "ai góu tu skuul bái bas", es: "Voy al colegio en autobús." },
+          { en: "She plays the piano.", pron: "shi pléis de piánou", es: "Toca el piano." },
+          { en: "Life is beautiful.", pron: "láif is biúutiful", es: "La vida es bella." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "En generalizaciones el inglés quita el artículo: «Life is hard», «I like music», «Dogs are loyal». El español lo pone y ahí es donde se cuela el error.",
+      },
     ],
     quiz: [
       { q: "«___ life is beautiful.» (en general)", options: ["The", "A", "(nada)"], answer: 2, why: "Generalización con incontable: sin artículo." },
@@ -1057,6 +1165,18 @@ export const LESSONS = [
           { en: "I had never seen snow before.", pron: "ai jad néver siin snóu bifór", es: "Nunca había visto nieve antes." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "The movie had started when we arrived.", pron: "de múuvi jad stárted uen ui aráivd", es: "La película había empezado cuando llegamos." },
+          { en: "I had never seen the sea.", pron: "ai jad néver siin de sii", es: "Nunca había visto el mar." },
+          { en: "She had finished before noon.", pron: "shi jad fínisht bifór nuun", es: "Había terminado antes del mediodía." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Es el «pasado del pasado». Si en una historia ya estás en pasado y necesitas ir aún más atrás, ahí entra «had + participio».",
+      },
     ],
     quiz: [
       { q: "«By the time we arrived, the movie ___.» (start)", options: ["started", "had started", "has started"], answer: 1, why: "La película empezó ANTES de que llegáramos: had + participio." },
@@ -1107,6 +1227,18 @@ export const LESSONS = [
           { en: "It's been raining all morning.", pron: "its bin réining ol mórning", es: "Ha estado lloviendo toda la mañana." },
           { en: "How long have you been waiting?", pron: "jáu long jav yu bin uéiting", es: "¿Cuánto tiempo llevas esperando?" },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I've been waiting for an hour.", pron: "aiv bin uéiting for an áuer", es: "Llevo una hora esperando." },
+          { en: "She's been working here since May.", pron: "shis bin uérking jíer sins méi", es: "Lleva trabajando aquí desde mayo." },
+          { en: "It's been raining all day.", pron: "its bin réining ol déi", es: "Lleva lloviendo todo el día." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Es el «llevo + gerundio» del español: «llevo una hora esperando» = «I've been waiting for an hour». En cuanto veas «llevo… haciendo», es este tiempo.",
       },
     ],
     quiz: [
@@ -1161,6 +1293,18 @@ export const LESSONS = [
           { en: "This song was written by a famous band.", pron: "dis song uós ríten bai a féimos band", es: "Esta canción fue escrita por una banda famosa." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "The house was built in 1920.", pron: "de jáus uós bilt in náintíin tuénti", es: "La casa fue construida en 1920." },
+          { en: "English is spoken here.", pron: "ínglish is spóuken jíer", es: "Aquí se habla inglés." },
+          { en: "My car has been stolen.", pron: "mái kar jas bin stóulen", es: "Me han robado el coche." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "El «se» impersonal del español suele ser pasiva en inglés: «se habla inglés» → «English is spoken». No lo traduzcas con «it».",
+      },
     ],
     quiz: [
       { q: "«The car ___ in Germany.»", options: ["makes", "is made", "made"], answer: 1, why: "No importa quién lo fabrica, el coche RECIBE la acción → be + participio." },
@@ -1214,6 +1358,18 @@ export const LESSONS = [
           { en: "He said he would be late.", pron: "ji sed ji uud bi léit", es: "Dijo que llegaría tarde." },
           { en: "She told me she had already eaten.", pron: "shi tóuld mi shi jad olrédi íten", es: "Me dijo que ya había comido." },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "He said he was tired.", pron: "ji sed ji uós táierd", es: "Dijo que estaba cansado." },
+          { en: "She told me she would come.", pron: "shi tóuld mi shi uúd kam", es: "Me dijo que vendría." },
+          { en: "They asked where I lived.", pron: "déi askt uér ai livd", es: "Preguntaron dónde vivía." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Todo retrocede un paso: presente → pasado, will → would, can → could. Y en las preguntas indirectas desaparece el auxiliar: «where I lived», no «where did I live».",
       },
     ],
     quiz: [
@@ -1279,6 +1435,18 @@ export const LESSONS = [
           { en: "She stopped to answer the phone.", pron: "shi stopt tu ánser de fóun", es: "Dejó lo que hacía para contestar al teléfono." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "I enjoy cooking.", pron: "ai inyói kúking", es: "Disfruto cocinando." },
+          { en: "We decided to leave.", pron: "ui disáided tu liiv", es: "Decidimos irnos." },
+          { en: "I'm looking forward to seeing you.", pron: "aim lúking fóruard tu síing yu", es: "Tengo ganas de verte." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Tras preposición, SIEMPRE gerundio: «good at cooking», «before leaving», «looking forward to seeing». El «to» de «looking forward to» es preposición, no infinitivo: por eso lleva -ing.",
+      },
     ],
     quiz: [
       { q: "«I enjoy ___ before bed.» (read)", options: ["read", "to read", "reading"], answer: 2, why: "Enjoy siempre va con -ing." },
@@ -1331,6 +1499,18 @@ export const LESSONS = [
           { en: "That's the restaurant where we met.", pron: "dats de réstorant uér uí met", es: "Ese es el restaurante donde nos conocimos." },
           { en: "I have a friend whose brother is a doctor.", pron: "ai jav a frend jus bráder is a dóctor", es: "Tengo un amigo cuyo hermano es médico." },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "The man who called is my boss.", pron: "de man juu kold is mái bos", es: "El hombre que llamó es mi jefe." },
+          { en: "The book that I read was great.", pron: "de buk dat ai red uós gréit", es: "El libro que leí era genial." },
+          { en: "That's the place where we met.", pron: "dats de pléis uér ui met", es: "Ese es el sitio donde nos conocimos." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "En español todo es «que». En inglés depende: WHO para personas, THAT/WHICH para cosas, WHERE para lugares y WHOSE para posesión.",
       },
     ],
     quiz: [
@@ -1387,6 +1567,18 @@ export const LESSONS = [
           { en: "We used to go camping every summer.", pron: "uí yuustu góu cámping évri sámer", es: "Antes íbamos de camping todos los veranos." },
           { en: "I didn't use to like coffee.", pron: "ai dídent yuustu láik cófi", es: "Antes no me gustaba el café." },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I used to smoke.", pron: "ai iúusd tu smóuk", es: "Antes fumaba." },
+          { en: "We would go to the beach every summer.", pron: "ui uúd góu tu de biich évri sámer", es: "Íbamos a la playa cada verano." },
+          { en: "She used to live in Paris.", pron: "shi iúusd tu liv in páris", es: "Antes vivía en París." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "«Used to» vale para todo lo que ya no haces. «Would» solo para acciones repetidas, nunca para estados: se dice «I used to have a car», no «I would have a car».",
       },
     ],
     quiz: [
@@ -1450,6 +1642,18 @@ export const LESSONS = [
           { en: "I have a few questions.", pron: "ai jav a fiú kuéschons", es: "Tengo algunas preguntas." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "There isn't much time.", pron: "der ísent mach táim", es: "No hay mucho tiempo." },
+          { en: "How many people came?", pron: "jáu méni píipol kéim", es: "¿Cuánta gente vino?" },
+          { en: "I have a few friends here.", pron: "ai jav a fiú frends jíer", es: "Tengo algunos amigos aquí." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "MUCH para lo que no se cuenta (time, money, water), MANY para lo que sí (people, books, hours). Si puedes decir «dos», va MANY.",
+      },
     ],
     quiz: [
       { q: "«How ___ sugar do you want?»", options: ["many", "much", "some"], answer: 1, why: "Sugar es incontable → much." },
@@ -1506,6 +1710,18 @@ export const LESSONS = [
           { en: "I left my keys on the table.", pron: "ai left mai kiis on de téibol", es: "Dejé las llaves en la mesa." },
         ],
       },
+      {
+        t: "examples",
+        items: [
+          { en: "I'll see you on Monday.", pron: "áil sii yu on mándei", es: "Te veo el lunes." },
+          { en: "The meeting is at three.", pron: "de míiting is at zrii", es: "La reunión es a las tres." },
+          { en: "She was born in July.", pron: "shi uós born in yulái", es: "Nació en julio." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "De grande a pequeño: IN para meses y años, ON para días y fechas, AT para horas y momentos concretos. Cuanto más preciso el momento, más corta la preposición.",
+      },
     ],
     quiz: [
       { q: "«My birthday is ___ July.»", options: ["on", "in", "at"], answer: 1, why: "Meses → in." },
@@ -1558,6 +1774,18 @@ export const LESSONS = [
           { en: "This is delicious, isn't it?", pron: "dis is dilíshos, ísent it", es: "Esto está delicioso, ¿verdad?" },
           { en: "You haven't finished yet, have you?", pron: "yu jávent fínisht yet, jav yu", es: "No has terminado todavía, ¿verdad?" },
         ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "You're coming, aren't you?", pron: "yur káming árent yu", es: "Vienes, ¿no?" },
+          { en: "She doesn't smoke, does she?", pron: "shi dásent smóuk das shi", es: "No fuma, ¿verdad?" },
+          { en: "It was expensive, wasn't it?", pron: "it uós ikspénsiv uósent it", es: "Fue caro, ¿verdad?" },
+        ],
+      },
+      {
+        t: "tip",
+        text: "En español todo es «¿no?» o «¿verdad?». En inglés la coletilla va al revés que la frase: afirmativa → negativa, y negativa → afirmativa. Siempre con el mismo auxiliar.",
       },
     ],
     quiz: [
@@ -2093,6 +2321,164 @@ export const LESSONS = [
       { q: "¿Dónde va el acento en «hotel»?", options: ["HOtel", "hoTEL", "da igual"], answer: 1, why: "hoTEL, en la segunda. En español lo diríamos al revés." },
       { q: "¿Y en «airport»?", options: ["AIRport", "airPORT", "las dos"], answer: 0, why: "En las palabras compuestas manda la primera parte." },
       { q: "¿Por qué importa el acento?", options: ["Por elegancia", "Porque sin él pueden no entenderte", "Solo importa en exámenes"], answer: 1, why: "Un acento mal puesto rompe la palabra para el oído nativo, más que un sonido regular." },
+    ],
+  },
+  {
+    id: "modales-obligacion",
+    title: "must, have to y should: los tres «deber»",
+    tag: "Modales",
+    goal: "Distinguir obligación, norma externa y consejo.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español «deber» sirve para todo: «debes parar», «debo trabajar», «deberías descansar». En inglés se reparte en tres, y elegir mal cambia el tono de la frase: puedes sonar mandón sin querer, o quitarle importancia a algo obligatorio.",
+      },
+      {
+        t: "table",
+        head: ["Se usa", "Qué expresa", "Ejemplo"],
+        rows: [
+          ["must", "obligación que sientes tú, o norma fuerte", "I must call my mother."],
+          ["have to", "obligación que viene de fuera", "I have to wear a uniform."],
+          ["should", "consejo, recomendación", "You should rest."],
+          ["mustn't", "prohibido", "You mustn't smoke here."],
+          ["don't have to", "no hace falta (pero puedes)", "You don't have to come."],
+          ["shouldn't", "no conviene", "You shouldn't eat so late."],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "You mustn't come if you're busy.",
+        right: "You don't have to come if you're busy.",
+        why: "«Mustn't» prohíbe; «don't have to» libera. Son opuestos, y este es el error más caro de los tres: le estarías prohibiendo venir a alguien a quien querías dar libertad.",
+      },
+      {
+        t: "tip",
+        text: "Truco: MUST sale de dentro (yo lo veo necesario), HAVE TO viene de fuera (lo manda el jefe, la ley, el horario). Y en negativo cambian de significado del todo, no solo de fuerza.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I must finish this today.", pron: "ai mast fínish dis tudéi", es: "Tengo que terminar esto hoy." },
+          { en: "She has to work on Saturdays.", pron: "shi jas tu uérk on sáterdeis", es: "Tiene que trabajar los sábados." },
+          { en: "You should see a doctor.", pron: "yu shud sii a dóktor", es: "Deberías ver a un médico." },
+          { en: "You mustn't touch that.", pron: "yu másent tach dat", es: "No debes tocar eso." },
+          { en: "We don't have to hurry.", pron: "ui dóunt jav tu jári", es: "No hace falta que nos demos prisa." },
+        ],
+      },
+      {
+        t: "p",
+        text: "En pasado, «must» y «have to» se juntan en uno solo: «had to». No existe «musted». Y para el futuro, «will have to».",
+      },
+    ],
+    quiz: [
+      { q: "«You ___ wear a helmet. It's the law.»", options: ["should", "must", "might"], answer: 1, why: "Norma fuerte y legal: must." },
+      { q: "«It's optional, you ___ come.»", options: ["mustn't", "don't have to", "shouldn't"], answer: 1, why: "No hace falta, pero puedes: don't have to." },
+      { q: "«You look ill. You ___ go home.»", options: ["should", "must", "have to"], answer: 0, why: "Es un consejo, no una orden: should." },
+      { q: "Pasado de «I must go»:", options: ["I musted go", "I had to go", "I must went"], answer: 1, why: "«Must» no tiene pasado: se usa «had to»." },
+      { q: "«You ___ park here, it's forbidden.»", options: ["don't have to", "mustn't", "shouldn't"], answer: 1, why: "Prohibición tajante: mustn't." },
+    ],
+  },
+
+  {
+    id: "there-their-theyre",
+    title: "there, their y they're",
+    tag: "Palabras",
+    goal: "Tres palabras que suenan igual y significan cosas distintas.",
+    blocks: [
+      {
+        t: "p",
+        text: "Se pronuncian prácticamente igual («der»), así que al oído no se distinguen: hay que decidir por el sentido. Es de los errores que más se ven escritos, incluso entre nativos.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Qué es", "Significa", "Ejemplo"],
+        rows: [
+          ["there", "lugar o «hay»", "allí / hay", "There is a problem."],
+          ["their", "posesivo", "su (de ellos)", "Their house is big."],
+          ["they're", "they + are", "ellos son/están", "They're late."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco para no fallar: si puedes cambiarlo por «they are», es THEY'RE. Si puedes cambiarlo por «our» o «my», es THEIR. Y si no es ninguna de las dos, es THERE.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "There are two options.", pron: "der ar tuu ópshons", es: "Hay dos opciones." },
+          { en: "Their car is new.", pron: "der kar is niú", es: "Su coche es nuevo." },
+          { en: "They're waiting outside.", pron: "der uéiting autsáid", es: "Están esperando fuera." },
+          { en: "Their kids are over there.", pron: "der kids ar óuver der", es: "Sus hijos están allí." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "Their is a problem. / They're house is big.",
+        right: "There is a problem. / Their house is big.",
+        why: "«Their» siempre lleva un sustantivo detrás (their house, their car). Si no lo lleva, no es «their».",
+      },
+    ],
+    quiz: [
+      { q: "«___ going to be late.»", options: ["There", "Their", "They're"], answer: 2, why: "Equivale a «they are going»: they're." },
+      { q: "«___ house has a garden.»", options: ["There", "Their", "They're"], answer: 1, why: "Lleva sustantivo detrás (house): posesivo their." },
+      { q: "«Is ___ any milk left?»", options: ["there", "their", "they're"], answer: 0, why: "«¿Queda leche?» → there is/are." },
+      { q: "«The keys are over ___.»", options: ["there", "their", "they're"], answer: 0, why: "Lugar: allí → there." },
+      { q: "¿Cuál puedes cambiar por «they are»?", options: ["there", "their", "they're"], answer: 2, why: "They're es literalmente la contracción de they are." },
+    ],
+  },
+
+  {
+    id: "tiempos-resumen",
+    title: "Todos los tiempos de un vistazo",
+    tag: "Base",
+    goal: "Ver el mapa completo antes de perderte en los detalles.",
+    blocks: [
+      {
+        t: "p",
+        text: "El inglés casi no conjuga: el verbo apenas cambia y los tiempos se montan con auxiliares (do, be, have, will). Eso asusta al principio, pero es una ventaja: en vez de memorizar terminaciones, aprendes cuatro piezas y las combinas.",
+      },
+      {
+        t: "table",
+        head: ["Tiempo", "Cómo se forma", "Ejemplo con «work»"],
+        rows: [
+          ["Presente simple", "verbo (+s en 3ª)", "I work / he works"],
+          ["Presente continuo", "am/is/are + -ing", "I am working"],
+          ["Pasado simple", "-ed o forma irregular", "I worked / I went"],
+          ["Pasado continuo", "was/were + -ing", "I was working"],
+          ["Present perfect", "have/has + participio", "I have worked"],
+          ["Past perfect", "had + participio", "I had worked"],
+          ["Futuro (will)", "will + infinitivo", "I will work"],
+          ["Futuro (going to)", "am/is/are going to + inf.", "I am going to work"],
+          ["Condicional", "would + infinitivo", "I would work"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Fíjate en el patrón: el verbo solo tiene cinco formas (work, works, working, worked, worked). Todo lo demás lo aporta el auxiliar. En Palabras → Verbos puedes ver cualquier verbo con toda esta tabla ya rellenada.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I work here.", pron: "ai uérk jíer", es: "Trabajo aquí." },
+          { en: "I am working now.", pron: "aim uérking náu", es: "Estoy trabajando ahora." },
+          { en: "I worked yesterday.", pron: "ai uérkt yésterdei", es: "Trabajé ayer." },
+          { en: "I have worked here for years.", pron: "ai jav uérkt jíer for yíers", es: "Llevo años trabajando aquí." },
+          { en: "I will work tomorrow.", pron: "ai uil uérk tumórou", es: "Trabajaré mañana." },
+        ],
+      },
+      {
+        t: "error",
+        wrong: "He is work. / I have work here for years.",
+        right: "He is working. / I have worked here for years.",
+        why: "Cada auxiliar exige una forma concreta: «be» pide -ing, «have» pide participio. Si te sale el infinitivo pelado detrás de un auxiliar, algo falla.",
+      },
+    ],
+    quiz: [
+      { q: "¿Qué forma pide «have» detrás?", options: ["infinitivo", "participio", "gerundio"], answer: 1, why: "have/has + participio: I have worked, she has gone." },
+      { q: "¿Qué forma pide «be» detrás para el continuo?", options: ["gerundio (-ing)", "participio", "pasado"], answer: 0, why: "am/is/are + -ing: I am working." },
+      { q: "«I will ___ tomorrow.»", options: ["working", "worked", "work"], answer: 2, why: "Tras will, infinitivo sin «to»." },
+      { q: "¿Cuántas formas distintas tiene un verbo regular en inglés?", options: ["cinco", "doce", "más de veinte"], answer: 0, why: "work, works, working, worked, worked. El resto lo montan los auxiliares." },
+      { q: "«She ___ been waiting.»", options: ["have", "has", "is"], answer: 1, why: "Tercera persona: has. Y «been» es el participio de be." },
     ],
   },
 ];

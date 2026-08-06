@@ -146,12 +146,15 @@
           <p class="muted" id="lista-sub"></p>
         </div>
 
-        <div class="seg" role="tablist" aria-label="Modo de la sección Palabras">
+        <div class="seg seg-3" role="tablist" aria-label="Modo de la sección Palabras">
           <button class="seg-btn is-active" id="modo-mis-palabras" role="tab" aria-selected="true">
             Mis palabras
           </button>
           <button class="seg-btn" id="modo-explorar" role="tab" aria-selected="false">
-            Explorar por categorías
+            Explorar
+          </button>
+          <button class="seg-btn" id="modo-verbos" role="tab" aria-selected="false">
+            Verbos
           </button>
         </div>
 
@@ -189,6 +192,25 @@
           </p>
           <div class="chips" id="chips-explorar" role="group" aria-label="Categoría a explorar"></div>
           <div id="explorar-card"></div>
+        </div>
+
+        <!-- Verbos: los irregulares y la tabla de tiempos de cualquier verbo -->
+        <div id="panel-verbos" hidden>
+          <p class="hint-line">
+            Elige un verbo y lo ves en todos sus tiempos. Los irregulares llevan
+            marca: son los que hay que memorizar, el resto sigue las reglas.
+          </p>
+          <input
+            id="buscar-verbo"
+            class="input"
+            type="search"
+            placeholder="Buscar un verbo… (go, study, be)"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <div id="lista-verbos" class="verb-chips"></div>
+          <div id="verbo-detalle"></div>
         </div>
       </section>
 
