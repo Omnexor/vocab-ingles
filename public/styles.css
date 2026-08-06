@@ -20,8 +20,13 @@
   --shadow: 0 2px 3px rgba(0, 0, 0, 0.2), 0 18px 44px rgba(0, 0, 0, 0.2);
 }
 
+/* Tema claro.
+   Se aplica en dos casos y por eso la paleta aparece dos veces: cuando lo pide
+   el sistema y no lo has forzado a oscuro (data-tema ausente), y cuando lo
+   eliges a mano en Ajustes. El selector con atributo gana al del @media, así
+   que tu elección manda siempre sobre la del móvil. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-tema]) {
     color-scheme: light;
     --bg: #f3f5fa;
     --bg-soft: #f8f9fd;
@@ -38,6 +43,27 @@
     --shadow: 0 2px 4px rgba(25, 35, 60, 0.05), 0 20px 48px rgba(25, 35, 60, 0.08);
   }
 }
+
+:root[data-tema="light"] {
+  color-scheme: light;
+  --bg: #f3f5fa;
+  --bg-soft: #f8f9fd;
+  --card: #ffffff;
+  --card-raised: #ffffff;
+  --line: #e0e5ef;
+  --line-strong: #cbd3e2;
+  --text: #182238;
+  --muted: #68738b;
+  --accent: #6356df;
+  --accent-strong: #5145c6;
+  --accent-soft: #6356df16;
+  --shadow-sm: 0 1px 2px rgba(25, 35, 60, 0.05), 0 6px 18px rgba(25, 35, 60, 0.05);
+  --shadow: 0 2px 4px rgba(25, 35, 60, 0.05), 0 20px 48px rgba(25, 35, 60, 0.08);
+}
+
+/* Oscuro forzado: la base de :root ya es oscura, solo hay que asegurar que el
+   navegador pinte de oscuro los controles nativos aunque el móvil vaya claro. */
+:root[data-tema="dark"] { color-scheme: dark; }
 
 * { box-sizing: border-box; }
 
@@ -328,6 +354,38 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
   background: var(--bg-soft);
   border: 1px solid var(--line);
   border-radius: 14px;
+}
+
+/* Tres opciones: ocupa el ancho y se reparte, que en el móvil no cabe en fila
+   holgada y quedaban los textos pegados. */
+.seg-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  margin-bottom: 0;
+}
+.seg-3 .seg-btn { padding: 0 8px; white-space: nowrap; }
+
+/* Bloques de juegos por destreza */
+.game-group { margin: 0 0 22px; }
+.game-group-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.game-group-title small {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+  opacity: 0.75;
 }
 .seg-btn {
   border: 0;

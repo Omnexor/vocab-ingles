@@ -12,6 +12,16 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./icon.svg" />
+    <script>
+      // Antes de pintar nada: si no, al abrir la app da un fogonazo del tema
+      // contrario mientras carga el módulo.
+      try {
+        var t = JSON.parse(localStorage.getItem("vocab-ingles:v1") || "{}");
+        var m = t.settings && t.settings.tema;
+        if (m === "claro") document.documentElement.dataset.tema = "light";
+        else if (m === "oscuro") document.documentElement.dataset.tema = "dark";
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <header class="topbar">
@@ -164,7 +174,23 @@
           <p class="muted">Todo se guarda en este navegador. Haz una copia de vez en cuando.</p>
         </div>
 
-        <div class="stats" id="stats"></div>
+        <div class="ajustes-grupo">
+          <h3>Mi progreso</h3>
+          <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="ajustes-grupo">
+          <h3>Aspecto</h3>
+          <div class="field">
+            <span>Tema de la app</span>
+            <div class="seg seg-3" id="seg-tema" role="group" aria-label="Tema de la app">
+              <button class="seg-btn" data-tema="auto">Automático</button>
+              <button class="seg-btn" data-tema="claro">☀️ Claro</button>
+              <button class="seg-btn" data-tema="oscuro">🌙 Oscuro</button>
+            </div>
+            <small>Automático sigue lo que tengas puesto en el móvil.</small>
+          </div>
+        </div>
 
         <div class="ajustes-grupo">
           <h3>Qué quiero aprender</h3>

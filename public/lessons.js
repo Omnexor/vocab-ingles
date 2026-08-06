@@ -1140,7 +1140,7 @@ export const LESSONS = [
         rows: [
           ["Presente simple", "They clean the office every day.", "The office is cleaned every day."],
           ["Pasado simple", "Someone stole my bike.", "My bike was stolen."],
-          ["Present perfect", "They have cancelled the flight.", "The flight has been cancelled."],
+          ["Present perfect", "They have canceled the flight.", "The flight has been canceled."],
           ["Futuro (will)", "They will announce the results.", "The results will be announced."],
         ],
       },

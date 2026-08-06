@@ -40,6 +40,9 @@ const SCHEMA = {
 
 const SYSTEM = `Eres un profesor de ingles para hispanohablantes. Creas ejercicios de gramatica tipo test.
 
+SIEMPRE INGLES AMERICANO, en ortografia y vocabulario: color, neighbor, favorite,
+apartment, vacation, elevator, movie, math, soccer, pants, gas, fall.
+
 Reglas:
 - Cada ejercicio tiene exactamente 3 opciones y una sola correcta.
 - Las opciones incorrectas deben ser errores realistas que comete un hispanohablante,

@@ -1,5 +1,6 @@
 import { SEED_WORDS, CATEGORIAS, nombreCategoria } from "./seed.js";
 import { LESSONS, getLesson } from "./lessons.js";
+import { FALSOS_AMIGOS } from "./false-friends.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -11,12 +12,13 @@ const INTERVALOS = [0, 1, 3, 7, 16, 35, 90];
 
 const defaults = () => ({
   version: 1,
-  settings: { level: "intermedio", daily: 5, topic: "", category: "mixto", tapar: false },
+  settings: { level: "intermedio", daily: 5, topic: "", category: "mixto", tapar: false, tema: "auto" },
   stats: { streak: 0, best: 0, lastStudy: null },
   daily: { date: null, ids: [], done: 0 },
   words: [],
   lessons: {}, // id -> { best: 0-100, done: bool, last: "YYYY-MM-DD" }
   games: {}, // id -> mejor marca
+  confusiones: {}, // "palabra|palabra" -> veces que has cambiado una por otra
 });
 
 let store = load();
@@ -494,8 +496,13 @@ function renderRepaso(restart = true) {
   if (restart) {
     // Una de cada tres sale al revés (español → inglés), que cuesta más y fija mejor.
     // Las palabras nuevas (caja 0) siempre salen de inglés a español.
+    //
+    // Las que se te resisten van primero: son las que menos veces has visto
+    // bien y las que más se benefician de que las pilles con la cabeza fresca,
+    // no al final de la sesión cuando ya estás cansado.
     queue = dueWords()
       .sort(() => Math.random() - 0.5)
+      .sort((a, b) => Number(esDificil(b)) - Number(esDificil(a)))
       .map((w) => ({ w, dir: w.box > 0 && Math.random() < 0.34 ? "es-en" : "en-es" }));
     queueTotal = queue.length;
     repaso = null;
@@ -585,7 +592,11 @@ function renderRepaso(restart = true) {
       $("#comprobar-repaso").onclick = comprobar;
     } else {
       $$("#op-repaso .option").forEach((b) => {
-        b.onclick = () => resolverRepaso({ acertada: b.dataset.en === w.en });
+        b.onclick = () => {
+          const acertada = b.dataset.en === w.en;
+          if (!acertada) registrarConfusion(w.en, b.dataset.en);
+          resolverRepaso({ acertada });
+        };
       });
     }
     $("#nose").onclick = () => resolverRepaso({ acertada: false, rendida: true });
@@ -841,6 +852,31 @@ const JUEGOS = [
     minimo: 4,
     record: "aciertos",
   },
+  {
+    id: "falsos",
+    emoji: "🎭",
+    nombre: "Falsos amigos",
+    desc: "Palabras que se parecen a una española y significan otra cosa. El error más típico del que habla español.",
+    minimo: 0,
+    record: "aciertos",
+  },
+  {
+    id: "confusas",
+    emoji: "🔀",
+    nombre: "Las que confundes",
+    desc: "Se apunta qué palabra cambias por cuál y te las pone cara a cara.",
+    minimo: 0,
+    record: "aciertos",
+  },
+];
+
+/** Los juegos, ordenados por la destreza que entrenan. */
+const GRUPOS_JUEGOS = [
+  { nombre: "Significado", pista: "saber qué quiere decir", juegos: ["rapida", "hueco"] },
+  { nombre: "Oído y pronunciación", pista: "reconocerla al oírla", juegos: ["escucha"] },
+  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
+  { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
+  { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
 ];
 
 let juego = null; // estado del juego en curso
@@ -894,6 +930,34 @@ function penalizar(w) {
   real.due = todayStr();
   save();
   updateChrome();
+}
+
+/**
+ * Apunta que has cambiado una palabra por otra.
+ *
+ * Fallar sin más dice poco; fallar SIEMPRE cambiando "borrow" por "lend" dice
+ * exactamente qué tienes que arreglar. Con esto se puede enfrentar cada par en
+ * el juego "Las que confundes".
+ */
+function registrarConfusion(correcta, elegida) {
+  if (!correcta || !elegida || correcta === elegida || elegida === NO_LO_SE) return;
+  store.confusiones = store.confusiones || {};
+  const clave = [correcta, elegida].sort().join("|");
+  store.confusiones[clave] = (store.confusiones[clave] || 0) + 1;
+  save();
+}
+
+/** Pares que confundes de verdad, ya emparejados con sus palabras. */
+function paresConfusos() {
+  const pool = gamePool();
+  const busca = (en) => pool.find((w) => w.en === en);
+  return Object.entries(store.confusiones || {})
+    .map(([clave, veces]) => {
+      const [a, b] = clave.split("|");
+      return { a: busca(a), b: busca(b), veces };
+    })
+    .filter((p) => p.a && p.b)
+    .sort((x, y) => y.veces - x.veces);
 }
 
 const norm = (s) =>
@@ -956,9 +1020,12 @@ function renderJuegosIndex() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   const pool = gamePool().length;
-  $("#juegos-sub").textContent = `${pool} palabras en juego · fallar una la devuelve al repaso`;
+  const lios = paresConfusos().length;
+  $("#juegos-sub").textContent =
+    `${pool} palabras en juego · fallar una la devuelve al repaso` +
+    (lios ? ` · ${lios} ${lios === 1 ? "pareja que mezclas" : "parejas que mezclas"}` : "");
 
-  $("#juegos-lista").innerHTML = JUEGOS.map((g) => {
+  const tarjeta = (g) => {
     const r = record(g.id);
     const marca = !r
       ? ""
@@ -971,6 +1038,17 @@ function renderJuegosIndex() {
       <span class="game-desc">${esc(g.desc)}</span>
       ${marca}
     </button>`;
+  };
+
+  // Agrupados por lo que entrena cada uno: con ocho seguidos no se sabe cuál
+  // coger, y no es lo mismo querer practicar oído que ortografía.
+  $("#juegos-lista").innerHTML = GRUPOS_JUEGOS.map((grupo) => {
+    const suyos = JUEGOS.filter((g) => grupo.juegos.includes(g.id));
+    if (!suyos.length) return "";
+    return `<section class="game-group">
+      <h3 class="game-group-title">${esc(grupo.nombre)} <small>${esc(grupo.pista)}</small></h3>
+      <div class="game-grid">${suyos.map(tarjeta).join("")}</div>
+    </section>`;
   }).join("");
 }
 
@@ -1002,6 +1080,8 @@ function abrirJuego(id) {
   if (id === "parejas") iniciarParejas(pool);
   if (id === "escucha") iniciarEscucha(pool);
   if (id === "ordena") iniciarOrdena(pool);
+  if (id === "falsos") iniciarFalsos(pool);
+  if (id === "confusas") iniciarConfusas(pool);
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1091,6 +1171,7 @@ function siguienteRapida() {
       if (bien) juego.aciertos += 1;
       else {
         juego.fallos += 1;
+        registrarConfusion(juego.actual.en, b.dataset.en);
         penalizar(juego.actual);
         marcarCorrecta();
       }
@@ -1184,6 +1265,7 @@ function renderHueco() {
         if (juego.elegida === w.en) juego.aciertos += 1;
         else {
           juego.fallos += 1;
+          registrarConfusion(w.en, juego.elegida);
           penalizar(w);
         }
         renderHueco();
@@ -1464,6 +1546,7 @@ function renderEscucha() {
         if (juego.elegida === w.en) juego.aciertos += 1;
         else {
           juego.fallos += 1;
+          registrarConfusion(w.en, juego.elegida);
           penalizar(w);
         }
         renderEscucha();
@@ -1615,6 +1698,234 @@ function renderOrdena() {
       juego.resultado = null;
       if (juego.i < items.length) prepararLetras();
       renderOrdena();
+    };
+  }
+}
+
+/* ---------- 🎭 Falsos amigos ---------- */
+
+function iniciarFalsos(pool) {
+  juego = {
+    pool,
+    items: mezclar(FALSOS_AMIGOS).slice(0, 10),
+    i: 0,
+    aciertos: 0,
+    fallos: 0,
+    nose: 0,
+    elegida: null,
+    opciones: [],
+  };
+  prepararFalsos();
+  renderFalsos();
+}
+
+/** Tres opciones fijas: el significado real, la trampa y una ajena. */
+function prepararFalsos() {
+  const f = juego.items[juego.i];
+  const ajena = mezclar(FALSOS_AMIGOS.filter((x) => x.en !== f.en && x.es !== f.es))[0];
+  juego.opciones = mezclar([
+    { txt: f.es, tipo: "bien" },
+    { txt: f.trampa, tipo: "trampa" },
+    { txt: ajena.es, tipo: "otra" },
+  ]);
+  juego.elegida = null;
+}
+
+function renderFalsos() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("falsos", juego.aciertos);
+    const pool = juego.pool;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      detalle(juego, esRecord),
+      esRecord,
+      () => iniciarFalsos(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const f = items[i];
+  const respondida = juego.elegida !== null;
+  const noLaSabia = juego.elegida === NO_LO_SE;
+  const cayo = juego.elegida === "trampa";
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">¿Qué significa de verdad?</p>
+      <p class="word" lang="en">${esc(f.en)}</p>
+      ${respondida ? `<span class="pron">${esc(f.pron)}</span>` : ""}
+      <button class="speak" data-speak="${esc(f.en)}" aria-label="Escuchar">🔊</button>
+    </div>
+    <div class="options" id="op-falsos">
+      ${juego.opciones
+        .map((o) => {
+          let cls = "option";
+          if (respondida && o.tipo === "bien") cls += " is-right";
+          else if (respondida && o.tipo === juego.elegida) cls += " is-wrong";
+          return `<button class="${cls}" data-tipo="${o.tipo}" ${respondida ? "disabled" : ""}>${esc(o.txt)}</button>`;
+        })
+        .join("")}
+    </div>
+    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? `<div class="explain ${juego.elegida === "bien" ? "ok" : noLaSabia ? "nose" : "ko"}">
+             <b>${juego.elegida === "bien" ? "Correcto" : cayo ? "Ahí está la trampa" : noLaSabia ? "Bien reconocerlo" : "No es eso"}</b>
+             <p><b lang="en">${esc(f.en)}</b> (${esc(f.pron)}) significa <b>${esc(f.es)}</b>.</p>
+             <p>«${esc(f.trampa)}» se dice <b lang="en">${esc(f.real)}</b> (${esc(f.realPron)}).</p>
+             <p>${esc(f.example)}<br><em>${esc(f.exampleEs)}</em></p>
+           </div>
+           <button class="btn" id="next-falsos">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : ""
+    }`;
+
+  if (!respondida) {
+    $$("#op-falsos .option").forEach((b) => {
+      b.onclick = () => {
+        juego.elegida = b.dataset.tipo;
+        if (juego.elegida === "bien") juego.aciertos += 1;
+        else {
+          juego.fallos += 1;
+          // Se queda en tu repaso: son justo las que hay que machacar.
+          penalizar({ en: f.en, es: f.es, pron: f.pron, example: f.example, exampleEs: f.exampleEs, cat: "mixto" });
+        }
+        renderFalsos();
+      };
+    });
+    $("#nose").onclick = () => {
+      juego.elegida = NO_LO_SE;
+      juego.nose += 1;
+      penalizar({ en: f.en, es: f.es, pron: f.pron, example: f.example, exampleEs: f.exampleEs, cat: "mixto" });
+      renderFalsos();
+    };
+  } else {
+    $("#next-falsos").onclick = () => {
+      juego.i += 1;
+      if (juego.i < items.length) prepararFalsos();
+      renderFalsos();
+    };
+  }
+}
+
+/* ---------- 🔀 Las que confundes ---------- */
+
+/** Acertar el par baja el contador; cuando llega a cero deja de salir. */
+function aflojarConfusion(a, b) {
+  const clave = [a, b].sort().join("|");
+  if (!store.confusiones?.[clave]) return;
+  store.confusiones[clave] -= 1;
+  if (store.confusiones[clave] <= 0) delete store.confusiones[clave];
+  save();
+}
+
+function iniciarConfusas(pool) {
+  const pares = paresConfusos();
+  if (!pares.length) {
+    $("#game-box").innerHTML = `
+      <div class="empty">
+        <span class="big">🔀</span>
+        Todavía no hay ninguna pareja apuntada.
+        <br />Repasa o juega: en cuanto cambies una palabra por otra, las dos
+        aparecerán aquí enfrentadas hasta que dejes de mezclarlas.
+      </div>`;
+    return;
+  }
+
+  // Cada par se pregunta en las dos direcciones: saber cuál es "borrow" no es
+  // lo mismo que saber cuál es "lend".
+  const items = pares.flatMap((p) => [
+    { w: p.a, otra: p.b },
+    { w: p.b, otra: p.a },
+  ]);
+  juego = { pool, items: mezclar(items).slice(0, 12), i: 0, aciertos: 0, fallos: 0, nose: 0, elegida: null };
+  renderConfusas();
+}
+
+function renderConfusas() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("confusas", juego.aciertos);
+    const pool = juego.pool;
+    const quedan = paresConfusos().length;
+    pantallaFinal(
+      `${juego.aciertos} de ${items.length}`,
+      `${detalle(juego, esRecord)} · ${quedan ? `${quedan} ${quedan === 1 ? "pareja" : "parejas"} por pulir` : "ninguna pareja pendiente"}`,
+      esRecord,
+      () => iniciarConfusas(pool),
+    );
+    juego = null;
+    return;
+  }
+
+  const { w, otra } = items[i];
+  const respondida = juego.elegida !== null;
+  const noLaSabia = juego.elegida === NO_LO_SE;
+  const opciones = mezclar([w, otra]);
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card quiz-card">
+      <p class="quiz-count">Estas dos las mezclas. ¿Cuál es cuál?</p>
+      <p class="word" lang="en">${esc(w.en)}</p>
+      ${respondida ? `<span class="pron">${esc(w.pron || "—")}</span>` : ""}
+      <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>
+    </div>
+    <div class="options" id="op-confusas">
+      ${opciones
+        .map((o) => {
+          let cls = "option";
+          if (respondida && o.en === w.en) cls += " is-right";
+          else if (respondida && o.en === juego.elegida) cls += " is-wrong";
+          return `<button class="${cls}" data-en="${esc(o.en)}" ${respondida ? "disabled" : ""}>${esc(o.es)}</button>`;
+        })
+        .join("")}
+    </div>
+    ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+    ${
+      respondida
+        ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}">
+             <b>${juego.elegida === w.en ? "Correcto" : "Justo al revés"}</b>
+             <p><b lang="en">${esc(w.en)}</b> = ${esc(w.es)}</p>
+             <p><b lang="en">${esc(otra.en)}</b> = ${esc(otra.es)}</p>
+             ${w.example ? `<p>${esc(w.example)}<br><em>${esc(w.exampleEs || "")}</em></p>` : ""}
+           </div>
+           <button class="btn" id="next-confusas">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
+        : ""
+    }`;
+
+  if (!respondida) {
+    $$("#op-confusas .option").forEach((b) => {
+      b.onclick = () => {
+        juego.elegida = b.dataset.en;
+        if (juego.elegida === w.en) {
+          juego.aciertos += 1;
+          aflojarConfusion(w.en, otra.en);
+        } else {
+          juego.fallos += 1;
+          registrarConfusion(w.en, otra.en);
+          penalizar(w);
+        }
+        renderConfusas();
+      };
+    });
+    $("#nose").onclick = () => {
+      juego.elegida = NO_LO_SE;
+      juego.nose += 1;
+      penalizar(w);
+      renderConfusas();
+    };
+  } else {
+    $("#next-confusas").onclick = () => {
+      juego.i += 1;
+      juego.elegida = null;
+      renderConfusas();
     };
   }
 }
@@ -1874,7 +2185,32 @@ function renderQuiz() {
  * Vista: Ajustes
  * ------------------------------------------------------------------ */
 
+/**
+ * Aplica el tema elegido. "auto" quita el atributo y deja mandar al móvil;
+ * claro y oscuro lo fuerzan por encima de lo que diga el sistema.
+ */
+function aplicarTema() {
+  const modo = store.settings.tema || "auto";
+  const raiz = document.documentElement;
+  if (modo === "claro") raiz.dataset.tema = "light";
+  else if (modo === "oscuro") raiz.dataset.tema = "dark";
+  else delete raiz.dataset.tema;
+
+  // La barra del navegador en el móvil tiene que ir a juego con la app.
+  const oscuro =
+    modo === "oscuro" ||
+    (modo === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  $('meta[name="theme-color"]')?.setAttribute("content", oscuro ? "#0b1020" : "#f3f5fa");
+
+  $$("#seg-tema .seg-btn").forEach((b) => {
+    const activo = b.dataset.tema === modo;
+    b.classList.toggle("is-active", activo);
+    b.setAttribute("aria-pressed", String(activo));
+  });
+}
+
 function renderAjustes() {
+  aplicarTema();
   $("#set-categoria").innerHTML = CATEGORIAS.map(
     (c) => `<option value="${c.id}">${esc(c.nombre)}</option>`,
   ).join("");
@@ -2021,6 +2357,20 @@ $("#set-daily").addEventListener("change", (e) => {
   toast(`${store.settings.daily} palabras nuevas al día`);
 });
 
+$("#seg-tema").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-tema]");
+  if (!btn) return;
+  store.settings.tema = btn.dataset.tema;
+  save();
+  aplicarTema();
+});
+
+// Si estás en automático y el móvil cambia de tema (de noche, por ejemplo),
+// la barra del navegador tiene que seguirlo.
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if ((store.settings.tema || "auto") === "auto") aplicarTema();
+});
+
 $("#menos").addEventListener("click", () => cambiarDiarias(store.settings.daily - 1));
 $("#mas").addEventListener("click", () => cambiarDiarias(store.settings.daily + 1));
 
@@ -2134,6 +2484,7 @@ document.addEventListener("keydown", (e) => {
  * Arranque
  * ------------------------------------------------------------------ */
 
+aplicarTema();
 await cargarBanco();
 updateChrome();
 renderHoy();
