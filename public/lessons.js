@@ -2731,7 +2731,8 @@ export const LESSONS = [
       },
       {
         "t": "formula",
-        "text": "Do you know + where the bank IS  (no «where is the bank»)"
+        "parts": ["Do you know","where the bank IS"],
+      "example": "Do you know where the bank is?"
       },
       {
         "t": "table",
@@ -2858,7 +2859,8 @@ export const LESSONS = [
       },
       {
         "t": "formula",
-        "text": "modal + have + participio    (must have gone, should have called)"
+        "parts": ["modal","have","participio"],
+      "example": "You should have called me."
       },
       {
         "t": "table",
@@ -3125,7 +3127,8 @@ export const LESSONS = [
       },
       {
         "t": "formula",
-        "text": "will be + -ing        →  estaré haciendo\nwill have + participio →  habré hecho"
+        "parts": ["will have","participio"],
+      "example": "By Friday I will have finished."
       },
       {
         "t": "table",
@@ -3534,7 +3537,8 @@ export const LESSONS = [
       },
       {
         "t": "formula",
-        "text": "sujeto + ADVERBIO + verbo        →  I always arrive late\nsujeto + be + ADVERBIO          →  I am always late"
+        "parts": ["sujeto","adverbio","verbo"],
+      "example": "I always arrive late."
       },
       {
         "t": "table",
@@ -3804,7 +3808,8 @@ export const LESSONS = [
       },
       {
         "t": "formula",
-        "text": "don't + anything / anyone / anywhere   ✓\ndon't + nothing / no one / nowhere    ✗"
+        "parts": ["don't","anything / anyone / anywhere"],
+      "example": "I don't know anything."
       },
       {
         "t": "table",

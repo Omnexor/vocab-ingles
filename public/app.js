@@ -3468,7 +3468,24 @@ function renderLeccionesIndex() {
   }).join("");
 }
 
+/**
+ * Un bloque mal formado no puede tumbar la lección entera.
+ *
+ * Pasó: una lección traía un bloque «formula» con `text` en vez de `parts`, y
+ * el `.map` de undefined reventaba el render. La lección salía en blanco, sin
+ * ejemplos y sin ninguna pista de por qué. Ahora ese bloque se salta y el
+ * resto se pinta igual; el aviso queda en consola para arreglarlo.
+ */
 function blockHtml(b) {
+  try {
+    return pintarBloque(b);
+  } catch (e) {
+    console.warn(`[vocab] bloque «${b?.t}» mal formado, se omite:`, e.message);
+    return "";
+  }
+}
+
+function pintarBloque(b) {
   switch (b.t) {
     case "p":
       return `<p class="lesson-p">${esc(b.text)}</p>`;
