@@ -102,6 +102,22 @@ export const LESSONS = [
         right: "water = uó-rer ✓ (sí cambia)",
         why: "La T solo se convierte en R cuando la sílaba de detrás es débil. En «return» la fuerza cae justo en «-turn», así que ahí la T suena T de verdad. Igual en hotel, attend o protect.",
       },
+      {
+        t: "p",
+        text: "Un último aviso honesto: el inglés tiene DOS «a» y el español solo una, así que aquí las dos se escriben igual. La de «run» o «cut» es la a española de siempre. La de «ran» o «cat» se hace abriendo más la boca y adelantando la lengua, tirando a «e». Por eso drank y drunk salen los dos como «drank».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I ran, and now I run every day.", pron: "ái ran, and náu ái ran év-ri déi", es: "Corrí, y ahora corro todos los días." },
+          { en: "The cat cut its paw.", pron: "de kat kat its po", es: "El gato se cortó la pata." },
+          { en: "She drank it, so it's drunk.", pron: "shi drank it, sóu its drank", es: "Se lo bebió, así que está bebido." },
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco para las dos «a»: si en la palabra escrita hay una A (ran, cat, drank, sang), abre la boca. Si hay U (run, cut, drunk, sung), es la a española normal. Los verbos irregulares afectados lo avisan en su ficha.",
+      },
     ],
     quiz: [
       { q: "«think» se escribe…", options: ["dink", "zink", "sink"], answer: 1, why: "Es th sorda: se escribe con z, que en España suena exactamente así." },
@@ -846,7 +862,7 @@ export const LESSONS = [
         t: "examples",
         items: [
           { en: "There are three people waiting.", pron: "der ar zrii píi-pol uéi-ting", es: "Hay tres personas esperando." },
-          { en: "I have a lot of homework.", pron: "ai jav a lot ov jóu-muerk", es: "Tengo muchos deberes." },
+          { en: "I have a lot of homework.", pron: "ai jav a lot ov jóum-uerk", es: "Tengo muchos deberes." },
         ],
       },
       {
@@ -1265,7 +1281,7 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "I've been waiting for an hour.", pron: "aiv bin uéi-ting for an áuer", es: "Llevo una hora esperando." },
+          { en: "I've been waiting for an hour.", pron: "aiv bin uéi-ting for an áu-er", es: "Llevo una hora esperando." },
           { en: "She's been working here since May.", pron: "shis bin uér-king jier sins méi", es: "Lleva trabajando aquí desde mayo." },
           { en: "It's been raining all day.", pron: "its bin réi-ning ol déi", es: "Lleva lloviendo todo el día." },
         ],
@@ -1396,7 +1412,7 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "He said he was tired.", pron: "ji sed ji uós táierd", es: "Dijo que estaba cansado." },
+          { en: "He said he was tired.", pron: "ji sed ji uós tái-erd", es: "Dijo que estaba cansado." },
           { en: "She told me she would come.", pron: "shi tóuld mi shi uúd kam", es: "Me dijo que vendría." },
           { en: "They asked where I lived.", pron: "déi askt uér ai livd", es: "Preguntaron dónde vivía." },
         ],
@@ -1474,7 +1490,7 @@ export const LESSONS = [
         items: [
           { en: "I enjoy cooking.", pron: "ai in-yói kú-king", es: "Disfruto cocinando." },
           { en: "We decided to leave.", pron: "ui di-sái-ded tu liiv", es: "Decidimos irnos." },
-          { en: "I'm looking forward to seeing you.", pron: "aim lú-king fó-ruard tu síing yu", es: "Tengo ganas de verte." },
+          { en: "I'm looking forward to seeing you.", pron: "aim lú-king fór-uard tu síing yu", es: "Tengo ganas de verte." },
         ],
       },
       {
@@ -1921,7 +1937,7 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "She told me she was tired.", pron: "shi tóuld mi shi uós táierd", es: "Me dijo que estaba cansada." },
+          { en: "She told me she was tired.", pron: "shi tóuld mi shi uós tái-erd", es: "Me dijo que estaba cansada." },
           { en: "What did he say?", pron: "uót did ji séi", es: "¿Qué dijo?" },
           { en: "Can I speak to the manager?", pron: "kan ai spiik tu de má-ni-yer", es: "¿Puedo hablar con el encargado?" },
         ],
@@ -2026,7 +2042,7 @@ export const LESSONS = [
         t: "examples",
         items: [
           { en: "I have worked here since 2020.", pron: "ai jav uérkt jier sins tuén-ti tuén-ti", es: "Trabajo aquí desde 2020." },
-          { en: "We waited for two hours.", pron: "ui uéi-ted for tuu áuers", es: "Esperamos dos horas." },
+          { en: "We waited for two hours.", pron: "ui uéi-ted for tuu áu-ers", es: "Esperamos dos horas." },
           { en: "She called me ten minutes ago.", pron: "shi kold mi ten mí-nits a-góu", es: "Me llamó hace diez minutos." },
         ],
       },

@@ -298,7 +298,7 @@ export const FRASES = [
     id: "up-in-the-air",
     cat: "idioms",
     en: "Our plans are still up in the air.",
-    pron: "áuar plans ar stil ap in de er",
+    pron: "áu-ar plans ar stil ap in de er",
     es: "Nuestros planes están en el aire.",
     literal: "Nuestros planes están arriba en el aire.",
     porque:
@@ -660,7 +660,7 @@ export const FRASES = [
     id: "looking-forward",
     cat: "moldes",
     en: "I'm looking forward to seeing you.",
-    pron: "áim lú-king fó-ruard tu síing iu",
+    pron: "áim lú-king fór-uard tu síing iu",
     es: "Tengo ganas de verte.",
     porque:
       "Aquí «to» es preposición, no parte de un infinitivo. Por eso detrás va -ing y no el verbo pelado: to seeing, no to see.",
@@ -779,7 +779,7 @@ export const FRASES = [
     id: "make-vs-do",
     cat: "moldes",
     en: "I have to do my homework and make dinner.",
-    pron: "ái jav tu du mái jóu-muerk and méik dí-ner",
+    pron: "ái jav tu du mái jóum-uerk and méik dí-ner",
     es: "Tengo que hacer los deberes y preparar la cena.",
     porque:
       "El español tiene un solo «hacer» y el inglés lo parte en dos: «do» para tareas y trabajo, «make» para crear o producir algo nuevo.",
@@ -819,7 +819,7 @@ export const FRASES = [
     id: "it-takes",
     cat: "moldes",
     en: "It takes about an hour.",
-    pron: "it téiks a-báut an áuar",
+    pron: "it téiks a-báut an áu-ar",
     es: "Se tarda una hora más o menos.",
     porque:
       "El inglés pone «it» como sujeto y el verbo «take» para el tiempo que algo requiere. El español lo dice con «se tarda», sin sujeto.",

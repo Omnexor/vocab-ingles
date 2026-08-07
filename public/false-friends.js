@@ -104,7 +104,7 @@ export const FALSOS_AMIGOS = [
     trampa: "decepción", real: "disappointment", realPron: "di-sa-póint-ment",
     example: "It was a deliberate deception.", exampleEs: "Fue un engaño deliberado." },
 
-  { en: "quiet", pron: "kuáiet", es: "callado, silencioso",
+  { en: "quiet", pron: "kuái-et", es: "callado, silencioso",
     trampa: "quieto", real: "still", realPron: "stil",
     example: "Please be quiet.", exampleEs: "Por favor, callaos." },
 
@@ -224,7 +224,7 @@ export const FALSOS_AMIGOS = [
     trampa: "jamón", real: "ham", realPron: "jam",
     example: "Toast with jam, please.", exampleEs: "Tostada con mermelada, por favor." },
 
-  { en: "mayor", pron: "méier", es: "alcalde",
+  { en: "mayor", pron: "méi-er", es: "alcalde",
     trampa: "mayor (más grande)", real: "bigger", realPron: "bí-guer",
     example: "The mayor gave a speech.", exampleEs: "El alcalde dio un discurso." },
 
