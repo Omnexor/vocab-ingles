@@ -1626,6 +1626,50 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 }
 .empty .big { font-size: 42px; display: block; margin-bottom: 10px; }
 
+/* Aviso de versión nueva. No se va solo como el toast: hasta que recargues,
+   la pantalla puede tener botones que tu JS todavía no sabe manejar. */
+.aviso-version {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* En una sola línea: al ocupar tres se comía los botones del final de la
+     pantalla (el «Empezar test» de las lecciones quedaba debajo). */
+  width: max-content;
+  max-width: calc(100% - 24px);
+  padding: 7px 8px 7px 16px;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 13.5px;
+  white-space: nowrap;
+  /* Flota sobre el contenido, así que se deja pasar el clic: solo sus dos
+     botones lo interceptan. Si no, tapaba lo que hubiera detrás. */
+  pointer-events: none;
+}
+.aviso-version .btn,
+.aviso-version .aviso-cerrar { pointer-events: auto; }
+.aviso-version .btn { padding: 7px 14px; font-size: 13.5px; white-space: nowrap; }
+.aviso-cerrar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+.aviso-cerrar:hover { color: var(--text); background: var(--bg-soft); }
+
 .toast {
   position: fixed;
   left: 50%;

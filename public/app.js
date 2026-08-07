@@ -4050,4 +4050,28 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   navigator.serviceWorker.register("./sw.js").catch(() => {
     /* si falla, la app va igual, solo que sin modo offline */
   });
+
+  // Cuando se activa una versión nueva, esta pestaña sigue con el código
+  // anterior: puede tener botones en pantalla que su JS no sabe manejar. En
+  // vez de dejarte tocando algo que no responde, se ofrece recargar.
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data?.tipo !== "version-nueva") return;
+    avisarVersionNueva();
+  });
+}
+
+function avisarVersionNueva() {
+  if ($("#aviso-version")) return;
+  const barra = document.createElement("div");
+  barra.id = "aviso-version";
+  barra.className = "aviso-version";
+  barra.setAttribute("role", "status");
+  // Se puede cerrar: si estás a mitad de un ejercicio, recargar te lo corta.
+  barra.innerHTML = `
+    <span>Versión nueva disponible</span>
+    <button class="btn" id="recargar-version">Recargar</button>
+    <button class="aviso-cerrar" id="cerrar-version" aria-label="Ahora no">✕</button>`;
+  document.body.appendChild(barra);
+  $("#recargar-version").onclick = () => location.reload();
+  $("#cerrar-version").onclick = () => barra.remove();
 }

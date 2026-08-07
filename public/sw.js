@@ -8,22 +8,60 @@
  *
  * Las llamadas a /api/ nunca se cachean: generan palabras nuevas y una
  * respuesta guardada no tendría ningún sentido.
+ *
+ * OJO CON MEZCLAR VERSIONES. Cada archivo se guarda por su cuenta, así que si
+ * una sola petición se cae (cobertura mala en el móvil) esa vuelve de la caché
+ * mientras las demás llegan frescas. El resultado es un Frankenstein: el
+ * index.html nuevo con el app.js de antes. Pasó de verdad: el engranaje de
+ * Ajustes aparecía pero no hacía nada, porque el HTML ya lo traía y el JS
+ * viejo no tenía su manejador, y sin ningún error en consola.
+ *
+ * Contra eso hay tres cosas aquí:
+ *  - VERSION va en el nombre de la caché: al subirla, el activate borra entera
+ *    la anterior y no queda nada viejo que mezclar.
+ *  - Cada vez que se carga la app con red, se refresca el núcleo entero de
+ *    golpe, para que lo guardado sea siempre de una misma generación.
+ *  - Al activarse una versión nueva se avisa a las pestañas abiertas, que ya
+ *    están corriendo el código anterior.
+ *
+ * Al tocar cualquiera de los archivos de NUCLEO, sube VERSION.
  */
-const CACHE = "vocab-v1";
+const VERSION = 2;
+const CACHE = `vocab-v${VERSION}`;
+
+// El núcleo se refresca junto: son los archivos que se rompen si no encajan
+// entre sí. El resto (lecturas, cuentos…) puede envejecer sin romper nada.
+const NUCLEO = ["./", "./index.html", "./styles.css", "./app.js"];
 
 const BASICOS = [
-  "./",
-  "./index.html",
-  "./styles.css",
-  "./app.js",
+  ...NUCLEO,
   "./seed.js",
   "./lessons.js",
   "./false-friends.js",
   "./readings.js",
+  "./stories.js",
+  "./irregulars.js",
+  "./conjugar.js",
+  "./modals.js",
   "./vocabulario.json",
   "./manifest.json",
   "./icon.svg",
 ];
+
+/** Baja el núcleo entero de la red y lo guarda de una vez. */
+async function refrescarNucleo() {
+  const cache = await caches.open(CACHE);
+  await Promise.all(
+    NUCLEO.map(async (url) => {
+      try {
+        const res = await fetch(url, { cache: "reload" });
+        if (res && res.ok) await cache.put(url, res);
+      } catch {
+        /* sin red: se queda lo que hubiera, que es coherente entre sí */
+      }
+    }),
+  );
+}
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
@@ -43,8 +81,19 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(
     (async () => {
       const viejas = (await caches.keys()).filter((k) => k !== CACHE);
+      // Solo es una ACTUALIZACIÓN si ya había una versión antes. En la primera
+      // visita no hay caché anterior y avisar de "versión nueva" sería absurdo
+      // (y el aviso tapaba los botones de abajo de la pantalla).
+      const esActualizacion = viejas.length > 0;
       await Promise.all(viejas.map((k) => caches.delete(k)));
       await self.clients.claim();
+
+      if (!esActualizacion) return;
+      // Las pestañas que ya estaban abiertas siguen ejecutando el código
+      // anterior. Se les avisa para que ofrezcan recargar en vez de dejarte
+      // con media app vieja y media nueva.
+      const abiertas = await self.clients.matchAll({ type: "window" });
+      for (const c of abiertas) c.postMessage({ tipo: "version-nueva", version: VERSION });
     })(),
   );
 });
@@ -54,6 +103,11 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
+
+  // Al abrir la app con red, se pone al día el núcleo entero. Así lo guardado
+  // es siempre de una misma generación y nunca se puede servir el HTML nuevo
+  // con el JS anterior.
+  if (e.request.mode === "navigate") e.waitUntil(refrescarNucleo());
 
   e.respondWith(
     (async () => {
