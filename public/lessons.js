@@ -1235,6 +1235,10 @@ export const LESSONS = [
       { q: "¿Cuál está bien?", options: ["I need two informations.", "I need some information.", "I need an information."], answer: 1, why: "«Information» es incontable: ni plural ni «a»." },
       { q: "«The news ___ good.»", options: ["are", "is", "were"], answer: 1, why: "Aunque acabe en -s, «news» es singular." },
       { q: "Plural de «knife»:", options: ["knifes", "knives", "knifs"], answer: 1, why: "Acabados en -f o -fe cambian a -ves." },
+      { q: "«Un consejo» es…", options: ["an advice", "a piece of advice", "one advice"], answer: 1, why: "«Advice» es incontable: para contarlo se usa «a piece of»." },
+      { q: "«Muchos deberes» es…", options: ["many homeworks", "a lot of homework", "much homeworks"], answer: 1, why: "«Homework» es incontable: ni plural ni many." },
+      { q: "«People» lleva verbo…", options: ["en singular: people is", "en plural: people are", "cualquiera"], answer: 1, why: "«People» ya es plural: «people are», nunca «people is»." },
+      { q: "¿Por qué decimos «informations» los españoles?", options: ["Porque en español «información» sí tiene plural", "Porque suena mejor", "Porque es una excepción"], answer: 0, why: "Calcamos el plural español a una palabra que en inglés es incontable." },
     ],
   },
 
@@ -1303,6 +1307,10 @@ export const LESSONS = [
       { q: "«I am boring» significa…", options: ["Estoy aburrido", "Soy aburrido", "Me aburro"], answer: 1, why: "Con -ing describes cómo eres tú para los demás." },
       { q: "«That trip was really ___.»", options: ["tired", "tiring", "tire"], answer: 1, why: "El viaje causa el cansancio: -ing." },
       { q: "«She looks ___.» (preocupada)", options: ["worrying", "worried", "worry"], answer: 1, why: "Ella siente la preocupación: -ed." },
+      { q: "En español los dos son «aburrido». ¿Qué distingue -ed de -ing?", options: ["El registro", "Quién siente (-ed) y qué lo provoca (-ing)", "El tiempo verbal"], answer: 1, why: "Las personas sienten (-ed), las cosas provocan (-ing)." },
+      { q: "«Estoy cansado» es…", options: ["I am tiring", "I am tired", "I am tire"], answer: 1, why: "Tú sientes el cansancio: -ed." },
+      { q: "«El viaje fue agotador» es…", options: ["The trip was tired", "The trip was tiring", "The trip was tire"], answer: 1, why: "El viaje provoca el cansancio: -ing." },
+      { q: "Si puedes cambiarlo por «estoy…», el adjetivo va con…", options: ["-ed", "-ing", "sin terminación"], answer: 0, why: "«Estoy aburrido» = I'm bored. «Soy aburrido» = I'm boring." },
     ],
   },
 
@@ -1607,6 +1615,10 @@ export const LESSONS = [
       { q: "Past perfect de «go» (ella):", options: ["she had went", "she had gone", "she has gone"], answer: 1, why: "El participio de go es gone, no went (que es el pasado simple)." },
       { q: "«She had left before I arrived.» ¿Qué pasó primero?", options: ["Ella se fue", "Yo llegué", "Pasaron a la vez"], answer: 0, why: "Had + participio marca la acción anterior: ella se fue primero." },
       { q: "«I ___ never flown before that trip.»", options: ["was", "had", "have"], answer: 1, why: "Hecho anterior a un momento pasado (that trip) → past perfect con had." },
+      { q: "«had + participio» equivale en español a…", options: ["he comido", "había comido", "comería"], answer: 1, why: "had = había. Es el pluscuamperfecto, igual que en español." },
+      { q: "«Cuando llegué, ya se había ido» es…", options: ["When I arrived, he already left", "When I arrived, he had already gone", "When I arrived, he has already gone"], answer: 1, why: "Lo anterior a otro pasado: had + participio." },
+      { q: "El past perfect sirve para…", options: ["el pasado más reciente", "el pasado ANTERIOR a otro pasado", "el futuro en el pasado"], answer: 1, why: "Marca cuál de los dos hechos pasados ocurrió primero." },
+      { q: "«Had» cambia según la persona?", options: ["Sí: had / hads", "No, es «had» para todos", "Solo en tercera persona"], answer: 1, why: "I had, she had, they had: una sola forma." },
     ],
   },
 
@@ -1988,6 +2000,10 @@ export const LESSONS = [
       { q: "«I lost the keys ___ you gave me.»", options: ["who", "that", "whose"], answer: 1, why: "Cosa → that (o which); who es solo para personas." },
       { q: "¿Se puede omitir el relativo en «The movie (that) I watched was great»?", options: ["Sí, porque that no es el sujeto de su propia frase", "No, nunca se puede omitir", "Solo en preguntas"], answer: 0, why: "Cuando el relativo no hace de sujeto en su propia cláusula, es opcional." },
       { q: "«That's the man ___ car was stolen.»", options: ["who", "whose", "which"], answer: 1, why: "Posesión (el coche DE ese hombre) → whose." },
+      { q: "El «que» español se reparte en inglés según…", options: ["si es persona o cosa", "si es singular o plural", "si es formal"], answer: 0, why: "«Who» para personas, «which» para cosas, «that» para las dos." },
+      { q: "«El hombre que vive aquí» es…", options: ["The man which lives here", "The man who lives here", "The man what lives here"], answer: 1, why: "Persona → who (o that)." },
+      { q: "«El libro que compré» es…", options: ["The book who I bought", "The book which I bought", "The book what I bought"], answer: 1, why: "Cosa → which (o that). «What» nunca es pronombre relativo." },
+      { q: "«That» sirve para…", options: ["solo personas", "solo cosas", "personas y cosas, en frases especificativas"], answer: 2, why: "Es la opción cómoda: vale para los dos." },
     ],
   },
 
@@ -2056,6 +2072,10 @@ export const LESSONS = [
       { q: "¿Cuál NO se puede decir con would?", options: ["I would visit my cousins every August.", "I would live in a small village.", "We would play cards after dinner."], answer: 1, why: "Would no se usa para ESTADOS (vivir en un sitio), solo para acciones repetidas; ahí hace falta used to." },
       { q: "«Did you ___ play an instrument as a kid?»", options: ["used to", "use to", "using to"], answer: 1, why: "Tras did, forma base: use to." },
       { q: "¿Qué NO expresa «used to»?", options: ["Un hábito pasado que ya no ocurre", "Un estado pasado que ya no es cierto", "Algo que sigue pasando ahora"], answer: 2, why: "Used to siempre marca algo que ya NO es así; para lo que sigue pasando se usa presente." },
+      { q: "«Used to» equivale en español a…", options: ["el imperfecto: solía / -aba", "el indefinido: hice", "el condicional: haría"], answer: 0, why: "«I used to work» = «trabajaba / solía trabajar»." },
+      { q: "«Antes fumaba» es…", options: ["I use to smoke", "I used to smoke", "I am used to smoke"], answer: 1, why: "Siempre «used to», con -d, aunque la frase sea afirmativa." },
+      { q: "«Used to» y «be used to» significan…", options: ["lo mismo", "cosas distintas: solía / estoy acostumbrado a", "solo cambia el registro"], answer: 1, why: "«I used to work» = trabajaba. «I'm used to working» = estoy acostumbrado a trabajar." },
+      { q: "«Estoy acostumbrado a madrugar» es…", options: ["I used to get up early", "I'm used to getting up early", "I use to get up early"], answer: 1, why: "«Be used to» + -ing: estar acostumbrado a." },
     ],
   },
 
@@ -2543,6 +2563,11 @@ export const LESSONS = [
       { q: "«He left the company two months ___.»", options: ["ago", "since", "before"], answer: 0, why: "«hace dos meses» → two months ago, detrás." },
       { q: "«She has been ill ___ Monday.»", options: ["for", "since", "ago"], answer: 1, why: "Monday es cuándo empezó → since." },
       { q: "¿Cuál es correcta?", options: ["I have seen him yesterday", "I saw him yesterday", "I have saw him yesterday"], answer: 1, why: "Un momento pasado y cerrado pide pasado simple, no present perfect." },
+      { q: "«Desde 2019» es…", options: ["for 2019", "since 2019", "ago 2019"], answer: 1, why: "«Since» marca el punto de inicio: desde." },
+      { q: "«Durante cinco años» es…", options: ["since five years", "for five years", "five years ago"], answer: 1, why: "«For» marca la duración: durante." },
+      { q: "«Hace dos horas» es…", options: ["since two hours", "for two hours", "two hours ago"], answer: 2, why: "«Ago» va DETRÁS de la cantidad y pide pasado simple." },
+      { q: "«Llevo dos años aquí» es…", options: ["I am here since two years", "I have been here for two years", "I am here for two years"], answer: 1, why: "«Llevo + tiempo» es present perfect con for, nunca presente." },
+      { q: "¿Dónde va «ago» en la frase?", options: ["Delante de la cantidad", "Detrás de la cantidad", "Al principio de la frase"], answer: 1, why: "«Two hours ago», nunca «ago two hours»." },
     ],
   },
 
@@ -2763,6 +2788,10 @@ export const LESSONS = [
       { q: "«She ___ her little brother.» (cuida de)", options: ["looks after", "looks him after", "after looks"], answer: 0, why: "look after es inseparable: el objeto va detrás." },
       { q: "¿Cuál es correcta?", options: ["I can't put up with it", "I can't put it up with", "I can't put up it with"], answer: 0, why: "Con dos partículas es inseparable: el objeto al final." },
       { q: "«The car ___ on the highway.»", options: ["broke it down", "broke down", "broke down it"], answer: 1, why: "break down aquí no lleva objeto." },
+      { q: "«Apágala» (la tele) es…", options: ["Turn off it", "Turn it off", "It turn off"], answer: 1, why: "Con pronombre (it, them, him) el objeto va SIEMPRE en medio." },
+      { q: "«Apaga la tele» admite…", options: ["solo «turn off the TV»", "solo «turn the TV off»", "las dos formas"], answer: 2, why: "Con sustantivo puede ir en medio o al final; solo el pronombre obliga." },
+      { q: "¿Por qué «turn off it» suena mal?", options: ["Porque «it» es demasiado corto para ir al final", "Porque «off» va siempre al final", "Porque falta un artículo"], answer: 0, why: "Los pronombres átonos no soportan la posición final: se meten en medio." },
+      { q: "En un phrasal INSEPARABLE, el objeto va…", options: ["en medio", "siempre detrás de la partícula", "donde quieras"], answer: 1, why: "«Look after the kids», nunca «look the kids after»." },
     ],
   },
 
@@ -3012,6 +3041,10 @@ export const LESSONS = [
       { q: "«Is ___ any milk left?»", options: ["there", "their", "they're"], answer: 0, why: "«¿Queda leche?» → there is/are." },
       { q: "«The keys are over ___.»", options: ["there", "their", "they're"], answer: 0, why: "Lugar: allí → there." },
       { q: "¿Cuál puedes cambiar por «they are»?", options: ["there", "their", "they're"], answer: 2, why: "They're es literalmente la contracción de they are." },
+      { q: "«Su casa» (de ellos) es…", options: ["there house", "their house", "they're house"], answer: 1, why: "«Their» es el posesivo y siempre lleva sustantivo detrás." },
+      { q: "«Hay un problema» empieza por…", options: ["There", "Their", "They're"], answer: 0, why: "«There is» = hay. Nada que ver con el posesivo." },
+      { q: "Si detrás NO hay sustantivo, seguro que no es…", options: ["there", "their", "they're"], answer: 1, why: "«Their» exige un sustantivo detrás: their car, their idea." },
+      { q: "«Están esperando fuera» es…", options: ["There waiting outside", "Their waiting outside", "They're waiting outside"], answer: 2, why: "Equivale a «they are waiting»." },
     ],
   },
 
@@ -3250,7 +3283,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Los sentidos van en presente simple: smells."
-      }
+      },
+      { q: "«Quiero un café» es…", options: ["I am wanting a coffee", "I want a coffee", "I do want a coffee"], answer: 1, why: "«Want» es de estado: nunca va en continuo." },
+      { q: "¿Por qué a un español le sale «I am wanting»?", options: ["Porque en español decimos «estoy queriendo»", "Porque el continuo suena más educado", "Porque copia el orden del francés"], answer: 0, why: "En español sí se puede decir; en inglés los verbos de estado lo prohíben." },
+      { q: "¿Cuál NO puede ir en continuo?", options: ["work", "know", "run"], answer: 1, why: "«Know» describe un estado mental, no una acción." },
+      { q: "«I'm thinking about it» está bien porque…", options: ["think siempre admite continuo", "aquí «think» es una acción (darle vueltas), no una opinión", "es una excepción sin regla"], answer: 1, why: "«I think it's good» (opinión, estado) frente a «I'm thinking» (proceso, acción)." }
     ]
   },
   {
@@ -4392,7 +4429,11 @@ export const LESSONS = [
         ],
         "answer": 0,
         "why": "Una. Dos se anulan y suena a inglés mal aprendido."
-      }
+      },
+      { q: "«No he visto a nadie» es…", options: ["I haven't seen nobody", "I haven't seen anybody", "I have seen nobody not"], answer: 1, why: "El «no» ya está en «haven't»: detrás va anybody, no nobody." },
+      { q: "«No quiero nada» es…", options: ["I don't want nothing", "I don't want anything", "I want nothing not"], answer: 1, why: "Una negación por frase: don't + anything." },
+      { q: "«I want nothing» ¿está bien?", options: ["No, nunca", "Sí: la negación la lleva «nothing» y el verbo va en positivo", "Solo en poesía"], answer: 1, why: "Vale mientras haya UNA sola negación: o don't + anything, o nothing con el verbo afirmativo." },
+      { q: "¿Por qué a un español le sale la doble negación?", options: ["Porque en español es obligatoria", "Porque suena más enfático", "Porque el inglés la permitía antes"], answer: 0, why: "«No he visto a nadie» lleva dos negativos en español y es lo correcto; en inglés no." }
     ]
   },
   {
