@@ -190,6 +190,10 @@ export const LESSONS = [
       { q: "Pasa a negativa: «We understand.»", options: ["We not understand.", "We don't understand.", "We doesn't understand."], answer: 1, why: "Con «we» el auxiliar es «do» → «don't»." },
       { q: "¿Dónde va el sujeto en una pregunta?", options: ["Delante del auxiliar", "Entre el auxiliar y el verbo", "Al final"], answer: 1, why: "Auxiliar + sujeto + verbo: «Do you know?»" },
       { q: "¿Cuál es correcta?", options: ["Every day I coffee drink.", "I drink coffee every day.", "Coffee I drink every day."], answer: 1, why: "Sujeto + verbo + complemento. El tiempo (every day) va al principio o al final, nunca en medio." },
+      { q: "«Llueve» (sin sujeto en español) es…", options: ["Is raining", "It is raining", "Rains"], answer: 1, why: "El español puede omitir el sujeto; el inglés no. Hace falta «it» aunque no signifique nada." },
+      { q: "«Está cansada» es…", options: ["Is tired", "She is tired", "Tired is"], answer: 1, why: "En español el verbo ya dice quién; en inglés el sujeto es obligatorio siempre." },
+      { q: "¿Por qué «Es difícil» no es «Is difficult»?", options: ["Porque falta el sujeto «it»", "Porque falta un artículo", "Porque el orden está mal"], answer: 0, why: "Toda frase inglesa necesita sujeto: «It is difficult»." },
+      { q: "«Son las tres» es…", options: ["Are three o'clock", "It's three o'clock", "There are three o'clock"], answer: 1, why: "La hora, el tiempo y el clima llevan «it» como sujeto vacío." },
     ],
   },
 
@@ -976,6 +980,25 @@ export const LESSONS = [
         text: "Hay dos tipos: las de sí o no (empiezan por auxiliar) y las de información (empiezan por una palabra WH-).",
       },
       {
+        t: "p",
+        text: "La diferencia de fondo con el español es esta: nosotros preguntamos con la ENTONACIÓN, sin tocar el orden. «Trabajas aquí» y «¿Trabajas aquí?» son las mismas palabras en el mismo orden. El inglés no puede hacer eso: tiene que mover piezas o meter un auxiliar. Por eso te sale «Where you live?», porque en español bastaría.",
+      },
+      {
+        t: "table",
+        head: ["Afirmación", "Pregunta", "Qué se movió"],
+        rows: [
+          ["You live here.", "Do you live here?", "Aparece «do» delante."],
+          ["She works here.", "Does she work here?", "«Does» se lleva la -s del verbo."],
+          ["You are ready.", "Are you ready?", "«Are» salta delante del sujeto."],
+          ["He has finished.", "Has he finished?", "«Has» salta delante del sujeto."],
+          ["They will come.", "Will they come?", "«Will» salta delante del sujeto."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Fíjate en el patrón: si la frase YA tiene un auxiliar (are, has, will, can), ese auxiliar salta delante del sujeto y ya está. Si NO lo tiene (verbos normales en presente o pasado), hay que traer uno de fuera: do, does o did. Esa es toda la mecánica de las preguntas inglesas.",
+      },
+      {
         t: "formula",
         parts: ["WH-", "auxiliar", "sujeto", "verbo"],
         example: "Where did you buy that?",
@@ -1040,6 +1063,10 @@ export const LESSONS = [
       { q: "«___ does it cost?»", options: ["How many", "How much", "How long"], answer: 1, why: "«How much» para precio y para incontables." },
       { q: "Respuesta corta a «Has she called?»", options: ["No, she hasn't.", "No, she doesn't.", "No, she didn't."], answer: 0, why: "Se repite el mismo auxiliar de la pregunta: has → hasn't." },
       { q: "«___ told you that?» (pregunta por el sujeto)", options: ["Who did", "Who", "Whom did"], answer: 1, why: "Cuando preguntas por el sujeto no hace falta auxiliar: «Who told you that?»" },
+      { q: "¿Cómo pregunta el español que el inglés no puede copiar?", options: ["Cambiando el orden", "Solo con la entonación", "Añadiendo un auxiliar"], answer: 1, why: "«¿Trabajas aquí?» son las mismas palabras en el mismo orden: el inglés necesita mover piezas." },
+      { q: "«She is ready» en pregunta es…", options: ["Does she is ready?", "Is she ready?", "She is ready?"], answer: 1, why: "Ya hay auxiliar (is): salta delante del sujeto, sin traer «do»." },
+      { q: "«They will come» en pregunta es…", options: ["Will they come?", "Do they will come?", "They will come?"], answer: 0, why: "«Will» ya es auxiliar: se adelanta y ya está." },
+      { q: "¿Cuándo hay que traer «do / does / did»?", options: ["Siempre", "Solo si la frase no tiene ya un auxiliar", "Solo en preguntas WH-"], answer: 1, why: "Con are, has, will o can basta con adelantarlos; sin ellos hace falta do." },
     ],
   },
   /* ------------------------------------------------------------------ */
@@ -1052,6 +1079,22 @@ export const LESSONS = [
       {
         t: "p",
         text: "En español siempre decimos «más + adjetivo». En inglés depende del tamaño de la palabra: las cortas cambian de forma, las largas llevan «more» delante. Decir «more tall» suena tan raro como decir «más alto» en plan «alto más».",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Qué hizo el inglés"],
+        rows: [
+          ["taller", "más alto", "-er hace el trabajo de «más»"],
+          ["the tallest", "el más alto", "-est hace el trabajo de «el más»"],
+          ["more expensive", "más caro", "aquí sí usa «more», como el español"],
+          ["the most expensive", "el más caro", "«the most» = «el más»"],
+          ["as tall as", "tan alto como", "as … as = tan … como"],
+          ["taller than", "más alto que", "«than» = «que» comparativo"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con «than» y «then», que se pronuncian casi igual pero no son lo mismo: THAN es el «que» de comparar (bigger than), THEN es «entonces / luego». Escribir «bigger then me» es un error habitual incluso entre nativos.",
       },
       {
         t: "table",
@@ -1114,6 +1157,10 @@ export const LESSONS = [
       { q: "Comparativo de «big»:", options: ["biger", "bigger", "more big"], answer: 1, why: "Consonante + vocal + consonante: se dobla la última letra." },
       { q: "Comparativo de «good»:", options: ["gooder", "more good", "better"], answer: 2, why: "Es irregular: good → better → the best." },
       { q: "«He isn't ___ as his sister.» (fast)", options: ["as fast", "faster", "more fast"], answer: 0, why: "La estructura de igualdad es «as + adjetivo + as»." },
+      { q: "En «taller», ¿qué pieza hace el trabajo del «más» español?", options: ["la palabra more", "la terminación -er", "la palabra the"], answer: 1, why: "-er ya significa «más»: por eso «more taller» sobra." },
+      { q: "«Tan alto como su hermano» es…", options: ["as tall as his brother", "so tall as his brother", "more tall than his brother"], answer: 0, why: "as … as = tan … como." },
+      { q: "El «que» de comparar (más alto QUE) es…", options: ["then", "than", "that"], answer: 1, why: "«Than» compara; «then» es «entonces»; «that» es «que» de otras cosas." },
+      { q: "«El más caro» es…", options: ["the more expensive", "the most expensive", "most expensive"], answer: 1, why: "«The most» traduce «el más» en adjetivos largos." },
     ],
   },
 
@@ -2225,6 +2272,21 @@ export const LESSONS = [
         text: "En español «hay» vale para uno y para muchos: hay un coche, hay tres coches. En inglés hay que elegir según lo que venga detrás, y además nunca se usa «have» para esto. «It has a problem» significa «él tiene un problema», no «hay un problema».",
       },
       {
+        t: "p",
+        text: "La traducción literal aclara de dónde sale el error: «there is / there are» es «hay», pero palabra por palabra significa «ahí está / ahí están». No tiene nada que ver con tener. Muchos hispanohablantes traducen «hay» por «it has» porque en catalán, francés o italiano sí se usa un verbo de posesión (hi ha, il y a, c'è). En inglés no: «hay» es SIEMPRE «there is / there are».",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Nunca digas"],
+        rows: [
+          ["Hay un problema.", "There is a problem.", "It has a problem."],
+          ["Hay tres coches.", "There are three cars.", "There is three cars."],
+          ["Había mucha gente.", "There were a lot of people.", "It had a lot of people."],
+          ["No hay tiempo.", "There isn't any time.", "It hasn't time."],
+          ["¿Hay algún problema?", "Is there a problem?", "Has it a problem?"],
+        ],
+      },
+      {
         t: "formula",
         parts: ["There is", "singular / incontable"],
         example: "There is a problem with the car.",
@@ -2270,6 +2332,10 @@ export const LESSONS = [
       { q: "¿Cómo se dice «Hay un problema»?", options: ["It has a problem", "There is a problem", "Have a problem"], answer: 1, why: "«Hay» es there is, nunca have." },
       { q: "«___ a table and six chairs in the room.»", options: ["There are", "There is", "There have"], answer: 1, why: "Concuerda con lo primero de la lista: «a table», singular." },
       { q: "«___ been three complaints this week.»", options: ["There has", "There have", "There is"], answer: 1, why: "«three complaints» es plural → there have been." },
+      { q: "«There is» significa literalmente…", options: ["ello tiene", "ahí está", "es allí"], answer: 1, why: "Literalmente «ahí está»; nada que ver con tener." },
+      { q: "«Había mucha gente» es…", options: ["It had a lot of people", "There were a lot of people", "There was a lot of people"], answer: 1, why: "«people» es plural en inglés, así que en pasado va «were»." },
+      { q: "«¿Hay algún problema?» es…", options: ["Has it a problem?", "Is there a problem?", "There is a problem?"], answer: 1, why: "Para preguntar se invierte: Is there…?" },
+      { q: "¿Por qué muchos hispanohablantes dicen «it has» para «hay»?", options: ["Porque en inglés también vale", "Porque en catalán, francés e italiano se usa un verbo de posesión", "Porque es más formal"], answer: 1, why: "hi ha, il y a, c'è… pero el inglés no funciona así." },
     ],
   },
 
