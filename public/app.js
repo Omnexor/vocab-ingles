@@ -14,12 +14,20 @@ import { conGuiones } from "./silabas.js";
  * ------------------------------------------------------------------ */
 
 const KEY = "vocab-ingles:v1";
-// Intervalos de repaso espaciado, en días. El índice es la "caja" de la palabra.
-const INTERVALOS = [0, 1, 3, 7, 16, 35, 90];
+/**
+ * Intervalos de repaso espaciado, en días. El índice es la "caja" de la palabra.
+ *
+ * La cola llega hasta el año a propósito. Antes se paraba en 90 días, y eso
+ * significa que una palabra que te sabes perfectamente vuelve cuatro veces al
+ * año para siempre: con mil palabras dominadas son once repasos diarios solo
+ * de cosas que ya sabes. Alargando el final, lo dominado casi no molesta y el
+ * hueco queda para lo que de verdad se te resiste.
+ */
+const INTERVALOS = [0, 1, 3, 7, 16, 35, 90, 180, 365];
 
 const defaults = () => ({
   version: 1,
-  settings: { level: "intermedio", daily: 5, topic: "", category: "mixto", tapar: false, tema: "auto" },
+  settings: { level: "intermedio", daily: 5, topic: "", category: "mixto", tapar: false, tema: "auto", maxRepaso: 25 },
   stats: { streak: 0, best: 0, lastStudy: null },
   daily: { date: null, ids: [], done: 0 },
   words: [],
@@ -78,7 +86,66 @@ const diffDays = (a, b) => Math.round((new Date(a) - new Date(b)) / 86400000);
 
 const knownWords = () => store.words.map((w) => w.en);
 const byId = (id) => store.words.find((w) => w.id === id);
+/** Todo lo vencido, sin tope. Sirve para saber cuánto hay de verdad. */
 const dueWords = () => store.words.filter((w) => w.due <= todayStr());
+
+/** El tope de la sesión. 0 = sin límite. */
+const topeRepaso = () => store.settings.maxRepaso || Infinity;
+
+/**
+ * Qué palabra va antes.
+ *
+ * Manda la dificultad —las que más te cuestan, primero— pero contando también
+ * cuántos días lleva vencida. Si solo mandara la dificultad, las que ya te
+ * sabes no volverían NUNCA una vez hay más palabras que hueco: se quedarían
+ * pudriéndose al final de la cola hasta que las olvidaras del todo.
+ *
+ *   recién fallada (caja 0, 3 fallos, vence hoy):  0 + 6 + 8 = 14
+ *   dominada (caja 8) que vence hoy:               0 + 0 + 0 = 0   → la última
+ *   esa misma, 20 días después:                   20 + 0 + 0 = 20  → la primera
+ *
+ * Los fallos cuentan como mucho cinco. Sin ese techo, una palabra que llevas
+ * fallada cincuenta veces sumaría cien y se pondría delante de TODO para
+ * siempre, dejando muertas a las demás. Con el techo, lo que más puede pesar la
+ * dificultad son 18 puntos, así que cualquier palabra pasa a la cabeza en
+ * cuanto lleva 19 días vencida. Nada se queda atrás indefinidamente.
+ */
+const TOPE_FALLOS = 5;
+function prioridad(w) {
+  const diasVencida = Math.max(0, diffDays(todayStr(), w.due));
+  return diasVencida + Math.min(w.lapses || 0, TOPE_FALLOS) * 2 + (INTERVALOS.length - 1 - w.box);
+}
+
+/**
+ * La cola de hoy: lo vencido, ordenado por prioridad y CORTADO por el tope.
+ *
+ * Sin tope, el repaso crece con el vocabulario y no para: al día 100 te
+ * plantaba cincuenta palabras y al año más de doscientas. Con tope, la sesión
+ * dura siempre lo mismo y lo que no entra hoy sube de prioridad para mañana,
+ * porque llevar días vencida puntúa.
+ */
+function colaDeHoy() {
+  return dueWords()
+    .sort((a, b) => prioridad(b) - prioridad(a))
+    .slice(0, topeRepaso());
+}
+
+/**
+ * Cuántas palabras nuevas caben hoy.
+ *
+ * El tope es el presupuesto del día: primero se paga el repaso, que es lo que
+ * ya has aprendido y se te va a olvidar, y lo que sobra se gasta en aprender.
+ * Si hoy vencen 18 y el tope son 25, entran 5 nuevas (o las que pidas). Si
+ * vencen 25, hoy no entra ninguna y mañana probablemente sí.
+ *
+ * Esto es lo que impide que la bola de nieve crezca: sin ello, un tope a secas
+ * solo aplaza la deuda y la sesión acaba siendo un muro igual.
+ */
+function huecoParaNuevas() {
+  const tope = topeRepaso();
+  if (tope === Infinity) return store.settings.daily;
+  return Math.max(0, Math.min(store.settings.daily, tope - dueWords().length));
+}
 const learnedWords = () => store.words.filter((w) => w.box >= 4);
 
 function addWord(raw) {
@@ -272,7 +339,17 @@ async function ensureDailyBatch() {
     return { words: store.daily.ids.map(byId).filter(Boolean), source: "cache" };
   }
 
-  const { words: incoming, source } = await obtenerPalabras(store.settings.daily);
+  // El tope del día es un presupuesto: primero el repaso, y solo lo que sobre
+  // se gasta en palabras nuevas. Si hoy no cabe ninguna, hoy toca ponerse al
+  // día, que es justo lo que evita la bola de nieve.
+  const cuantas = huecoParaNuevas();
+  if (!cuantas) {
+    store.daily = { date: t, ids: [], done: store.daily.date === t ? store.daily.done || 0 : 0 };
+    save();
+    return { words: [], source: "sin-hueco" };
+  }
+
+  const { words: incoming, source } = await obtenerPalabras(cuantas);
   const added = incoming.map(addWord).filter(Boolean);
   store.daily = { date: t, ids: added.map((w) => w.id), done: 0 };
   registerStudyDay();
@@ -470,8 +547,24 @@ async function renderHoy() {
   const { words, source } = await ensureDailyBatch();
 
   if (!words.length) {
-    cards.innerHTML = `<div class="empty"><span class="big">🎉</span>Ya has visto todas las palabras disponibles.<br />Configura la API para recibir palabras nuevas.</div>`;
-    sub.textContent = "";
+    // Dos motivos muy distintos para no tener palabras nuevas hoy, y hay que
+    // decir cuál es: agotar el banco no tiene nada que ver con ir atrasado.
+    const pendientes = dueWords().length;
+    cards.innerHTML =
+      source === "sin-hueco"
+        ? `<div class="empty">
+             <span class="big">⏳</span>
+             Hoy no tocan palabras nuevas: tienes <b>${pendientes}</b> por repasar
+             y el tope del día son <b>${store.settings.maxRepaso}</b>.
+             <br />Ponte al día y mañana vuelven a entrar.
+           </div>
+           <p class="hint-line">
+             Es a propósito: si entraran igual, el repaso crecería sin parar
+             hasta hacerse imposible. Puedes subir el tope en Ajustes.
+           </p>`
+        : `<div class="empty"><span class="big">🎉</span>Ya has visto todas las palabras disponibles.<br />Configura la API para recibir palabras nuevas.</div>`;
+    sub.textContent = source === "sin-hueco" ? "Primero el repaso" : "";
+    actions.innerHTML = "";
     return;
   }
 
@@ -564,6 +657,7 @@ async function addMoreWords() {
 
 let queue = [];
 let queueTotal = 0;
+let aplazadas = 0; // vencidas que no caben hoy: van las primeras mañana
 let repaso = null; // pregunta en curso: { escribir, opciones, resuelto, acertada… }
 let repasoExtra = false; // vuelta voluntaria: no toca las fechas de repaso
 
@@ -643,11 +737,16 @@ function renderRepaso(restart = true) {
     // Las que se te resisten van primero: son las que menos veces has visto
     // bien y las que más se benefician de que las pilles con la cabeza fresca,
     // no al final de la sesión cuando ya estás cansado.
-    queue = dueWords()
-      .sort(() => Math.random() - 0.5)
-      .sort((a, b) => Number(esDificil(b)) - Number(esDificil(a)))
-      .map((w) => ({ w, dir: w.box > 0 && Math.random() < 0.34 ? "es-en" : "en-es" }));
+    // colaDeHoy() ya viene ordenada por prioridad y cortada por el tope: las
+    // que más te cuestan delante, y nunca más palabras de las que caben en una
+    // sesión. Aquí solo se baraja DENTRO de bloques de misma prioridad, para
+    // que no salga siempre el mismo orden sin romper la prioridad.
+    queue = colaDeHoy()
+      .map((w) => ({ w, r: Math.random() }))
+      .sort((a, b) => prioridad(b.w) - prioridad(a.w) || a.r - b.r)
+      .map(({ w }) => ({ w, dir: w.box > 0 && Math.random() < 0.34 ? "es-en" : "en-es" }));
     queueTotal = queue.length;
+    aplazadas = Math.max(0, dueWords().length - queue.length);
     repaso = null;
   }
 
@@ -701,7 +800,10 @@ function renderRepaso(restart = true) {
   const hechas = queueTotal - queue.length;
   // Escribir siempre va del español al inglés: producir la palabra es lo que cuesta.
   const alReves = repaso.escribir || dir === "es-en";
-  sub.textContent = `${hechas + 1} de ${queueTotal}${repasoExtra ? " · vuelta extra, no cuenta para las fechas" : ""}`;
+  sub.textContent =
+    `${hechas + 1} de ${queueTotal}` +
+    (repasoExtra ? " · vuelta extra, no cuenta para las fechas" : "") +
+    (aplazadas ? ` · ${aplazadas} ${aplazadas === 1 ? "queda" : "quedan"} para mañana` : "");
 
   const progreso = `<div class="quiz-progress"><span style="width:${(hechas / queueTotal) * 100}%"></span></div>`;
 
@@ -1366,7 +1468,12 @@ function penalizar(w) {
       juego.falladas.push({ en: w.en, es: w.es, pron: w.pron });
     }
   }
-  const real = (w.id ? byId(w.id) : store.words.find((x) => x.en === w.en)) || addWord(w);
+  // Si ya es tuya, vuelve al repaso y punto. Si NO lo es, se añade solo si hoy
+  // queda hueco bajo el tope: jugando se fallan muchas, y añadirlas todas es
+  // justo lo que hacía que un día 3 con objetivo de 5 acabara en 68 por
+  // repasar. Fallarla sigue contando en la partida y sale en el resumen.
+  const tuya = w.id ? byId(w.id) : store.words.find((x) => x.en === w.en);
+  const real = tuya || (huecoParaNuevas() > 0 ? addWord(w) : null);
   if (!real) return;
   real.box = 0;
   real.due = todayStr();
@@ -3930,6 +4037,7 @@ function renderAjustes() {
   ).join("");
   $("#set-categoria").value = store.settings.category;
   $("#set-level").value = store.settings.level;
+  $("#set-max-repaso").value = String(store.settings.maxRepaso ?? 25);
   $("#set-daily").value = String(store.settings.daily);
   $("#daily-valor").textContent = store.settings.daily;
   $("#set-topic").value = store.settings.topic || "";
@@ -3988,11 +4096,16 @@ function showView(name) {
  * es lo que convierte dos pestañas sueltas en un hábito.
  */
 function siguientePaso() {
-  const pendientes = dueWords().length;
-  if (pendientes) {
+  // Se anuncia lo que vas a hacer HOY, no todo lo vencido: prometer 68 cuando
+  // la sesión son 25 asusta sin motivo y encima es mentira.
+  const hoy = colaDeHoy().length;
+  const sobran = dueWords().length - hoy;
+  if (hoy) {
     return {
       vista: "repaso",
-      texto: `Repasar <b>${pendientes}</b> ${pendientes === 1 ? "palabra" : "palabras"}`,
+      texto:
+        `Repasar <b>${hoy}</b> ${hoy === 1 ? "palabra" : "palabras"}` +
+        (sobran ? ` <span class="daybar-resto">+${sobran} mañana</span>` : ""),
       cta: "▶",
     };
   }
@@ -4014,7 +4127,9 @@ function siguientePaso() {
 }
 
 function updateChrome() {
-  const pendientes = dueWords().length;
+  // La chapa de la pestaña muestra lo de HOY, no todo lo vencido: es lo que
+  // vas a hacer, y un 68 cuando la sesión son 25 solo agobia.
+  const pendientes = colaDeHoy().length;
   const badge = $("#due-badge");
   badge.textContent = pendientes;
   badge.hidden = pendientes === 0;
@@ -4136,6 +4251,14 @@ $("#set-level").addEventListener("change", (e) => {
   store.settings.level = e.target.value;
   save();
   toast("Nivel actualizado. Se aplica a las palabras de mañana.");
+});
+
+$("#set-max-repaso").addEventListener("change", (e) => {
+  store.settings.maxRepaso = Number(e.target.value);
+  save();
+  updateChrome();
+  const n = store.settings.maxRepaso;
+  toast(n ? `Máximo ${n} palabras por sesión` : "Repaso sin límite: cuidado, puede crecer mucho");
 });
 
 $("#set-categoria").addEventListener("change", (e) => {
