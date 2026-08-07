@@ -129,6 +129,10 @@ export const LESSONS = [
       { q: "«have» se escribe…", options: ["hav", "jav", "av"], answer: 1, why: "La h española es muda, así que se usa j (suave)." },
       { q: "«what» se escribe…", options: ["guát", "uót", "juát"], answer: 1, why: "La w inglesa se representa con u." },
       { q: "¿Qué significa la tilde en «míiting»?", options: ["Que se alarga la i", "Dónde va el golpe de voz", "Que es plural"], answer: 1, why: "La tilde marca la sílaba tónica; la vocal larga se marca repitiendo la letra." },
+      { q: "¿Por qué esta app no usa el alfabeto fonético (IPA)?", options: ["Porque es menos preciso","Porque hay que estudiarlo aparte y aquí lees en español directamente","Porque no cabe en pantalla"], answer: 1, why: "El objetivo es que puedas leer la pronunciación sin aprender un sistema nuevo." },
+      { q: "La «j» de estas pronunciaciones suena como…", options: ["la j española de «jamón»","una h aspirada suave","una y"], answer: 0, why: "Se usa la j española porque el sonido inglés /h/ se le parece lo bastante." },
+      { q: "¿Por qué nunca verás una «h» en estas pronunciaciones?", options: ["Por economía de letras","Porque la h española es muda y no diría nada","Porque el inglés no tiene ese sonido"], answer: 1, why: "Si la h es muda en español, escribirla sería no escribir nada." },
+      { q: "«uó-rer» (water) lleva una r en medio porque…", options: ["es un error","la t entre vocales suena como una r suave en inglés americano","la palabra lleva dos erres"], answer: 1, why: "Es la T americana: water, better, city suenan con una erre suave." },
     ],
   },
 
@@ -528,6 +532,10 @@ export const LESSONS = [
       { q: "Completa: «While I ___, the doorbell rang.»", options: ["slept", "was sleeping", "sleep"], answer: 1, why: "«While» pide normalmente el continuo." },
       { q: "¿Cuál es la acción corta?", options: ["I was reading", "the lights went out", "ambas"], answer: 1, why: "«The lights went out» interrumpe; va en pasado simple." },
       { q: "«___ you waiting for me?»", options: ["Was", "Were", "Did"], answer: 1, why: "Con «you» siempre «were», también en singular." },
+      { q: "«was / were + -ing» equivale en español a…", options: ["estaba + -ando/-iendo","he estado + -ando","estaría + -ando"], answer: 0, why: "I was working = estaba trabajando." },
+      { q: "«Estábamos comiendo» es…", options: ["We was eating","We were eating","We are eating"], answer: 1, why: "Con we, you y they siempre «were»." },
+      { q: "En «Mientras cocinaba, sonó el teléfono», ¿cuál va en continuo?", options: ["cocinaba","sonó","las dos"], answer: 0, why: "La acción larga va en continuo; la corta que la interrumpe, en pasado simple." },
+      { q: "«¿Qué estabas haciendo?» es…", options: ["What did you do?","What were you doing?","What was you doing?"], answer: 1, why: "Con «you» siempre were, también en singular." },
     ],
   },
 
@@ -1388,6 +1396,10 @@ export const LESSONS = [
       { q: "«Useless» significa…", options: ["muy útil", "inútil", "usado"], answer: 1, why: "-less significa «sin»: sin uso, inútil." },
       { q: "«He plays the guitar ___.»", options: ["good", "well", "goodly"], answer: 1, why: "Los verbos llevan adverbio: «well», no «good»." },
       { q: "¿Cuál NO es un adverbio?", options: ["quickly", "friendly", "slowly"], answer: 1, why: "«Friendly» acaba en -ly pero es adjetivo (simpático)." },
+      { q: "«Unhappy» significa…", options: ["muy feliz","no feliz","antes feliz"], answer: 1, why: "El prefijo «un-» niega: happy → unhappy." },
+      { q: "Para decir «volver a hacer algo» el prefijo es…", options: ["un-","re-","mis-"], answer: 1, why: "«Re-» es «otra vez»: redo, rewrite, reread." },
+      { q: "«Careless» significa…", options: ["con cuidado","sin cuidado","más cuidado"], answer: 1, why: "«-less» es «sin»: careless, useless, homeless." },
+      { q: "Si te sabes las piezas, ¿qué ganas?", options: ["Pronunciar mejor","Entender palabras que nunca has estudiado","Escribir más rápido"], answer: 1, why: "Reconocer prefijos y sufijos multiplica lo que entiendes sin memorizar." },
     ],
   },
 
@@ -1682,6 +1694,10 @@ export const LESSONS = [
       { q: "«She's been working here ___ 2020.»", options: ["for", "since", "during"], answer: 1, why: "Since + punto de inicio, igual que en present perfect simple." },
       { q: "¿Cuál está mal?", options: ["I've been knowing him for years.", "I've known him for years.", "I've been living here for years."], answer: 0, why: "Know es verbo de estado: nunca en forma continua." },
       { q: "«Why are you out of breath? — ___»", options: ["I run.", "I've been running.", "I am running since an hour."], answer: 1, why: "Explica una acción reciente cuyo efecto se nota ahora, sin aliento." },
+      { q: "«have been + -ing» equivale a…", options: ["llevo + -ando","había + participio","estaría + -ando"], answer: 0, why: "I have been working = llevo trabajando." },
+      { q: "«Llevo dos horas esperando» es…", options: ["I wait for two hours","I have been waiting for two hours","I am waiting for two hours"], answer: 1, why: "«Llevar + tiempo + gerundio» es el present perfect continuo." },
+      { q: "La diferencia con el present perfect normal es que el continuo insiste en…", options: ["el resultado","la duración y que sigue","el pasado lejano"], answer: 1, why: "«I've read it» (resultado) frente a «I've been reading it» (llevo un rato y sigo)." },
+      { q: "«Estoy sin aliento porque he estado corriendo» usa el continuo porque…", options: ["es más formal","explica una actividad reciente que deja huella ahora","es obligatorio con «because»"], answer: 1, why: "El continuo conecta la actividad con el efecto visible en el presente." },
     ],
   },
 
@@ -1835,6 +1851,10 @@ export const LESSONS = [
       { q: "\"I can swim.\" → He said…", options: ["he can swim.", "he could swim.", "he cans swim."], answer: 1, why: "Can → could." },
       { q: "Say vs tell: ¿cuál lleva a la persona justo detrás?", options: ["say", "tell", "las dos igual"], answer: 1, why: "«Tell someone» (tell me, tell her); «say» no lleva a la persona directamente (say to me)." },
       { q: "\"I am working today.\" → He said…", options: ["he was working today.", "he was working that day.", "he is working that day."], answer: 1, why: "Presente → pasado, y today → that day." },
+      { q: "En estilo indirecto, el presente pasa a…", options: ["futuro", "pasado", "no cambia"], answer: 1, why: "«I live» → he lived. Todo retrocede un tiempo." },
+      { q: "«Will» en estilo indirecto pasa a…", options: ["would", "will", "shall"], answer: 0, why: "Y ahí vuelve a salir el -ía: dijo que vendría = he said he would come." },
+      { q: "«Can» en estilo indirecto pasa a…", options: ["can", "could", "may"], answer: 1, why: "He said he could swim: otra vez el retroceso de un tiempo." },
+      { q: "«Tomorrow» en estilo indirecto suele pasar a…", options: ["tomorrow", "the next day", "that day"], answer: 1, why: "Los marcadores de tiempo también se desplazan." },
     ],
   },
 
@@ -2678,6 +2698,10 @@ export const LESSONS = [
       { q: "«She is very good ___ drawing.»", options: ["in", "on", "at"], answer: 2, why: "good at + actividad." },
       { q: "«We arrived ___ the airport at six.»", options: ["to", "at", "in"], answer: 1, why: "arrive at con lugares concretos; arrive in con ciudades. Nunca «arrive to»." },
       { q: "«Are you interested ___ the job?»", options: ["for", "in", "on"], answer: 1, why: "interested in, fijo." },
+      { q: "«Depender de» es…", options: ["depend of","depend on","depend from"], answer: 1, why: "La preposición no se traduce literalmente: depend ON." },
+      { q: "«Pensar en algo» es…", options: ["think in","think about","think on"], answer: 1, why: "«Think about», nunca «think in», que es el calco directo del español." },
+      { q: "«Llegar a Madrid» es…", options: ["arrive to Madrid","arrive in Madrid","arrive at Madrid"], answer: 1, why: "Nunca «arrive to». Ciudades y países con «in»; sitios concretos con «at»." },
+      { q: "¿Por qué fallan tanto estas preposiciones?", options: ["Porque son irregulares","Porque cada idioma elige la suya sin lógica común","Porque cambian con el tiempo"], answer: 1, why: "Hay que aprenderse el verbo Y su preposición como una sola pieza." },
     ],
   },
 
@@ -2839,6 +2863,10 @@ export const LESSONS = [
       { q: "¿Cómo suena «wanted»?", options: ["uónt", "uónted", "uónd"], answer: 1, why: "Acaba en T → -ed añade sílaba: «id»." },
       { q: "¿Cuántas sílabas tiene «stopped»?", options: ["una", "dos", "tres"], answer: 0, why: "«stopt»: -ed no añade sílaba salvo tras T o D." },
       { q: "¿Cuál añade sílaba al pasado?", options: ["watched", "decided", "loved"], answer: 1, why: "«decide» acaba en D → decided suena «disáided», con sílaba nueva." },
+      { q: "«Worked» se pronuncia…", options: ["uór-ked, dos sílabas","uerkt, una sílaba","uór-kid"], answer: 1, why: "La -ed solo suena como sílaba aparte tras t o d." },
+      { q: "¿Tras qué sonidos la -ed añade una sílaba entera?", options: ["tras t y d","tras k y p","tras s y sh"], answer: 0, why: "wanted, needed, started: ahí sí se oye «-id»." },
+      { q: "«Played» tiene…", options: ["una sílaba","dos sílabas","tres sílabas"], answer: 0, why: "Pléid: la -ed se pega y no suena aparte." },
+      { q: "El error típico del español con la -ed es…", options: ["pronunciarla siempre como sílaba","no pronunciarla nunca","cambiarla por -id"], answer: 0, why: "Decir «uór-ked» en vez de «uerkt» delata enseguida." },
     ],
   },
 
@@ -2892,6 +2920,10 @@ export const LESSONS = [
       { q: "¿Dónde va el acento en «hotel»?", options: ["HOtel", "hoTEL", "da igual"], answer: 1, why: "hoTEL, en la segunda. En español lo diríamos al revés." },
       { q: "¿Y en «airport»?", options: ["AIRport", "airPORT", "las dos"], answer: 0, why: "En las palabras compuestas manda la primera parte." },
       { q: "¿Por qué importa el acento?", options: ["Por elegancia", "Porque sin él pueden no entenderte", "Solo importa en exámenes"], answer: 1, why: "Un acento mal puesto rompe la palabra para el oído nativo, más que un sonido regular." },
+      { q: "En español el acento casi siempre cae en…", options: ["la última o la penúltima sílaba","la primera siempre","donde quieras"], answer: 0, why: "Por eso desplazamos el acento inglés sin darnos cuenta." },
+      { q: "«Hotel» en inglés lleva el acento en…", options: ["HO-tel","ho-TEL","las dos valen"], answer: 1, why: "Igual que en español, pero muchas palabras no coinciden." },
+      { q: "En las palabras compuestas (airport, bedroom) manda…", options: ["la primera parte","la segunda parte","ninguna"], answer: 0, why: "AIRport, BEDroom: el golpe va delante." },
+      { q: "Un acento mal puesto…", options: ["se entiende igual","puede hacer que no te entiendan aunque los sonidos estén bien","solo importa por escrito"], answer: 1, why: "El oído nativo reconoce las palabras por su ritmo antes que por sus sonidos." },
     ],
   },
   {
@@ -3100,6 +3132,10 @@ export const LESSONS = [
       { q: "«I will ___ tomorrow.»", options: ["working", "worked", "work"], answer: 2, why: "Tras will, infinitivo sin «to»." },
       { q: "¿Cuántas formas distintas tiene un verbo regular en inglés?", options: ["cinco", "doce", "más de veinte"], answer: 0, why: "work, works, working, worked, worked. El resto lo montan los auxiliares." },
       { q: "«She ___ been waiting.»", options: ["have", "has", "is"], answer: 1, why: "Tercera persona: has. Y «been» es el participio de be." },
+      { q: "¿Cuántas formas del verbo hacen falta para montar todos los tiempos?", options: ["Una","Cinco: base, -s, -ing, pasado y participio","Doce"], answer: 1, why: "De esas cinco piezas sale toda la conjugación inglesa." },
+      { q: "El auxiliar de los tiempos continuos es…", options: ["have","be","do"], answer: 1, why: "Be + -ing: am working, was working, will be working." },
+      { q: "El auxiliar de los tiempos perfectos es…", options: ["be","have","will"], answer: 1, why: "Have + participio: have finished, had finished, will have finished." },
+      { q: "Si juntas los dos (perfecto y continuo) sale…", options: ["have been + -ing","be have + -ing","have being"], answer: 0, why: "I have been working: primero el perfecto, luego el continuo." },
     ],
   },
   {
@@ -3156,6 +3192,10 @@ export const LESSONS = [
       { q: "¿Cuáles riman entre sí?", options: ["though y through", "though y dough", "tough y though"], answer: 1, why: "Las dos son «dóu». Through es «zruu» y tough es «taf»." },
       { q: "«thought» lleva la th…", options: ["sorda, con z", "sonora, con d", "muda"], answer: 0, why: "No vibra: zot. La sonora es la de though, dóu." },
       { q: "«throughout» suena…", options: ["zró-aut", "zru-áut", "zrau-t"], answer: 1, why: "Es through + out pegados: zru-áut, con la fuerza en áut." },
+      { q: "La familia -ough es difícil porque…", options: ["se pronuncia siempre igual","las mismas cuatro letras suenan de varias maneras","no existe en americano"], answer: 1, why: "Though, through, tough, thought: mismas letras, sonidos distintos." },
+      { q: "«Tough» rima con…", options: ["go","stuff","true"], answer: 1, why: "Taf: suena como «stuff»." },
+      { q: "«Though» suena…", options: ["dóu","zruu","taf"], answer: 0, why: "Rima con «go»." },
+      { q: "¿Cuál es la única salida con esta familia?", options: ["Deducirlas por la escritura","Aprenderse cada palabra por separado","Evitarlas"], answer: 1, why: "No hay regla: la escritura no predice el sonido." },
     ],
   },
   {
@@ -3415,7 +3455,11 @@ export const LESSONS = [
         ],
         "answer": 0,
         "why": "Frase normal: sujeto (it) y verbo conjugado (opens)."
-      }
+      },
+      { q: "En una pregunta indirecta, el orden vuelve a ser…", options: ["auxiliar + sujeto + verbo","sujeto + verbo, como una frase normal","verbo + sujeto"], answer: 1, why: "«Do you know where the bank IS», no «where is the bank»." },
+      { q: "«¿Sabes dónde está el banco?» es…", options: ["Do you know where is the bank?","Do you know where the bank is?","Do you know where the bank?"], answer: 1, why: "Dentro de otra frase no se invierte." },
+      { q: "¿Por qué se falla tanto?", options: ["Porque en español también se invierte y lo arrastramos","Porque es una excepción rara","Porque cambia según el país"], answer: 0, why: "Decimos «¿sabes dónde está el banco?» con el verbo delante y lo copiamos." },
+      { q: "En preguntas indirectas de sí/no se usa…", options: ["that","if / whether","what"], answer: 1, why: "«I wonder if he's coming»." },
     ]
   },
   {
@@ -3735,7 +3779,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Duración hasta un punto futuro: will have been + -ing."
-      }
+      },
+      { q: "«will have + participio» equivale a…", options: ["habré terminado","estaré terminando","terminaría"], answer: 0, why: "Futuro perfecto: para el viernes habré terminado." },
+      { q: "«will be + -ing» equivale a…", options: ["habré trabajado","estaré trabajando","trabajaría"], answer: 1, why: "Futuro continuo: mañana a las diez estaré trabajando." },
+      { q: "«Para el viernes habré acabado» es…", options: ["By Friday I will finish","By Friday I will have finished","By Friday I am finishing"], answer: 1, why: "Acción terminada ANTES de un momento futuro: will have + participio." },
+      { q: "«A esta hora mañana estaré volando» es…", options: ["This time tomorrow I will fly","This time tomorrow I will be flying","This time tomorrow I fly"], answer: 1, why: "En marcha en un momento concreto del futuro: will be + -ing." },
     ]
   },
   {
@@ -4172,7 +4220,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Es frecuencia baja, no rareza."
-      }
+      },
+      { q: "Los adverbios de frecuencia van…", options: ["al final de la frase","entre el sujeto y el verbo","delante del sujeto"], answer: 1, why: "I always go, she never eats." },
+      { q: "Con el verbo «to be», el adverbio va…", options: ["delante de is/are","detrás de is/are","al final"], answer: 1, why: "«I am always late», no «I always am late»." },
+      { q: "«Voy siempre al gimnasio» es…", options: ["I go always to the gym","I always go to the gym","Always I go to the gym"], answer: 1, why: "Entre el sujeto y el verbo principal." },
+      { q: "Con un auxiliar (have, can, will), el adverbio va…", options: ["delante del auxiliar","entre el auxiliar y el verbo","al final"], answer: 1, why: "«I have never been there», «I can never remember»." },
     ]
   },
   {
@@ -4300,7 +4352,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Very solo intensifica; too dice que se pasa de la raya."
-      }
+      },
+      { q: "«Demasiado caro» es…", options: ["very expensive","too expensive","so expensive"], answer: 1, why: "«Too» tiene sentido negativo: pasa del límite." },
+      { q: "«Muy caro» es…", options: ["too expensive","very expensive","such expensive"], answer: 1, why: "«Very» solo intensifica, sin juzgar." },
+      { q: "«Lo bastante mayor» es…", options: ["enough old","old enough","too old"], answer: 1, why: "«Enough» va DETRÁS del adjetivo, al revés que en español." },
+      { q: "«Such» se usa con…", options: ["adjetivo solo","sustantivo (con o sin adjetivo)","verbos"], answer: 1, why: "«Such a good movie» frente a «so good»." },
     ]
   },
   {
@@ -4693,7 +4749,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Producirlo tú es lo que te enseña a reconocerlo."
-      }
+      },
+      { q: "¿Por qué no entiendes lo que oyes aunque sepas las palabras?", options: ["Hablan demasiado rápido","Porque las palabras se enlazan y suenan como una sola","Porque usan palabras raras"], answer: 1, why: "«What are you doing» suena «uó-ra-yu-dú-ing»." },
+      { q: "«Want to» en habla rápida suena…", options: ["uónt tu","uá-na","uón-tu"], answer: 1, why: "Wanna. Igual que «going to» → gonna." },
+      { q: "Cuando una palabra acaba en consonante y la siguiente empieza por vocal…", options: ["se separan más","se enlazan","desaparece la consonante"], answer: 1, why: "«An apple» suena «a-ná-pol»." },
+      { q: "¿Qué conviene entrenar además del vocabulario?", options: ["Solo leer","Escuchar mucho para acostumbrar el oído al enlace","Escribir a mano"], answer: 1, why: "El enlace solo se domina oyéndolo, no estudiándolo." },
     ]
   },
 ];
