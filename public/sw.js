@@ -29,11 +29,11 @@
  * rompe igual. Esto no se confía a la memoria — revision-final.mjs guarda una
  * huella de todos y da error si cambian sin subir VERSION.
  */
-const VERSION = 11;
+const VERSION = 12;
 const CACHE = `vocab-v${VERSION}`;
 // Huella de los archivos de BASICOS con esta VERSION. La calcula el script de
 // revisión; si no cuadra, es que algo cambió y la versión se quedó atrás.
-const SELLO = "75dbb41cb79d9e73";
+const SELLO = "c453ee79244af21d";
 
 // El núcleo se refresca junto: son los archivos que se rompen si no encajan
 // entre sí. El resto (lecturas, cuentos…) puede envejecer sin romper nada.

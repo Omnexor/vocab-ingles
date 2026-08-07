@@ -558,22 +558,40 @@ export const LESSONS = [
         text: "Los modales (can, could, must, should, may, might, would) son especiales: nunca llevan -s, nunca llevan «to» detrás, y no necesitan «do» para negar o preguntar.",
       },
       {
+        t: "p",
+        text: "En español un solo verbo, «deber», hace de todo: obligación («debes irte»), consejo («deberías descansar») e incluso conjetura («debe de ser tarde»). El inglés reparte eso en piezas que no se pueden intercambiar: poner «must» donde tocaba «should» suena a orden; poner «should» donde tocaba «must» hace que algo obligatorio parezca opcional. Aprender los modales es sobre todo aprender ESE reparto.",
+      },
+      {
         t: "formula",
         parts: ["Sujeto", "modal", "verbo base"],
         example: "She can speak three languages.",
       },
       {
         t: "table",
-        head: ["Modal", "Significado", "Ejemplo"],
+        head: ["Modal", "Qué expresa exactamente", "Ejemplo"],
         rows: [
-          ["can", "poder / saber hacer", "I can swim."],
-          ["could", "podría / pasado de can / petición educada", "Could you help me?"],
-          ["must", "obligación fuerte o deducción segura", "You must be tired."],
-          ["have to", "obligación externa (norma, regla)", "I have to wear a uniform."],
-          ["should", "consejo, recomendación", "You should see a doctor."],
-          ["may", "permiso formal o posibilidad", "May I come in?"],
-          ["might", "posibilidad más floja", "It might rain later."],
-          ["would", "condicional, ofrecimientos", "I would love to come."],
+          ["can", "capacidad o permiso informal: «puedo / sé»", "I can swim."],
+          ["could", "capacidad en pasado, o petición educada", "Could you help me?"],
+          ["must", "obligación que te impones tú, o certeza casi total", "You must be tired."],
+          ["have to", "obligación que viene de fuera: norma, ley, horario", "I have to wear a uniform."],
+          ["should", "consejo o recomendación, sin obligar", "You should see a doctor."],
+          ["may", "permiso formal, o posibilidad moderada", "May I come in?"],
+          ["might", "posibilidad floja, menos segura que may", "It might rain later."],
+          ["would", "condicional, ofrecimientos, cortesía", "I would love to come."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "«Must» hace el trabajo de dos verbos españoles que no tienen nada que ver entre sí. Cuando es obligación, must = «debo / tengo que» (I must call her = Debo llamarla). Cuando es una certeza casi segura sobre algo que no has comprobado, must = «debe DE» (She must be home = Debe de estar en casa: estás casi seguro, no se lo estás mandando a nadie). Es el mismo lío que hay en español entre «debes venir» y «debe de haber salido»: el inglés usa la MISMA palabra para las dos cosas, así que solo el contexto las distingue.",
+      },
+      {
+        t: "table",
+        head: ["Frase con must", "Sentido", "Cómo lo sabes"],
+        rows: [
+          ["You must wear a helmet.", "obligación — tienes que", "Habla de una norma, no de una suposición."],
+          ["She must be tired.", "deducción — debe de estar", "Nadie manda cómo se siente ella: es una conclusión."],
+          ["He must know the answer.", "deducción — seguro que sabe", "No es una orden, es algo que deduces de los datos."],
+          ["You must finish this by Friday.", "obligación — tienes que", "Hay una fecha límite real de por medio."],
         ],
       },
       {
@@ -583,8 +601,12 @@ export const LESSONS = [
         why: "Después de un modal va el verbo desnudo: sin «to» y sin «-s», da igual la persona.",
       },
       {
+        t: "p",
+        text: "Escala de fuerza, de más exigente a más suave: MUST y HAVE TO mandan (obligatorio), SHOULD aconseja (recomendable, pero se puede ignorar), MAY / MIGHT / COULD abren posibilidad (quizá). Si dudas entre dos modales, pregúntate cuánta fuerza le quieres dar a la frase: «you should call her» es un consejo que puede no seguir; «you must call her» casi no le deja opción.",
+      },
+      {
         t: "tip",
-        text: "must vs have to: «must» sale de ti (I must stop smoking), «have to» viene de fuera (I have to clock in at nine). Y ojo: «mustn't» es prohibición, «don't have to» es que no hace falta.",
+        text: "must vs have to, en corto: MUST sale de ti, HAVE TO viene de fuera. Y sus negativos NO son intercambiables: «mustn't» prohíbe, «don't have to» libera. El detalle completo, con más ejercicios, está en la lección «must, have to y should».",
       },
       {
         t: "examples",
@@ -592,6 +614,9 @@ export const LESSONS = [
           { en: "You mustn't park here.", pron: "yu má-sent park jier", es: "No debes aparcar aquí (prohibido)." },
           { en: "You don't have to park here.", pron: "yu dount jav tu park jier", es: "No hace falta que aparques aquí." },
           { en: "Could you say that again, please?", pron: "cud yu séi dat a-guén plíis", es: "¿Podría repetirlo, por favor?" },
+          { en: "She isn't answering. She must be busy.", pron: "shi í-sent án-se-ring. shi mast bi bí-si.", es: "No contesta. Debe de estar ocupada." },
+          { en: "You must wear a seatbelt in this car.", pron: "yu mast uér a síit-belt in dis kar.", es: "Tienes que llevar el cinturón en este coche." },
+          { en: "I might come to the party, I'm not sure yet.", pron: "ai máit kam tu de pár-ti, aim not shur yet.", es: "Puede que vaya a la fiesta, todavía no lo sé." },
         ],
       },
     ],
@@ -601,6 +626,14 @@ export const LESSONS = [
       { q: "Consejo: «You ___ take an umbrella.»", options: ["should", "must", "can"], answer: 0, why: "«Should» es la forma normal de aconsejar." },
       { q: "Petición educada:", options: ["Can you pass the salt?", "Could you pass the salt?", "Las dos, pero la 2ª es más educada"], answer: 2, why: "«Could» suena más cortés que «can», aunque ambas funcionan." },
       { q: "«It ___ rain, but I'm not sure.»", options: ["must", "might", "has to"], answer: 1, why: "«Might» expresa posibilidad no segura." },
+      { q: "«She's not picking up the phone. She ___ be in a meeting.» (lo deduces)", options: ["must", "should", "can"], answer: 0, why: "Es una conclusión sobre algo que no ves: must de deducción, «debe de»." },
+      { q: "«You ___ show your ID at the door. It's the rule.» (norma real)", options: ["might", "must", "could"], answer: 1, why: "Norma real, no suposición: must de obligación, «tienes que»." },
+      { q: "«He must be at least 40.» ¿Es obligación o deducción?", options: ["Obligación: tiene que", "Deducción: debe de tener", "Da igual, es lo mismo"], answer: 1, why: "Hablas de una edad que calculas, no que le impones a nadie: es «debe de»." },
+      { q: "¿Cuál de los dos pide más?", options: ["must exige más que should", "should exige más que must", "exigen lo mismo"], answer: 0, why: "«Should» es un consejo que puedes ignorar; «must» casi no deja opción." },
+      { q: "«Mustn't» y «don't have to», ¿significan lo mismo?", options: ["Sí, las dos son «no hace falta»", "No: mustn't prohíbe, don't have to libera", "Las dos prohíben"], answer: 1, why: "Son opuestos, y es el error más caro de los modales." },
+      { q: "¿Cuál suena MENOS seguro?", options: ["may", "might", "las dos igual"], answer: 1, why: "«Might» es un peldaño más flojo que «may»: la posibilidad es más remota." },
+      { q: "«I would love to come» expresa…", options: ["una orden", "un ofrecimiento educado o un deseo", "una prohibición"], answer: 1, why: "«Would» aquí suaviza y muestra disposición, no manda nada." },
+      { q: "«___ I come in?» (pidiendo permiso formal)", options: ["Must", "May", "Should"], answer: 1, why: "Para permiso formal, el modal es «may»." },
     ],
   },
 
@@ -2381,11 +2414,11 @@ export const LESSONS = [
     id: "modales-obligacion",
     title: "must, have to y should: los tres «deber»",
     tag: "Modales",
-    goal: "Distinguir obligación, norma externa y consejo.",
+    goal: "Distinguir obligación, norma externa, consejo y deducción.",
     blocks: [
       {
         t: "p",
-        text: "En español «deber» sirve para todo: «debes parar», «debo trabajar», «deberías descansar». En inglés se reparte en tres, y elegir mal cambia el tono de la frase: puedes sonar mandón sin querer, o quitarle importancia a algo obligatorio.",
+        text: "En español «deber» sirve para todo: «debes parar», «debo trabajar», «deberías descansar», «debe de ser tarde». En inglés se reparte en piezas que no se pueden intercambiar, y elegir mal cambia el tono de la frase: puedes sonar mandón sin querer, o quitarle importancia a algo obligatorio.",
       },
       {
         t: "table",
@@ -2400,6 +2433,18 @@ export const LESSONS = [
         ],
       },
       {
+        t: "p",
+        text: "«Must» tiene dos usos que no tienen nada que ver entre sí: obligación (lo exiges tú, o lo exige una norma) y deducción (estás casi seguro de algo que no has comprobado). En español son dos construcciones distintas — «debes» y «debe DE» — pero el inglés usa la misma palabra para las dos. El resto de esta lección trata sobre todo el uso de OBLIGACIÓN; aquí tienes las dos una al lado de la otra para que no se te mezclen nunca más.",
+      },
+      {
+        t: "table",
+        head: ["Sentido de must", "Se traduce", "Ejemplo"],
+        rows: [
+          ["obligación (tú lo exiges, o una norma)", "debo / tengo que", "I must call her before 6."],
+          ["deducción (casi seguro, sin comprobarlo)", "debe de", "She must be at home, her car is outside."],
+        ],
+      },
+      {
         t: "error",
         wrong: "You mustn't come if you're busy.",
         right: "You don't have to come if you're busy.",
@@ -2407,7 +2452,11 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Truco: MUST sale de dentro (yo lo veo necesario), HAVE TO viene de fuera (lo manda el jefe, la ley, el horario). Y en negativo cambian de significado del todo, no solo de fuerza.",
+        text: "Truco: MUST sale de dentro (yo lo veo necesario), HAVE TO viene de fuera (lo manda el jefe, la ley, el horario). Y en negativo cambian de significado del todo, no solo de fuerza: no lo confundas con una simple diferencia de intensidad.",
+      },
+      {
+        t: "tip",
+        text: "«Should» no es solo consejo: también sirve para una expectativa razonable, algo que se espera que pase aunque no sea seguro al cien por cien. «The package should arrive tomorrow» no es un consejo al paquete, es «se espera que llegue mañana».",
       },
       {
         t: "examples",
@@ -2417,11 +2466,14 @@ export const LESSONS = [
           { en: "You should see a doctor.", pron: "yu shud sii a dók-tor", es: "Deberías ver a un médico." },
           { en: "You mustn't touch that.", pron: "yu má-sent tach dat", es: "No debes tocar eso." },
           { en: "We don't have to hurry.", pron: "ui dóunt jav tu já-ri", es: "No hace falta que nos demos prisa." },
+          { en: "She must be around thirty.", pron: "shi mast bi a-ráund zér-ti", es: "Debe de rondar los treinta." },
+          { en: "The package should arrive tomorrow.", pron: "de pá-kich shud a-ráiv tu-mó-rou", es: "El paquete debería llegar mañana." },
+          { en: "Next year I'll have to pay for my own insurance.", pron: "nekst yier ail jav tu péi for mai óun in-shú-rens", es: "El año que viene tendré que pagar mi propio seguro." },
         ],
       },
       {
         t: "p",
-        text: "En pasado, «must» y «have to» se juntan en uno solo: «had to». No existe «musted». Y para el futuro, «will have to».",
+        text: "En pasado, «must» y «have to» se juntan en uno solo: «had to». No existe «musted». Y para el futuro, «will have to» — must no tiene forma propia en ninguno de los dos tiempos.",
       },
     ],
     quiz: [
@@ -2430,6 +2482,14 @@ export const LESSONS = [
       { q: "«You look ill. You ___ go home.»", options: ["should", "must", "have to"], answer: 0, why: "Es un consejo, no una orden: should." },
       { q: "Pasado de «I must go»:", options: ["I musted go", "I had to go", "I must went"], answer: 1, why: "«Must» no tiene pasado: se usa «had to»." },
       { q: "«You ___ park here, it's forbidden.»", options: ["don't have to", "mustn't", "shouldn't"], answer: 1, why: "Prohibición tajante: mustn't." },
+      { q: "«Look at those dark clouds. It ___ rain soon.» (lo deduces del cielo)", options: ["must", "have to", "should"], answer: 0, why: "Deducción con must: «debe de llover»." },
+      { q: "«All visitors ___ sign in at reception.» (norma del edificio, no algo que tú exijas)", options: ["must", "have to", "should"], answer: 1, why: "Viene de una norma externa, no de ti: have to." },
+      { q: "«She ___ be exhausted after that flight.» (lo deduces)", options: ["has to", "must", "should"], answer: 1, why: "Deducción sobre cómo se sentirá: must, «debe de estar»." },
+      { q: "«Debe de haber mucho tráfico» (presente, no pasado) es…", options: ["There must be a lot of traffic.", "There has to be a lot of traffic.", "There should be a lot of traffic."], answer: 0, why: "Deducción en presente: there must be." },
+      { q: "«The package ___ arrive tomorrow.» (se espera, sin certeza total)", options: ["must", "should", "have to"], answer: 1, why: "«Should» de expectativa, no de consejo: se espera que pase." },
+      { q: "«Next year I ___ pay for my own insurance.» (futuro)", options: ["will must", "will have to", "must"], answer: 1, why: "Must no tiene futuro propio: se usa will have to." },
+      { q: "«You don't have to» significa…", options: ["Está prohibido", "No es necesario, pero puedes si quieres", "Es obligatorio"], answer: 1, why: "Libera de la obligación, no prohíbe nada." },
+      { q: "El opuesto de MUSTN'T (prohibición) es…", options: ["don't have to", "can", "must"], answer: 0, why: "Mustn't prohíbe; don't have to libera. Es el matiz más caro de esta lección." },
     ],
   },
 
@@ -2848,272 +2908,153 @@ export const LESSONS = [
     ]
   },
   {
-    "id": "modales-pasado",
-    "title": "must have, should have, could have",
-    "tag": "Modales",
-    "goal": "Hablar de lo que pudo, debió o debería haber pasado.",
-    "blocks": [
+    id: "modales-pasado",
+    title: "must have, should have, could have",
+    tag: "Modales",
+    goal: "Hablar de lo que pudo, debió o debería haber pasado.",
+    blocks: [
       {
-        "t": "p",
-        "text": "Los modales no tienen pasado propio: para hablar del pasado se les añade «have + participio». La fórmula es siempre la misma y solo cambia el modal de delante, que es el que pone el significado."
+        t: "p",
+        text: "Los modales no tienen pasado propio: para hablar del pasado se les añade «have + participio». La fórmula es siempre la misma y solo cambia el modal de delante, que es el que pone el significado.",
       },
       {
-        "t": "formula",
-        "parts": ["modal","have","participio"],
-      "example": "You should have called me."
+        t: "formula",
+        parts: ["modal", "have", "participio"],
+        example: "You should have called me.",
       },
       {
-        "t": "table",
-        "head": [
-          "Fórmula",
-          "Qué dice",
-          "Español"
+        t: "table",
+        head: ["Fórmula", "Qué dice", "Español"],
+        rows: [
+          ["must have", "deducción: estoy seguro de que pasó", "debe de haber…"],
+          ["can't have", "deducción negativa: es imposible", "no puede haber…"],
+          ["might / may have", "posibilidad: quizá pasó", "puede que haya…"],
+          ["should have", "reproche: lo correcto era hacerlo y no se hizo", "debería haber…"],
+          ["shouldn't have", "reproche al revés: lo hiciste y no debías", "no debería haber…"],
+          ["could have", "era posible y no pasó (o reproche por no ayudar)", "podría haber…"],
         ],
-        "rows": [
-          [
-            "must have",
-            "deducción: estoy seguro de que pasó",
-            "debe de haber…"
-          ],
-          [
-            "can't have",
-            "deducción negativa: es imposible",
-            "no puede haber…"
-          ],
-          [
-            "might / may have",
-            "posibilidad: quizá pasó",
-            "puede que haya…"
-          ],
-          [
-            "should have",
-            "reproche: lo correcto era hacerlo y no se hizo",
-            "debería haber…"
-          ],
-          [
-            "could have",
-            "era posible y no pasó",
-            "podría haber…"
-          ]
-        ]
       },
       {
-        "t": "error",
-        "wrong": "I should call you yesterday.",
-        "right": "I should have called you yesterday.",
-        "why": "Sin «have + participio» estás hablando del presente. El reproche por algo no hecho necesita la fórmula entera."
+        t: "error",
+        wrong: "I should call you yesterday.",
+        right: "I should have called you yesterday.",
+        why: "Sin «have + participio» estás hablando del presente. El reproche por algo no hecho necesita la fórmula entera.",
       },
       {
-        "t": "tip",
-        "text": "Al hablar se contraen y suenan casi igual: «should have» se dice «shoulda», «could have» «coulda», «must have» «musta». Por eso mucha gente lo escribe mal como «should of», que no existe."
+        t: "error",
+        wrong: "You should have go.",
+        right: "You should have gone.",
+        why: "Detrás de «have» siempre va el participio, nunca el verbo base: have + gone, no have + go.",
       },
       {
-        "t": "examples",
-        "items": [
-          {
-            "en": "She must have forgotten.",
-            "pron": "shi mast jav for-gó-ten",
-            "es": "Se le debe de haber olvidado."
-          },
-          {
-            "en": "You should have told me.",
-            "pron": "yu shud jav tóuld mi",
-            "es": "Deberías habérmelo dicho."
-          },
-          {
-            "en": "He can't have finished already.",
-            "pron": "ji kant jav fí-nisht ol-ré-di",
-            "es": "No puede haber terminado ya."
-          }
-        ]
-      }
+        t: "tip",
+        text: "Al hablar se contraen y suenan casi igual: «should have» se dice «shoulda», «could have» «coulda», «must have» «musta». Por eso mucha gente lo escribe mal como «should of», que no existe.",
+      },
+      {
+        t: "p",
+        text: "«Could have» tiene dos aires distintos y el contexto es lo único que los separa: posibilidad que no se cumplió («podría haber pasado, pero no pasó») y reproche cuando alguien tenía la opción de ayudar y no lo hizo («¡podrías haberme avisado!»). La gramática es idéntica en los dos casos.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "She must have forgotten.", pron: "shi mast jav for-gó-ten", es: "Se le debe de haber olvidado." },
+          { en: "You should have told me.", pron: "yu shud jav tóuld mi", es: "Deberías habérmelo dicho." },
+          { en: "He can't have finished already.", pron: "ji kant jav fí-nisht ol-ré-di", es: "No puede haber terminado ya." },
+          { en: "You shouldn't have shouted at him.", pron: "yu shú-dent jav sháu-ted at jim", es: "No deberías haberle gritado." },
+          { en: "You could have told me!", pron: "yu kud jav tóuld mi", es: "¡Podrías haberme avisado!" },
+          { en: "They could have won, but they didn't try hard enough.", pron: "déi kud jav uan, bat déi dí-dent trái jard i-náf", es: "Podrían haber ganado, pero no se esforzaron lo suficiente." },
+          { en: "She might have left already.", pron: "shi máit jav left ol-ré-di", es: "Puede que ya se haya ido." },
+        ],
+      },
     ],
-    "quiz": [
-      {
-        "q": "«Deberías haber venido» es…",
-        "options": [
-          "You should come",
-          "You should have come",
-          "You should came"
-        ],
-        "answer": 1,
-        "why": "Reproche por el pasado: should + have + participio."
-      },
-      {
-        "q": "«Se le debe de haber olvidado» es…",
-        "options": [
-          "She must forget",
-          "She must have forgotten",
-          "She must forgot"
-        ],
-        "answer": 1,
-        "why": "Deducción sobre el pasado: must have + participio."
-      },
-      {
-        "q": "«No puede haberlo hecho» es…",
-        "options": [
-          "He mustn't have done it",
-          "He can't have done it",
-          "He couldn't do it"
-        ],
-        "answer": 1,
-        "why": "La deducción negativa es can't have, no mustn't have."
-      },
-      {
-        "q": "Detrás del modal siempre va…",
-        "options": [
-          "had",
-          "have",
-          "has"
-        ],
-        "answer": 1,
-        "why": "Siempre «have», sin conjugar: he must have, no he must has."
-      },
-      {
-        "q": "«Should of» es…",
-        "options": [
-          "Correcto en informal",
-          "Un error de escritura de should have",
-          "Otro significado"
-        ],
-        "answer": 1,
-        "why": "No existe. Sale de que «should have» suena «shoulda»."
-      }
-    ]
+    quiz: [
+      { q: "«Deberías haber venido» es…", options: ["You should come", "You should have come", "You should came"], answer: 1, why: "Reproche por el pasado: should + have + participio." },
+      { q: "«Se le debe de haber olvidado» es…", options: ["She must forget", "She must have forgotten", "She must forgot"], answer: 1, why: "Deducción sobre el pasado: must have + participio." },
+      { q: "«No puede haberlo hecho» es…", options: ["He mustn't have done it", "He can't have done it", "He couldn't do it"], answer: 1, why: "La deducción negativa es can't have, no mustn't have." },
+      { q: "Detrás del modal siempre va…", options: ["had", "have", "has"], answer: 1, why: "Siempre «have», sin conjugar: he must have, no he must has." },
+      { q: "«Should of» es…", options: ["Correcto en informal", "Un error de escritura de should have", "Otro significado"], answer: 1, why: "No existe. Sale de que «should have» suena «shoulda»." },
+      { q: "«No deberías haber gritado» es…", options: ["You shouldn't shout", "You shouldn't have shouted", "You didn't should shout"], answer: 1, why: "Reproche al revés: lo hiciste y no debías, con la fórmula entera." },
+      { q: "«¡Podrías haberme avisado!» (reproche) es…", options: ["You could tell me!", "You could have told me!", "You should telling me!"], answer: 1, why: "Reproche por algo que era posible y no hiciste: could have." },
+      { q: "Detrás de «should have» va…", options: ["el verbo base", "el gerundio", "el participio"], answer: 2, why: "Should have + participio, nunca base ni -ing: should have gone, no should have go." },
+      { q: "«Puede que ya haya salido» (posibilidad, no certeza) es…", options: ["She must have left", "She might have left", "She should have left"], answer: 1, why: "«Might have» es posibilidad; «must have» sería casi seguro." },
+      { q: "«Musta» al hablar es la forma corta de…", options: ["might have", "must have", "mustn't have"], answer: 1, why: "Must have se contrae y suena «musta»." },
+      { q: "«They could have won, but they didn't try hard enough.» ¿Ganaron?", options: ["Sí, ganaron", "No, no ganaron", "No lo dice"], answer: 1, why: "«Could have» describe algo que era posible y NO llegó a pasar." },
+      { q: "El opuesto de «must have» (deducción positiva) es…", options: ["mustn't have", "can't have", "shouldn't have"], answer: 1, why: "La deducción negativa segura es can't have, no mustn't have." },
+    ],
   },
   {
-    "id": "can-be-able",
-    "title": "can, could y be able to",
-    "tag": "Modales",
-    "goal": "Decir «poder» en cualquier tiempo, no solo en presente.",
-    "blocks": [
+    id: "can-be-able",
+    title: "can, could y be able to",
+    tag: "Modales",
+    goal: "Decir «poder» en cualquier tiempo, no solo en presente.",
+    blocks: [
       {
-        "t": "p",
-        "text": "«Can» solo existe en presente y pasado (could). No tiene infinitivo ni participio, así que para el futuro, el perfecto o después de otro verbo hay que cambiar a «be able to», que sí se conjuga entero."
+        t: "p",
+        text: "«Can» solo existe en presente y pasado (could). No tiene infinitivo ni participio, así que para el futuro, el perfecto o después de otro verbo hay que cambiar a «be able to», que sí se conjuga entero.",
       },
       {
-        "t": "table",
-        "head": [
-          "Cuándo",
-          "Se dice",
-          "Ejemplo"
+        t: "table",
+        head: ["Cuándo", "Se dice", "Ejemplo"],
+        rows: [
+          ["Presente", "can", "I can swim."],
+          ["Pasado (habilidad)", "could", "I could swim at five."],
+          ["Pasado (una vez concreta)", "was able to / managed to", "I was able to fix it."],
+          ["Futuro", "will be able to", "I'll be able to help tomorrow."],
+          ["Perfecto", "have been able to", "I haven't been able to sleep."],
+          ["Tras otro verbo", "to be able to", "I want to be able to travel."],
         ],
-        "rows": [
-          [
-            "Presente",
-            "can",
-            "I can swim."
-          ],
-          [
-            "Pasado (habilidad)",
-            "could",
-            "I could swim at five."
-          ],
-          [
-            "Pasado (una vez concreta)",
-            "was able to / managed to",
-            "I was able to fix it."
-          ],
-          [
-            "Futuro",
-            "will be able to",
-            "I'll be able to help tomorrow."
-          ],
-          [
-            "Perfecto",
-            "have been able to",
-            "I haven't been able to sleep."
-          ],
-          [
-            "Tras otro verbo",
-            "to be able to",
-            "I want to be able to travel."
-          ]
-        ]
       },
       {
-        "t": "error",
-        "wrong": "I will can help you.",
-        "right": "I will be able to help you.",
-        "why": "Dos modales seguidos no se pueden. Como «can» no tiene infinitivo, el futuro pide be able to."
+        t: "p",
+        text: "«Managed to» y «was able to» no son intercambiables al cien por cien: «managed to» añade la idea de que costó, de que hubo un obstáculo que superaste. «I managed to fix it» suena a «lo conseguí, a pesar de todo»; «I was able to fix it» solo informa de que pudiste, sin dramatismo.",
       },
       {
-        "t": "tip",
-        "text": "Ojo con «could» en pasado: sirve para una habilidad general (I could run for hours) pero NO para un logro puntual. «Ayer conseguí abrirlo» es «I was able to open it», no «I could open it»."
+        t: "error",
+        wrong: "I will can help you.",
+        right: "I will be able to help you.",
+        why: "Dos modales seguidos no se pueden. Como «can» no tiene infinitivo, el futuro pide be able to.",
       },
       {
-        "t": "examples",
-        "items": [
-          {
-            "en": "I won't be able to come.",
-            "pron": "ai uóunt bi éi-bol tu kam",
-            "es": "No voy a poder venir."
-          },
-          {
-            "en": "She was able to finish on time.",
-            "pron": "shi uós éi-bol tu fí-nish on táim",
-            "es": "Consiguió terminar a tiempo."
-          },
-          {
-            "en": "I'd like to be able to read this.",
-            "pron": "aid láik tu bi éi-bol tu riid dis",
-            "es": "Me gustaría poder leer esto."
-          }
-        ]
-      }
+        t: "tip",
+        text: "Ojo con «could» en pasado: sirve para una habilidad general (I could run for hours) pero NO para un logro puntual. «Ayer conseguí abrirlo» es «I was able to open it», no «I could open it». En negativo esta regla se relaja: «I couldn't open it» sí vale para una vez concreta.",
+      },
+      {
+        t: "table",
+        head: ["Negativo de can", "Cuándo", "Ejemplo"],
+        rows: [
+          ["can't", "presente", "I can't swim today, I'm injured."],
+          ["couldn't", "pasado, general o puntual", "I couldn't sleep last night."],
+          ["wasn't able to / didn't manage to", "pasado, alternativa a couldn't", "She wasn't able to finish in time."],
+          ["won't be able to", "futuro", "I won't be able to come tomorrow."],
+        ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I won't be able to come.", pron: "ai uóunt bi éi-bol tu kam", es: "No voy a poder venir." },
+          { en: "She was able to finish on time.", pron: "shi uós éi-bol tu fí-nish on táim", es: "Consiguió terminar a tiempo." },
+          { en: "I'd like to be able to read this.", pron: "aid láik tu bi éi-bol tu riid dis", es: "Me gustaría poder leer esto." },
+          { en: "I managed to pass the exam.", pron: "ai má-nichd tu pas di ig-sám", es: "Conseguí aprobar el examen." },
+          { en: "She wasn't able to open the door.", pron: "shi uó-sent éi-bol tu óu-pen de dor", es: "No consiguió abrir la puerta." },
+          { en: "I won't be able to swim as fast as before.", pron: "ai uóunt bi éi-bol tu suim as fast as bi-fór", es: "No podré nadar tan rápido como antes." },
+          { en: "Can I use your phone?", pron: "kan ai iúus yor fóun", es: "¿Puedo usar tu teléfono?" },
+        ],
+      },
     ],
-    "quiz": [
-      {
-        "q": "«Podré ayudarte mañana» es…",
-        "options": [
-          "I will can help you",
-          "I will be able to help you",
-          "I can help you tomorrow"
-        ],
-        "answer": 1,
-        "why": "Dos modales seguidos no se pueden: el futuro de can es will be able to."
-      },
-      {
-        "q": "«Conseguí arreglarlo» (una vez) es…",
-        "options": [
-          "I could fix it",
-          "I was able to fix it",
-          "I can fix it"
-        ],
-        "answer": 1,
-        "why": "Could vale para habilidad general; un logro puntual pide was able to."
-      },
-      {
-        "q": "«Quiero poder viajar» es…",
-        "options": [
-          "I want to can travel",
-          "I want to be able to travel",
-          "I want can travel"
-        ],
-        "answer": 1,
-        "why": "Detrás de «to» hace falta un infinitivo, y can no lo tiene."
-      },
-      {
-        "q": "«No he podido dormir» es…",
-        "options": [
-          "I haven't could sleep",
-          "I haven't been able to sleep",
-          "I couldn't sleep"
-        ],
-        "answer": 1,
-        "why": "En perfecto, can pasa a been able to."
-      },
-      {
-        "q": "«De pequeño sabía nadar» es…",
-        "options": [
-          "I could swim",
-          "I was able to swim once",
-          "I can swim then"
-        ],
-        "answer": 0,
-        "why": "Habilidad general en el pasado: could."
-      }
-    ]
+    quiz: [
+      { q: "«Podré ayudarte mañana» es…", options: ["I will can help you", "I will be able to help you", "I can help you tomorrow"], answer: 1, why: "Dos modales seguidos no se pueden: el futuro de can es will be able to." },
+      { q: "«Conseguí arreglarlo» (una vez) es…", options: ["I could fix it", "I was able to fix it", "I can fix it"], answer: 1, why: "Could vale para habilidad general; un logro puntual pide was able to." },
+      { q: "«Quiero poder viajar» es…", options: ["I want to can travel", "I want to be able to travel", "I want can travel"], answer: 1, why: "Detrás de «to» hace falta un infinitivo, y can no lo tiene." },
+      { q: "«No he podido dormir» es…", options: ["I haven't could sleep", "I haven't been able to sleep", "I couldn't sleep"], answer: 1, why: "En perfecto, can pasa a been able to." },
+      { q: "«De pequeño sabía nadar» es…", options: ["I could swim", "I was able to swim once", "I can swim then"], answer: 0, why: "Habilidad general en el pasado: could." },
+      { q: "«Managed to» frente a «was able to» añade la idea de…", options: ["que costó esfuerzo", "que fue fácil", "ninguna diferencia"], answer: 0, why: "Managed to sugiere que había un obstáculo y lo superaste." },
+      { q: "Negativo de «could» en pasado, para habilidad general:", options: ["wasn't able to", "couldn't", "didn't can"], answer: 1, why: "En negativo, «couldn't» sí funciona tanto para lo general como para lo puntual." },
+      { q: "«No pudo abrir la puerta» (una vez, no general) suena natural como…", options: ["She couldn't open the door", "She can't opened the door", "She not could open"], answer: 0, why: "En negativo, a diferencia del afirmativo, «couldn't» también vale para un caso puntual." },
+      { q: "Futuro negativo de can:", options: ["won't can", "won't be able to", "don't will can"], answer: 1, why: "El futuro de can, en negativo, sigue siendo be able to: won't be able to." },
+      { q: "«Podré nadar mejor cuando practique más» (futuro) es…", options: ["I'll can swim better", "I'll be able to swim better", "I can swim better then"], answer: 1, why: "Can no tiene futuro propio: se usa will be able to." },
+      { q: "¿Cuál suena más neutro, sin remarcar el esfuerzo?", options: ["I managed to pass the exam", "I was able to pass the exam", "las dos remarcan el esfuerzo igual"], answer: 1, why: "«Was able to» informa sin dramatismo; «managed to» sugiere que costó." },
+      { q: "¿Cuál de estas usa «can» para PERMISO, no para habilidad?", options: ["Can I use your phone?", "I can speak French", "She can run fast"], answer: 0, why: "Aquí «can» pide permiso; en las otras dos describe una capacidad." },
+    ],
   },
   {
     "id": "futuro-avanzado",
