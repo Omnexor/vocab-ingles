@@ -1451,6 +1451,10 @@ export const LESSONS = [
       { q: "Orden correcto:", options: ["a leather black new bag", "a new black leather bag", "a black new leather bag"], answer: 1, why: "Edad → color → material." },
       { q: "¿Dónde puede ir detrás?", options: ["The red is car.", "The car is red.", "The car red is."], answer: 1, why: "Detrás de «be» y verbos de percepción sí va el adjetivo." },
       { q: "«a ___ table» (redonda, pequeña)", options: ["round small", "small round", "smalls round"], answer: 1, why: "Tamaño antes que forma: small round table." },
+      { q: "«Un coche rojo»: ¿qué palabra va primero en inglés?", options: ["car", "red", "da igual"], answer: 1, why: "El adjetivo inglés va SIEMPRE delante: a red car. Justo al revés que en español." },
+      { q: "Los adjetivos ingleses, ¿cambian en plural?", options: ["Sí, llevan -s", "No, nunca cambian", "Solo algunos"], answer: 1, why: "«Two red cars», nunca «two reds cars»." },
+      { q: "Los adjetivos ingleses, ¿tienen masculino y femenino?", options: ["Sí", "No, son invariables", "Solo con personas"], answer: 1, why: "«A tall man» y «a tall woman»: la misma palabra sin cambios." },
+      { q: "«Unas chicas altas» es…", options: ["some talls girls", "some tall girls", "some girls tall"], answer: 1, why: "Delante, sin -s y sin género: tall girls." },
     ],
   },
 
@@ -2141,6 +2145,28 @@ export const LESSONS = [
         text: "Son de las palabras más pequeñas y más difíciles de acertar en inglés, porque no siguen la lógica del español. Van de lo más general (in) a lo más concreto (at).",
       },
       {
+        t: "p",
+        text: "El motivo de fondo es demoledor de sencillo: las TRES se traducen por «en». El español usa una sola palabra donde el inglés usa tres, así que la traducción no te da ninguna pista y hay que aprenderse cuál va con qué. No es que las uses mal: es que en español no existe la distinción.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Por qué esa"],
+        rows: [
+          ["en julio", "in July", "Mes → in"],
+          ["en 2020", "in 2020", "Año → in"],
+          ["en lunes", "on Monday", "Día de la semana → on"],
+          ["en mi cumpleaños", "on my birthday", "Fecha concreta → on"],
+          ["a las seis", "at six", "Hora concreta → at"],
+          ["en la mesa", "on the table", "Superficie → on"],
+          ["en la caja", "in the box", "Dentro → in"],
+          ["en la parada", "at the bus stop", "Punto concreto → at"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Imagen que ayuda: IN es dentro de algo (un mes, un año, una caja, una ciudad). ON es encima o pegado a una superficie (una mesa, una pared, y por extensión un día del calendario). AT es un punto exacto en el mapa o en el reloj (las seis, la parada, la puerta). De más grande a más pequeño: in → on → at.",
+      },
+      {
         t: "table",
         head: ["Preposición", "Se usa con", "Ejemplo"],
         rows: [
@@ -2194,6 +2220,11 @@ export const LESSONS = [
       { q: "«The shop closes ___ 9 pm.»", options: ["in", "on", "at"], answer: 2, why: "Horas concretas → at." },
       { q: "«I was born ___ Madrid.»", options: ["at", "on", "in"], answer: 2, why: "Ciudades → in." },
       { q: "«There's a picture ___ the wall.»", options: ["in", "on", "at"], answer: 1, why: "Superficie (encima de) → on." },
+      { q: "¿Por qué in, on y at cuestan tanto a un español?", options: ["Porque no existen en español", "Porque las tres se traducen por «en»", "Porque cambian según la región"], answer: 1, why: "El español usa una sola palabra donde el inglés distingue tres." },
+      { q: "«En julio» es…", options: ["on July", "in July", "at July"], answer: 1, why: "Los meses van con «in»." },
+      { q: "«El lunes» (día de la semana) es…", options: ["in Monday", "at Monday", "on Monday"], answer: 2, why: "Los días de la semana y las fechas van con «on»." },
+      { q: "«A las seis» es…", options: ["at six", "in six", "on six"], answer: 0, why: "Las horas concretas van con «at»." },
+      { q: "De más grande a más concreto, el orden es…", options: ["at → on → in", "in → on → at", "on → in → at"], answer: 1, why: "In (dentro), on (superficie o día), at (punto exacto)." },
     ],
   },
 
@@ -2441,6 +2472,10 @@ export const LESSONS = [
       { q: "«She ___ the dishes every night.»", options: ["makes", "does", "make"], answer: 1, why: "Tarea de casa → do the dishes." },
       { q: "«They want to ___ a decision.»", options: ["do", "make", "take"], answer: 1, why: "En inglés la decisión se «hace»: make a decision (no take)." },
       { q: "«He is ___ his homework.»", options: ["making", "doing", "does"], answer: 1, why: "do your homework, y en continuo: doing." },
+      { q: "¿Por qué make y do se confunden tanto?", options: ["Porque suenan parecido", "Porque los dos se traducen por «hacer»", "Porque son irregulares"], answer: 1, why: "El español tiene un solo verbo donde el inglés tiene dos." },
+      { q: "MAKE se acerca más a la idea de…", options: ["crear algo que antes no existía", "cumplir una tarea", "empezar algo"], answer: 0, why: "Make = fabricar, producir, crear: make a cake, make a decision." },
+      { q: "DO se acerca más a la idea de…", options: ["crear un objeto", "realizar una actividad o tarea", "terminar algo"], answer: 1, why: "Do = llevar a cabo: do your homework, do the dishes, do exercise." },
+      { q: "«Hacer una foto» es…", options: ["do a photo", "make a photo", "take a photo"], answer: 2, why: "Ojo: aquí no es ni make ni do. El inglés usa «take» para las fotos." },
     ],
   },
 
@@ -2653,6 +2688,10 @@ export const LESSONS = [
       { q: "«The ___ books» (de los alumnos, en plural)", options: ["students's", "student's", "students'"], answer: 2, why: "Plural que ya acaba en -s: solo apóstrofo." },
       { q: "¿Cuál suena natural?", options: ["the end of the street", "the street's end", "the street of end"], answer: 0, why: "Con cosas se prefiere «of»." },
       { q: "«___ house is big.» (de Ana y Pablo, la misma casa)", options: ["Ana's and Paul's", "Ana and Paul's", "Ana and Paul"], answer: 1, why: "Si la casa es de los dos, el 's va solo en el último." },
+      { q: "En «el coche de mi hermano», ¿qué va primero en inglés?", options: ["car", "my brother", "da igual"], answer: 1, why: "El inglés invierte el orden respecto al español: my brother's car." },
+      { q: "El «de» de posesión con personas se convierte en…", options: ["of", "'s", "from"], answer: 1, why: "«De mi hermano» = «my brother's», con el orden dado la vuelta." },
+      { q: "«La habitación de mi hermana» es…", options: ["The room of my sister", "My sister's room", "The my sister room"], answer: 1, why: "Persona → 's, y el poseedor delante." },
+      { q: "¿Por qué «the dog of Ana» suena mal?", options: ["Porque «of» no existe", "Porque con personas el inglés usa 's", "Porque falta un artículo"], answer: 1, why: "«Of» se reserva sobre todo para cosas; con personas se usa 's." },
     ],
   },
 
