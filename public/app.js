@@ -7,6 +7,7 @@ import { IRREGULARES, FORMA_A_BASE, CONTRACCIONES } from "./irregulars.js";
 import { conjugar, verbosConjugables } from "./conjugar.js";
 import { EJERCICIOS_MODALES } from "./modals.js";
 import { FRASES, CATEGORIAS_FRASES, contextosDe } from "./phrases.js";
+import { conGuiones } from "./silabas.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -89,7 +90,9 @@ function addWord(raw) {
     id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     en,
     es: String(raw.es || "").trim(),
-    pron: String(raw.pron || "").trim(),
+    // Las palabras que genera la IA pueden venir sin guiones: se silabean aquí
+    // para que se vean igual que las del banco.
+    pron: conGuiones(String(raw.pron || "").trim()),
     example: String(raw.example || "").trim(),
     exampleEs: String(raw.exampleEs || "").trim(),
     cat: raw.cat || store.settings.category,
@@ -169,6 +172,40 @@ async function cargarBanco() {
     }
   } catch {
     // Sin banco: seguimos con SEED_WORDS.
+  }
+  refrescarPronunciaciones();
+}
+
+/**
+ * Pone al día la pronunciación de las palabras que ya tenías guardadas.
+ *
+ * Al añadir una palabra se COPIA su ficha a tus palabras, así que la
+ * pronunciación se queda congelada tal y como estaba ese día. Cuando se
+ * corrigió la T americana y se metieron los guiones de sílaba, en Explorar
+ * salía lo nuevo y en Hoy y en Palabras lo viejo, porque esas dos leen de lo
+ * guardado.
+ *
+ * Se toca SOLO la pronunciación: caja, fechas, repasos y fallos no se rozan.
+ * Si la palabra está en el banco se copia la buena de ahí, que además trae las
+ * correcciones de sílabas que no se deducen por regla (fám-li, uó-rer). Si no
+ * está —porque la generó la IA— al menos se le ponen los guiones.
+ */
+function refrescarPronunciaciones() {
+  const fuente = new Map();
+  for (const w of [...SEED_WORDS, ...BANCO]) fuente.set(w.en, w.pron);
+  for (const v of IRREGULARES) if (!fuente.has(v.base)) fuente.set(v.base, v.pron.split(" · ")[0]);
+
+  let n = 0;
+  for (const w of store.words) {
+    const buena = fuente.get(w.en) || conGuiones(w.pron || "");
+    if (buena && buena !== w.pron) {
+      w.pron = buena;
+      n += 1;
+    }
+  }
+  if (n) {
+    save();
+    console.info(`[vocab] ${n} pronunciaciones puestas al día`);
   }
 }
 
