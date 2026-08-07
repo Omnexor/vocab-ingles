@@ -544,6 +544,34 @@ export const LESSONS = [
         text: "Se usa cuando el pasado conecta con el presente: no dices cuándo pasó, o la acción sigue teniendo efecto ahora. Es el tiempo que peor se traduce del español, así que fíate de la regla, no de la traducción.",
       },
       {
+        t: "p",
+        text: "Pieza por pieza sí encaja: «have / has» es el verbo HABER y el participio es el «-ado / -ido» español. I have finished = «he terminado». El problema no es la forma, es CUÁNDO se usa: el español y el inglés no lo reparten igual, y ahí es donde un español mete la pata.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Pieza por pieza"],
+        rows: [
+          ["I have finished", "He terminado", "have = he · finish-ed = termin-ado"],
+          ["She has eaten", "Ha comido", "has = ha · eat-en = com-ido"],
+          ["We have lived here", "Hemos vivido aquí", "have = hemos · liv-ed = viv-ido"],
+          ["They haven't arrived", "No han llegado", "haven't = no han"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Donde se rompe la equivalencia es en España, porque el español de España usa «he hecho» muchísimo más que el inglés usa «I have done». Nosotros decimos «he ido al cine ayer» sin ningún problema; en inglés eso está MAL. Si dices cuándo pasó, el inglés te obliga al pasado simple, sin excepción. Traducir literalmente desde el español de España es justo lo que produce el error.",
+      },
+      {
+        t: "table",
+        head: ["En español (España)", "En inglés", "Por qué"],
+        rows: [
+          ["He ido al cine ayer.", "I went to the cinema yesterday.", "Dices «ayer» → pasado simple obligatorio."],
+          ["He ido al cine.", "I have been to the cinema.", "Sin cuándo → present perfect."],
+          ["Esta mañana he desayunado tarde.", "I had breakfast late this morning.", "Si la mañana ya acabó, es pasado simple."],
+          ["He perdido las llaves.", "I have lost my keys.", "Sigue teniendo efecto ahora: no las tengo."],
+        ],
+      },
+      {
         t: "table",
         head: ["Uso", "Ejemplo", "Traducción"],
         rows: [
@@ -602,6 +630,11 @@ export const LESSONS = [
       { q: "¿for o since? «I've worked here ___ 2019.»", options: ["for", "since", "ago"], answer: 1, why: "«Since» + punto de inicio; «for» + duración (for five years)." },
       { q: "¿Dónde va «yet»?", options: ["Have you yet finished?", "Have you finished yet?", "Yet have you finished?"], answer: 1, why: "«Yet» va al final de la frase, en negativas y preguntas." },
       { q: "«He ___ arrived, he's in the hall.»", options: ["has just", "just has", "is just"], answer: 0, why: "«Just» va entre el auxiliar y el participio." },
+      { q: "En «I have finished», ¿a qué equivale «have»?", options: ["al verbo tener", "al verbo haber", "no se traduce"], answer: 1, why: "have + participio = haber + participio: he terminado." },
+      { q: "«He ido al cine ayer» en inglés correcto es…", options: ["I have gone to the cinema yesterday", "I went to the cinema yesterday", "I have been to the cinema yesterday"], answer: 1, why: "Con «yesterday» el inglés obliga al pasado simple, aunque el español use «he ido»." },
+      { q: "¿Por qué falla tanto este tiempo a los españoles?", options: ["Porque la forma es distinta", "Porque en España se usa «he hecho» mucho más que «I have done»", "Porque no existe en español"], answer: 1, why: "La forma encaja; lo que no encaja es cuándo se usa cada uno." },
+      { q: "«He perdido las llaves» (y sigo sin ellas) es…", options: ["I lost my keys", "I have lost my keys", "I was losing my keys"], answer: 1, why: "El efecto sigue en el presente y no dices cuándo: present perfect." },
+      { q: "El participio «-ed / -en» equivale en español a…", options: ["-ando / -iendo", "-ado / -ido", "-aré / -eré"], answer: 1, why: "finish-ed = termin-ado, eat-en = com-ido." },
     ],
   },
 
@@ -860,6 +893,30 @@ export const LESSONS = [
         ],
       },
       {
+        t: "p",
+        text: "Traducido pieza por pieza se entiende mucho mejor, porque el español hace lo mismo pero con otras herramientas. Donde el inglés pone un PASADO detrás del «if», el español pone un SUBJUNTIVO. Y donde el inglés pone «would», el español pone la terminación -ía. Son dos cambios, uno en cada mitad de la frase.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Las dos mitades"],
+        rows: [
+          ["If I had money, I would travel.", "Si tuviera dinero, viajaría.", "had → tuviera (subjuntivo) · would travel → viajaría"],
+          ["If I were you, I would accept.", "Si fuera tú, aceptaría.", "were → fuera · would accept → aceptaría"],
+          ["If she called, I would answer.", "Si llamara, contestaría.", "called → llamara · would answer → contestaría"],
+          ["If I had studied, I would have passed.", "Si hubiera estudiado, habría aprobado.", "had studied → hubiera estudiado · would have passed → habría aprobado"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco práctico: si en español te sale un «-ía» (viajaría, aceptaría, contestaría), esa mitad lleva WOULD. Y si te sale un subjuntivo («tuviera», «fuera», «llamara»), esa mitad lleva PASADO en inglés, no «would». El error más típico del español es meter «would» en las dos mitades: «If I would have money» está mal, es «If I had money».",
+      },
+      {
+        t: "error",
+        wrong: "If I would have money, I would travel.",
+        right: "If I had money, I would travel.",
+        why: "«Would» va solo en la mitad del resultado, nunca detrás del «if». En la parte del if va pasado, que es lo que traduce el subjuntivo español.",
+      },
+      {
         t: "error",
         wrong: "If I will have time, I will call you.",
         right: "If I have time, I will call you.",
@@ -899,6 +956,11 @@ export const LESSONS = [
       { q: "«If she had left earlier, she ___ the train.»", options: ["would catch", "would have caught", "caught"], answer: 1, why: "Condicional 3: would have + participio." },
       { q: "«If you press this button, the machine ___.»", options: ["stops", "will stop", "would stop"], answer: 0, why: "Condicional 0: es una verdad que pasa siempre." },
       { q: "¿Qué está mal?", options: ["If I see him, I'll tell him.", "If I will see him, I'll tell him.", "I'll tell him if I see him."], answer: 1, why: "Nunca «will» dentro de la cláusula del if." },
+      { q: "El subjuntivo español («si tuviera») se traduce al inglés con…", options: ["would + verbo", "el pasado simple (had)", "el presente"], answer: 1, why: "«Si tuviera» = «If I had». El inglés usa pasado donde el español usa subjuntivo." },
+      { q: "«Si fuera tú, aceptaría» es…", options: ["If I would be you, I would accept", "If I were you, I would accept", "If I am you, I will accept"], answer: 1, why: "Subjuntivo → pasado (were); el -ía de «aceptaría» → would." },
+      { q: "¿Dónde va «would» en un condicional 2?", options: ["En las dos mitades", "Solo en la mitad del resultado", "Solo detrás del if"], answer: 1, why: "Would marca el -ía del resultado; detrás del if va pasado." },
+      { q: "«Si hubiera estudiado, habría aprobado» es…", options: ["If I studied, I would pass", "If I had studied, I would have passed", "If I would study, I would pass"], answer: 1, why: "Condicional 3: had + participio / would have + participio." },
+      { q: "«Viajaría» delata que esa mitad lleva…", options: ["would", "will", "pasado simple"], answer: 0, why: "El -ía siempre es «would»." },
     ],
   },
 
@@ -1353,6 +1415,20 @@ export const LESSONS = [
     goal: "Quitar los «the» que sobran, que son muchos.",
     blocks: [
       {
+        t: "p",
+        text: "Empecemos por la traducción literal, que ya avisa del problema. «A / an» es «un / una», y «the» es «el / la / los / las» — los cuatro en una sola palabra, porque el inglés no tiene ni género ni número en el artículo. Eso es lo fácil. Lo difícil es que el inglés tiene una cuarta opción que el español casi no usa: NINGÚN artículo.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Detalle"],
+        rows: [
+          ["a dog", "un perro", "«a» = un / una, sin distinguir género."],
+          ["the dog", "el perro", "«the» = el, la, los, las: una palabra para las cuatro."],
+          ["the dogs", "los perros", "«the» no cambia en plural."],
+          ["dogs", "los perros (en general)", "Sin artículo: el español pone «los», el inglés nada."],
+        ],
+      },
+      {
         t: "table",
         head: ["Artículo", "Cuándo", "Ejemplo"],
         rows: [
@@ -1413,6 +1489,10 @@ export const LESSONS = [
       { q: "«She's ___ university student.»", options: ["a", "an", "the"], answer: 0, why: "«University» suena «yu-», que es sonido consonántico: a." },
       { q: "«I play ___ guitar.»", options: ["(nada)", "the", "a"], answer: 1, why: "Los instrumentos musicales sí llevan «the»." },
       { q: "«He goes to ___ bed at eleven.»", options: ["the", "a", "(nada)"], answer: 2, why: "«Go to bed», «go to work», «go to school»: sin artículo." },
+      { q: "«The» se traduce por…", options: ["solo «el»", "el, la, los y las: las cuatro", "un y una"], answer: 1, why: "El inglés no marca género ni número en el artículo: «the» vale para todo." },
+      { q: "«Los perros son leales» (en general) es…", options: ["The dogs are loyal", "Dogs are loyal", "A dogs are loyal"], answer: 1, why: "En generalizaciones el inglés quita el artículo aunque el español lo ponga." },
+      { q: "«Me gusta la música» es…", options: ["I like the music", "I like music", "I like a music"], answer: 1, why: "Hablas de la música en general: sin artículo." },
+      { q: "¿Cuál es la opción que el español casi nunca usa y el inglés sí?", options: ["a / an", "the", "ningún artículo"], answer: 2, why: "El español pone artículo casi siempre; el inglés lo omite en generalizaciones." },
     ],
   },
 
@@ -1559,6 +1639,24 @@ export const LESSONS = [
         example: "The house was built in 1990.",
       },
       {
+        t: "p",
+        text: "La traducción literal es «ser + participio», y encaja: was built = fue construida. Pero aquí hay algo más importante que la forma: el español casi nunca la usa así. Nosotros preferimos el «se» impersonal, y el inglés no tiene esa opción. Por eso el inglés usa la pasiva muchísimo más que nosotros, y por eso suena natural en sitios donde en español chirriaría.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español natural", "Español literal (raro)"],
+        rows: [
+          ["The house was built in 1990.", "La casa se construyó en 1990.", "La casa fue construida en 1990."],
+          ["English is spoken here.", "Aquí se habla inglés.", "El inglés es hablado aquí."],
+          ["The car is made in Germany.", "El coche se fabrica en Alemania.", "El coche es fabricado en Alemania."],
+          ["My wallet was stolen.", "Me robaron la cartera.", "Mi cartera fue robada."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si en español te sale un «se» impersonal («se habla», «se vende», «se construyó») o un «me robaron / te dijeron» sin sujeto claro, en inglés eso suele ser una PASIVA. Es la señal más fiable: donde nosotros escondemos al culpable con un «se», el inglés lo esconde con be + participio.",
+      },
+      {
         t: "table",
         head: ["Tiempo", "Activa", "Pasiva"],
         rows: [
@@ -1604,6 +1702,10 @@ export const LESSONS = [
       { q: "¿Cuándo se usa «by»?", options: ["Siempre, es obligatorio", "Solo si importa decir quién hizo la acción", "Nunca en pasiva"], answer: 1, why: "By + agente es opcional; se añade solo cuando aporta información relevante." },
       { q: "«The results ___ announced tomorrow.»", options: ["will", "will be", "are"], answer: 1, why: "Futuro en pasiva: will + be + participio." },
       { q: "¿Cuál está bien?", options: ["The email was sent yesterday.", "The email was send yesterday.", "The email was sended yesterday."], answer: 0, why: "El participio de send es sent, no send ni sended." },
+      { q: "«Aquí se habla inglés» es…", options: ["Here speaks English", "English is spoken here", "Here is speaking English"], answer: 1, why: "El «se» impersonal español se traduce con pasiva: be + participio." },
+      { q: "El «se» impersonal español («se vende», «se construyó») suele traducirse…", options: ["con una pasiva inglesa", "con «it»", "con «one»"], answer: 0, why: "El inglés no tiene ese «se»: usa be + participio para esconder al agente." },
+      { q: "«Me robaron la cartera» suena natural en inglés como…", options: ["They stole me the wallet", "My wallet was stolen", "It stole my wallet"], answer: 1, why: "Sin culpable concreto, el inglés va a la pasiva." },
+      { q: "¿Quién usa más la pasiva?", options: ["El español", "El inglés", "Los dos igual"], answer: 1, why: "El español prefiere el «se» impersonal; el inglés recurre a la pasiva mucho más." },
     ],
   },
 
@@ -1685,6 +1787,25 @@ export const LESSONS = [
         text: "Algunos verbos siempre van seguidos de -ing, otros siempre de to + infinitivo, y unos pocos aceptan las dos formas, a veces cambiando el significado. No hay una regla única: hay que aprenderse los grupos.",
       },
       {
+        t: "p",
+        text: "Lo primero es entender por qué esto es un problema SOLO para nosotros: en español, detrás de un verbo va siempre el infinitivo. «Quiero comer», «disfruto leyendo»... bueno, ahí ya no. El español también reparte entre infinitivo y gerundio, pero NO en los mismos verbos, así que la intuición española te traiciona en vez de ayudarte. Por eso hay que aprenderse las listas: no puedes deducirlas.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Ojo"],
+        rows: [
+          ["I want to eat.", "Quiero comer.", "Aquí coincide: los dos usan infinitivo."],
+          ["I enjoy reading.", "Disfruto leyendo.", "Aquí también coincide, por suerte."],
+          ["I finished working.", "Terminé de trabajar.", "El español usa infinitivo y el inglés -ing."],
+          ["I avoid talking about it.", "Evito hablar de ello.", "El español usa infinitivo y el inglés -ing."],
+          ["I decided to leave.", "Decidí irme.", "Aquí vuelven a coincidir."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "La única regla que SÍ es automática y no falla nunca: detrás de una preposición (in, at, on, of, about, for, before, after, without) siempre va -ing. «Before leaving», «good at cooking», «without saying». En español ahí ponemos infinitivo («antes de salir»), así que es el error más mecánico y el más fácil de corregir de golpe.",
+      },
+      {
         t: "table",
         head: ["Verbo + -ing", "Ejemplo"],
         rows: [
@@ -1746,6 +1867,11 @@ export const LESSONS = [
       { q: "«I'm not interested in ___ a new car.» (buy)", options: ["buy", "to buy", "buying"], answer: 2, why: "Tras preposición (in) siempre -ing." },
       { q: "«I stopped ___ two years ago.» (dejé de fumar)", options: ["to smoke", "smoking", "smoke"], answer: 1, why: "Stop + -ing = dejar de hacer algo; stop + to = parar PARA hacer otra cosa." },
       { q: "¿Cuál está mal?", options: ["We avoided answering.", "We avoided to answer.", "We avoided the question."], answer: 1, why: "Avoid nunca lleva to + infinitivo, solo -ing o un sustantivo directo." },
+      { q: "«Antes de salir» es…", options: ["before to leave", "before leaving", "before leave"], answer: 1, why: "Tras preposición siempre -ing, aunque el español ponga infinitivo." },
+      { q: "¿Cuál es la única regla que nunca falla?", options: ["Tras preposición, siempre -ing", "Tras verbo, siempre to", "Tras verbo, siempre -ing"], answer: 0, why: "Es la única automática: in, at, on, about, before, after + -ing." },
+      { q: "«Terminé de trabajar» es…", options: ["I finished to work", "I finished working", "I finished work to"], answer: 1, why: "Finish va con -ing, aunque el español use infinitivo." },
+      { q: "«Se me da bien cocinar» es…", options: ["I'm good at cook", "I'm good at to cook", "I'm good at cooking"], answer: 2, why: "«At» es preposición, así que detrás va -ing." },
+      { q: "¿Por qué no sirve la intuición española aquí?", options: ["Porque el español solo usa infinitivo", "Porque reparte infinitivo y gerundio en verbos distintos", "Porque el español no tiene gerundio"], answer: 1, why: "Los dos idiomas reparten, pero no en los mismos verbos: hay que aprender las listas." },
     ],
   },
 
