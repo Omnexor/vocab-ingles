@@ -137,17 +137,60 @@ function arreglarGlide(trozos) {
 const COMPUESTOS = {
   pásuerd: "pás-uerd",
   zruáut: "zru-áut",
+  yéniuin: "yé-niu-in", // genuine: la u va con la i de delante (/ju/), no con la de detrás
 };
 
+/**
+ * La W inglesa entre dos vocales.
+ *
+ * Escrita así, «a-uéi» (away) y «jau-é-ver» (however) son la misma secuencia de
+ * letras: vocal + u + vocal. Pero en away la u es la W (a-way) y en however es
+ * la u de un diptongo (how-ever). Ningún algoritmo puede distinguirlas mirando
+ * solo las letras, porque la información no está en las letras: está en de qué
+ * palabra inglesa vienen.
+ *
+ * Así que se resuelve por morfema, que es donde de verdad está la costura. Son
+ * pocos y muy productivos: away/awake/aware, -way, -where, -one. Todo lo demás
+ * sigue tratando au y ou como diptongo, que es el caso normal.
+ */
+// La vocal de delante va SIN tilde a propósito. «hour» (áu-er), «power»
+// (páu-er) y «flower» (fláu-er) acaban en -uer igual que «anywhere», pero ahí
+// el diptongo lleva el acento: si el acento cae antes de la u, es diptongo de
+// verdad y no se toca.
+const MORFEMAS_W = [
+  // En a-way, a-wake, a-ware, a-ward el acento cae SIEMPRE detrás de la W. Por
+  // eso se exige vocal tónica: «ourselves» (au-ar-sélvs) empieza igual pero ahí
+  // au es el diptongo de «our» y la sílaba tónica está al final.
+  /^a(?=u[áéíóú])/,
+  /^ri(?=u[áéíóú])/, // re-ward, re-wind
+  /[aeiou](?=u[eé]i\b)/, // -way:   é-ni-uei
+  /[aeiou](?=u[eé]r\b)/, // -where: é-ni-uer
+  /[aeiou](?=u[aá]n\b)/, // -one:   é-ni-uan
+];
+
+/** Mete un guion delante de la u glide antes de silabear el resto. */
+function partirGlide(limpia) {
+  for (const re of MORFEMAS_W) {
+    const m = re.exec(limpia);
+    if (!m) continue;
+    const i = m.index + m[0].length;
+    return [limpia.slice(0, i), limpia.slice(i)];
+  }
+  return null;
+}
+
+// La barra separa dos palabras alternativas («was/were» → «uós/uér»), no dos
+// sílabas: sin esto salía «uós-/uér», con un guion que no significa nada.
 export const conGuiones = (pron) =>
   String(pron)
-    .split(/\s+/)
+    .split(/(\s+|\/)/)
     .map((palabra) => {
+      if (/^(\s+|\/)$/.test(palabra)) return palabra;
       const compuesto = COMPUESTOS[palabra.replace(/-/g, "")];
       if (compuesto) return compuesto;
       return conGuionesPalabra(palabra);
     })
-    .join(" ");
+    .join(""); // los separadores vienen ya dentro del split
 
 function conGuionesPalabra(palabra) {
   // Se quitan los guiones que ya hubiera: si no, al pasar el script dos veces
@@ -158,5 +201,11 @@ function conGuionesPalabra(palabra) {
   if (!/[a-záéíóúñ]/i.test(limpia)) return palabra;
   // La puntuación pegada (comas, puntos) no entra en el silabeo.
   const m = limpia.match(/^([^a-záéíóúñ]*)(.*?)([^a-záéíóúñ]*)$/i);
-  return m[1] + silabas(m[2]).join("-") + m[3];
+  // Si lleva una W entre vocales, cada mitad se silabea por su cuenta: unidas
+  // el silabeador se comería la u dentro del diptongo (au-éi en vez de a-uéi).
+  const partes = partirGlide(m[2]);
+  const cuerpo = partes
+    ? partes.map((p) => silabas(p).join("-")).join("-")
+    : silabas(m[2]).join("-");
+  return m[1] + cuerpo + m[3];
 }

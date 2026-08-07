@@ -17,9 +17,9 @@
  */
 export const IRREGULARES = [
   { base: "arise", pasado: "arose", participio: "arisen", es: "surgir / plantearse", pron: "a-ráis · a-róus · a-rí-sen" },
-  { base: "awake", pasado: "awoke", participio: "awoken", es: "despertar(se)", pron: "au-éik · au-óuk · au-óu-ken" },
+  { base: "awake", pasado: "awoke", participio: "awoken", es: "despertar(se)", pron: "a-uéik · a-uóuk · a-uóu-ken" },
   { base: "babysit", pasado: "babysat", participio: "babysat", es: "cuidar niños", pron: "béi-bi-sit · béi-bi-sat · béi-bi-sat" },
-  { base: "be", pasado: "was/were", participio: "been", es: "ser / estar", pron: "bi · uós-/uér · bin" },
+  { base: "be", pasado: "was/were", participio: "been", es: "ser / estar", pron: "bi · uós/uér · bin" },
   { base: "bear", pasado: "bore", participio: "borne", es: "soportar / aguantar", pron: "ber · bor · born", nota: "Para nacer se usa «born»: I was born in Madrid." },
   { base: "beat", pasado: "beat", participio: "beaten", es: "ganar a / golpear", pron: "biit · biit · bíi-ten" },
   { base: "become", pasado: "became", participio: "become", es: "convertirse en", pron: "bi-kám · bi-kéim · bi-kám" },

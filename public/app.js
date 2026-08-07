@@ -352,7 +352,10 @@ async function ensureDailyBatch() {
   const { words: incoming, source } = await obtenerPalabras(cuantas);
   const added = incoming.map(addWord).filter(Boolean);
   store.daily = { date: t, ids: added.map((w) => w.id), done: 0 };
-  registerStudyDay();
+  // Aquí NO se registra día de estudio. Esto corre solo al abrir la app, porque
+  // Hoy es la vista de entrada: si contara, la racha premiaría abrir la app y
+  // cerrarla, y dejaría de medir nada. La racha sube cuando repasas, juegas,
+  // haces una lección, lees o añades una palabra — no cuando aparecen.
   save();
 
   return { words: added, source };

@@ -3856,7 +3856,7 @@ export const LESSONS = [
         "items": [
           {
             "en": "I didn't see anyone there.",
-            "pron": "ai dí-dent sii é-niuan der",
+            "pron": "ai dí-dent sii é-ni-uan der",
             "es": "No vi a nadie allí."
           },
           {
