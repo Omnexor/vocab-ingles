@@ -42,7 +42,12 @@ const SCHEMA = {
           pron: {
             type: "string",
             description:
-              "Como se pronuncia, escrito como lo leeria un hispanohablante. Solo letras del espanol, con tilde en la silaba tonica. Ej: 'though' -> 'dou', 'enough' -> 'ináf'",
+              "Como se pronuncia, escrito como lo leeria un espanol. Solo letras del espanol, tilde en la silaba fuerte y GUION entre silabas. " +
+              "Ej: 'though' -> 'dóu', 'enough' -> 'i-náf', 'beautiful' -> 'biúu-ri-ful'. " +
+              "OJO CON LAS SILABAS: pon solo las que suenan de verdad en ingles, no una por vocal escrita. " +
+              "'family' es 'fám-li' (dos), no 'fa-mi-li'. Igual con different (dí-frent), chocolate (chó-klat) y every (év-ri). " +
+              "OJO CON LA T AMERICANA: entre vocales suena como la r espanola de 'pero', y se escribe con r: " +
+              "water -> 'uó-rer', city -> 'sí-ri', better -> 'bé-rer'. Pero si la silaba de detras es la fuerte, la t se queda: return -> 'ri-térn'.",
           },
           example: { type: "string", description: "Frase de ejemplo corta en ingles usando la palabra" },
           exampleEs: { type: "string", description: "Traduccion al espanol de la frase de ejemplo" },

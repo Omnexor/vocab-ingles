@@ -72,7 +72,7 @@ export const FRASES = [
     id: "under-the-weather",
     cat: "idioms",
     en: "I'm feeling under the weather.",
-    pron: "áim fíiling ánder de uéder",
+    pron: "áim fíi-ling án-der de ué-der",
     es: "Estoy pachucho / no me encuentro bien.",
     literal: "Me siento debajo del tiempo.",
     porque:
@@ -214,7 +214,7 @@ export const FRASES = [
     id: "long-story-short",
     cat: "idioms",
     en: "Long story short, we missed the flight.",
-    pron: "long stóri short, ui mist de fláit",
+    pron: "long stó-ri short, ui mist de fláit",
     es: "En resumen, perdimos el vuelo.",
     literal: "Larga historia corta.",
     porque:
@@ -256,7 +256,7 @@ export const FRASES = [
     id: "beat-around-bush",
     cat: "idioms",
     en: "Stop beating around the bush.",
-    pron: "stop bíiting aráund de bush",
+    pron: "stop bíi-ting a-ráund de bush",
     es: "Deja de andarte por las ramas.",
     literal: "Deja de golpear alrededor del arbusto.",
     porque:
@@ -362,7 +362,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Restaurante",
     en: "Could I get a coffee, please?",
-    pron: "kud ái guet a kófi, pliis",
+    pron: "kud ái guet a kó-fi, pliis",
     es: "¿Me pones un café, por favor?",
     porque:
       "En americano se pide con «Can I get…?» o «Could I get…?». El «get» aquí es recibir, no coger: no estás yendo tú a por ello.",
@@ -392,7 +392,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Tiendas",
     en: "I'm just looking, thanks.",
-    pron: "áim yast lúking, zanks",
+    pron: "áim yast lú-king, zanks",
     es: "Solo estoy mirando, gracias.",
     porque:
       "Es la respuesta fija a «Can I help you?» en una tienda. El «just» es lo que la hace amable: sin él suena cortante.",
@@ -421,7 +421,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Teléfono y trabajo",
     en: "Hi, I'm calling about the apartment.",
-    pron: "jái, áim kóling abáut di apártment",
+    pron: "jái, áim kó-ling a-báut di a-párt-ment",
     es: "Hola, llamo por lo del piso.",
     porque:
       "Es la fórmula fija para abrir una llamada: primero quién eres, después el motivo con «about». El presente continuo indica que estás llamando ahora.",
@@ -435,7 +435,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Teléfono y trabajo",
     en: "Can I take a message?",
-    pron: "kan ái téik a mésich",
+    pron: "kan ái téik a mé-sich",
     es: "¿Quiere dejar un recado?",
     porque:
       "El inglés lo dice desde quien atiende («¿puedo coger un mensaje?») y el español desde quien llama («¿quiere dejar…?»). Cambia el sujeto entero.",
@@ -450,7 +450,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Teléfono y trabajo",
     en: "Sorry I'm late — traffic was terrible.",
-    pron: "sóri áim léit — trafik uós téribol",
+    pron: "só-ri áim léit — tra-fik uós té-ri-bol",
     es: "Perdón por el retraso, había un tráfico horrible.",
     porque:
       "«Late» es adjetivo, así que va con el verbo be: estás tarde, no llegas tarde. Por eso nunca «I have late» ni «I come late».",
@@ -464,7 +464,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Aeropuerto y viaje",
     en: "Here's my boarding pass.",
-    pron: "jíers mái bórding pas",
+    pron: "jiers mái bór-ding pas",
     es: "Aquí tiene mi tarjeta de embarque.",
     porque:
       "«Board» es subir a bordo de un avión, un barco o un tren, y de ahí sale todo el vocabulario del aeropuerto: boarding pass, boarding gate, now boarding.",
@@ -478,7 +478,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Aeropuerto y viaje",
     en: "Window seat, please.",
-    pron: "uíndou siit, pliis",
+    pron: "uín-dou siit, pliis",
     es: "Ventanilla, por favor.",
     porque:
       "Las dos opciones son «window» (ventanilla) y «aisle» (pasillo). Ojo con aisle: se dice «áil», la s no se pronuncia.",
@@ -492,7 +492,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Aeropuerto y viaje",
     en: "How do I get to the station?",
-    pron: "jáu du ái guet tu de stéishon",
+    pron: "jáu du ái guet tu de stéi-shon",
     es: "¿Cómo llego a la estación?",
     porque:
       "«Get to» es llegar a un sitio. Es la fórmula normal para pedir indicaciones, más natural que «how can I arrive».",
@@ -506,7 +506,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Cortesía",
     en: "Excuse me, do you have a minute?",
-    pron: "ekskiús mi, du iu jav a mínit",
+    pron: "eks-kiús mi, du iu jav a mí-nit",
     es: "Perdona, ¿tienes un momento?",
     porque:
       "«Excuse me» se dice ANTES de molestar; «sorry», DESPUÉS de haber molestado. El español usa «perdona» para las dos cosas y ahí está la confusión.",
@@ -524,7 +524,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Cortesía",
     en: "You're welcome.",
-    pron: "iur uélkam",
+    pron: "iur uél-kam",
     es: "De nada.",
     porque:
       "Literalmente «eres bienvenido»: la ayuda que has dado queda a disposición del otro. Es la respuesta estándar a «thank you».",
@@ -539,7 +539,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Cortesía",
     en: "No worries.",
-    pron: "nóu uóris",
+    pron: "nóu uó-ris",
     es: "Tranquilo / no pasa nada.",
     porque:
       "Vale para dos cosas a la vez: responder a un «gracias» y quitar hierro a una disculpa. Por eso se oye tantísimo.",
@@ -553,7 +553,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Cuando no entiendes",
     en: "Sorry, could you say that again?",
-    pron: "sóri, kud iu séi dat aguén",
+    pron: "só-ri, kud iu séi dat a-guén",
     es: "Perdona, ¿lo puedes repetir?",
     porque:
       "Es más natural que «repeat», que suena a profesor mandando. «Say that again» es lo que se dice de verdad.",
@@ -597,7 +597,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Charla informal",
     en: "How was your weekend?",
-    pron: "jáu uós ior uíkend",
+    pron: "jáu uós ior uí-kend",
     es: "¿Qué tal el fin de semana?",
     porque:
       "Es la pregunta ritual de los lunes en cualquier oficina americana. Se espera respuesta corta y una pregunta de vuelta.",
@@ -626,7 +626,7 @@ export const FRASES = [
     id: "id-rather",
     cat: "moldes",
     en: "I'd rather stay home.",
-    pron: "áid ráder stéi jóum",
+    pron: "áid rá-der stéi jóum",
     es: "Prefiero quedarme en casa.",
     porque:
       "«I'd rather» es «would rather»: preferir entre opciones. Lo raro para un español es que detrás va el infinitivo SIN «to» — stay, no to stay.",
@@ -660,7 +660,7 @@ export const FRASES = [
     id: "looking-forward",
     cat: "moldes",
     en: "I'm looking forward to seeing you.",
-    pron: "áim lúking fóruard tu síing iu",
+    pron: "áim lú-king fó-ruard tu síing iu",
     es: "Tengo ganas de verte.",
     porque:
       "Aquí «to» es preposición, no parte de un infinitivo. Por eso detrás va -ing y no el verbo pelado: to seeing, no to see.",
@@ -674,7 +674,7 @@ export const FRASES = [
     id: "how-about",
     cat: "moldes",
     en: "How about Friday?",
-    pron: "jáu abáut fráidei",
+    pron: "jáu a-báut frái-dei",
     es: "¿Qué tal el viernes?",
     porque:
       "Es la manera más ligera de proponer algo. Detrás va un sustantivo o un verbo en -ing, nunca un infinitivo.",
@@ -687,7 +687,7 @@ export const FRASES = [
     id: "would-you-mind",
     cat: "moldes",
     en: "Would you mind closing the window?",
-    pron: "uúd iu máind klóusing de uíndou",
+    pron: "uúd iu máind klóu-sing de uín-dou",
     es: "¿Te importaría cerrar la ventana?",
     porque:
       "«Mind» es molestar, así que preguntas si le molestaría. Es la petición más educada del inglés. Detrás, -ing.",
@@ -701,7 +701,7 @@ export const FRASES = [
     id: "supposed-to",
     cat: "moldes",
     en: "I'm supposed to be there at nine.",
-    pron: "áim sapóust tu bi der at náin",
+    pron: "áim sa-póust tu bi der at náin",
     es: "Se supone que tengo que estar allí a las nueve.",
     porque:
       "Marca una obligación que viene de fuera —una norma, un acuerdo, lo que se espera de ti— sin que tú la hayas elegido.",
@@ -714,7 +714,7 @@ export const FRASES = [
     id: "the-more-the-more",
     cat: "moldes",
     en: "The more you practice, the easier it gets.",
-    pron: "de mor iu práktis, di íisier it guets",
+    pron: "de mor iu prák-tis, di íi-sier it guets",
     es: "Cuanto más practicas, más fácil se hace.",
     porque:
       "Es un molde doble, con «the» delante de los dos comparativos. Corresponde exacto a nuestro «cuanto más…, más…».",
@@ -740,7 +740,7 @@ export const FRASES = [
     id: "not-only-but-also",
     cat: "moldes",
     en: "She's not only smart but also kind.",
-    pron: "shis not óunli smart bat ólsou káind",
+    pron: "shis not óun-li smart bat ól-sou káind",
     es: "No solo es lista, sino también amable.",
     porque: "Molde de dos piezas para sumar cualidades. Se corresponde con nuestro «no solo…, sino también…».",
     cuando: "Neutro, algo cuidado. Bien en escritura y presentaciones.",
@@ -765,7 +765,7 @@ export const FRASES = [
     id: "there-is-there-are",
     cat: "moldes",
     en: "There's a problem with the file.",
-    pron: "ders a próblem uíd de fáil",
+    pron: "ders a pró-blem uíd de fáil",
     es: "Hay un problema con el archivo.",
     porque:
       "El inglés no tiene un verbo «haber» impersonal: monta la frase con «there» + be, y el verbo concuerda con lo que viene detrás.",
@@ -779,7 +779,7 @@ export const FRASES = [
     id: "make-vs-do",
     cat: "moldes",
     en: "I have to do my homework and make dinner.",
-    pron: "ái jav tu du mái jóumuerk and méik díner",
+    pron: "ái jav tu du mái jóu-muerk and méik dí-ner",
     es: "Tengo que hacer los deberes y preparar la cena.",
     porque:
       "El español tiene un solo «hacer» y el inglés lo parte en dos: «do» para tareas y trabajo, «make» para crear o producir algo nuevo.",
@@ -806,7 +806,7 @@ export const FRASES = [
     id: "had-better",
     cat: "moldes",
     en: "You'd better leave now.",
-    pron: "iud béter liiv náu",
+    pron: "iud bé-ter liiv náu",
     es: "Más vale que te vayas ya.",
     porque:
       "«Had better» es un consejo con aviso: si no lo haces, habrá consecuencias. Detrás va infinitivo sin «to».",
@@ -819,7 +819,7 @@ export const FRASES = [
     id: "it-takes",
     cat: "moldes",
     en: "It takes about an hour.",
-    pron: "it téiks abáut an áuar",
+    pron: "it téiks a-báut an áuar",
     es: "Se tarda una hora más o menos.",
     porque:
       "El inglés pone «it» como sujeto y el verbo «take» para el tiempo que algo requiere. El español lo dice con «se tarda», sin sujeto.",
@@ -835,7 +835,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I have 30 years.",
     en: "I'm 30 years old.",
-    pron: "áim zérti íers óuld",
+    pron: "áim zér-ti í-ers óuld",
     es: "Tengo 30 años.",
     porque:
       "La edad en inglés no se tiene, se es. Se usa el verbo «be», igual que con el hambre, el frío o el miedo: I'm hungry, I'm cold, I'm scared.",
@@ -849,7 +849,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I'm agree.",
     en: "I agree.",
-    pron: "ái agrí",
+    pron: "ái a-grí",
     es: "Estoy de acuerdo.",
     porque:
       "«Agree» ya es un verbo entero, no un adjetivo. Como decimos «estoy de acuerdo», colocamos un «estoy» que en inglés sobra por completo.",
@@ -863,7 +863,7 @@ export const FRASES = [
     cat: "errores",
     mal: "Explain me this.",
     en: "Explain this to me.",
-    pron: "ekspléin dis tu mi",
+    pron: "eks-pléin dis tu mi",
     es: "Explícame esto.",
     porque:
       "«Explain» no admite persona pegada detrás: hay que meter «to». Lo mismo pasa con say, describe y suggest.",
@@ -878,7 +878,7 @@ export const FRASES = [
     cat: "errores",
     mal: "People is nice here.",
     en: "People are nice here.",
-    pron: "pípol ar náis jíer",
+    pron: "pí-pol ar náis jier",
     es: "La gente es maja aquí.",
     porque:
       "«People» ya es el plural de «person»: son personas, en plural. El español lo trata como singular («la gente es») y de ahí el calco.",
@@ -892,7 +892,7 @@ export const FRASES = [
     cat: "errores",
     mal: "Actually I live in Madrid. (queriendo decir «actualmente»)",
     en: "Currently, I live in Madrid.",
-    pron: "kérentli, ái liv in madrid",
+    pron: "ké-rent-li, ái liv in ma-drid",
     es: "Actualmente vivo en Madrid.",
     porque:
       "«Actually» no es «actualmente»: significa «en realidad», y se usa para corregir a alguien. Actualmente es «currently» o «right now».",
@@ -920,7 +920,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I have hunger.",
     en: "I'm hungry.",
-    pron: "áim jángri",
+    pron: "áim ján-gri",
     es: "Tengo hambre.",
     porque:
       "Las sensaciones van con «be» y un adjetivo, no con «have» y un sustantivo. En español las tenemos; en inglés se está.",
@@ -934,7 +934,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I live here since 2020.",
     en: "I've lived here since 2020.",
-    pron: "áiv livd jíer sins tuénti tuénti",
+    pron: "áiv livd jier sins tuén-ti tuén-ti",
     es: "Vivo aquí desde 2020.",
     porque:
       "Algo que empezó antes y sigue pasando pide present perfect, no presente. El español usa el presente y por eso lo calcamos.",
@@ -948,7 +948,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I need more informations.",
     en: "I need more information.",
-    pron: "ái niid mor informéishon",
+    pron: "ái niid mor in-for-méi-shon",
     es: "Necesito más información.",
     porque:
       "«Information» es incontable en inglés: no tiene plural ni lleva «an». Para contar unidades se dice «a piece of information».",
@@ -963,7 +963,7 @@ export const FRASES = [
     cat: "errores",
     mal: "It depends of the weather.",
     en: "It depends on the weather.",
-    pron: "it dipénds on de uéder",
+    pron: "it di-pénds on de ué-der",
     es: "Depende del tiempo.",
     porque:
       "Cada verbo inglés lleva su preposición fija y no coincide con la española. «Depend» va con «on», aunque nosotros digamos «de».",
@@ -994,7 +994,7 @@ export const FRASES = [
     cat: "errores",
     mal: "Can I do you a question?",
     en: "Can I ask you a question?",
-    pron: "kan ái ask iu a kuéschon",
+    pron: "kan ái ask iu a kués-chon",
     es: "¿Te puedo hacer una pregunta?",
     porque:
       "Las preguntas no se hacen en inglés, se piden: el verbo es «ask». Es el mismo problema del «hacer» español, que se reparte entre do, make y otros verbos.",
@@ -1023,7 +1023,7 @@ export const FRASES = [
     cat: "errores",
     mal: "This one is more better.",
     en: "This one is better.",
-    pron: "dis uán is béter",
+    pron: "dis uán is bé-ter",
     es: "Este es mejor.",
     porque:
       "«Better» ya es el comparativo de «good»: lleva el «más» dentro. Ponerle «more» delante es decir «más mejor».",
@@ -1038,7 +1038,7 @@ export const FRASES = [
     cat: "errores",
     mal: "I'm living here since two years.",
     en: "I've been living here for two years.",
-    pron: "áiv bin líving jíer for tuu íers",
+    pron: "áiv bin lí-ving jier for tuu í-ers",
     es: "Llevo dos años viviendo aquí.",
     porque:
       "Nuestro «llevo + tiempo» no existe en inglés: se dice con present perfect continuous y «for» para la duración.",

@@ -26,7 +26,7 @@
  *
  * Al tocar cualquiera de los archivos de NUCLEO, sube VERSION.
  */
-const VERSION = 3;
+const VERSION = 4;
 const CACHE = `vocab-v${VERSION}`;
 
 // El núcleo se refresca junto: son los archivos que se rompen si no encajan
