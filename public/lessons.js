@@ -5614,6 +5614,837 @@ export const LESSONS = [
   },
 
 
+  /* ------------------------------------------------------------------ *
+   * SEGUNDA TANDA DE DIEZ
+   *
+   * Los huecos que quedaban tras las 63: ortografía, movimiento, causativos,
+   * orden de complementos y cuatro de pronunciación fina.
+   * ------------------------------------------------------------------ */
+
+  {
+    id: "ortografia-terminaciones",
+    title: "Cómo se escriben -s, -ed y -ing",
+    tag: "Base",
+    goal: "Dejar de dudar entre «stoped» y «stopped».",
+    blocks: [
+      {
+        t: "p",
+        text: "El inglés añade tres terminaciones constantemente: la -s de la tercera persona y los plurales, la -ed del pasado y la -ing del continuo. Al pegarlas, la palabra a veces cambia de forma. No son caprichos: hay cuatro reglas y con ellas se resuelve todo.",
+      },
+      {
+        t: "table",
+        head: ["Regla", "Cuándo", "Ejemplo"],
+        rows: [
+          ["Se dobla la última letra", "consonante + vocal + consonante y sílaba tónica al final", "stop → stopped, big → bigger"],
+          ["La -e muda desaparece", "el verbo acaba en -e", "make → making, live → living"],
+          ["La -y pasa a -i", "consonante + y", "study → studies, happy → happier"],
+          ["La -y se queda", "vocal + y", "play → played, boy → boys"],
+        ],
+      },
+      {
+        t: "p",
+        text: "La primera es la que más se falla, y tiene truco: solo se dobla si las tres últimas letras son consonante + vocal + consonante Y el golpe de voz cae en esa última sílaba. Por eso «stop» dobla (una sílaba, así que el golpe está ahí) y «visit» no (el golpe está en VI-sit, no en -sit).",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "Se dobla", "Por qué"],
+        rows: [
+          ["stop → stopped", "sí", "s-t-o-p: consonante, vocal, consonante, y una sílaba"],
+          ["plan → planned", "sí", "p-l-a-n, y una sílaba"],
+          ["begin → beginning", "sí", "el golpe cae en -GIN, la última sílaba"],
+          ["visit → visited", "no", "el golpe cae en VI-, no en la última"],
+          ["open → opened", "no", "el golpe cae en O-, no en -pen"],
+          ["rain → rained", "no", "acaba en dos vocales + consonante, no en CVC"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "He stoped. / She is makeing dinner. / He studys English.",
+        right: "He stopped. / She is making dinner. / He studies English.",
+        why: "Las tres reglas juntas: stop dobla la p, make pierde la e y study cambia la y por -ies.",
+      },
+      {
+        t: "tip",
+        text: "Con la -ing hay una que se olvida siempre: la -e desaparece pero la -y NUNCA cambia. «Study» hace «studies» en presente, pero «studying» en continuo, con la y intacta. Lo mismo con «play → playing» y «try → trying». La y solo se toca cuando detrás va -s o -ed.",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "+ -s", "+ -ed", "+ -ing"],
+        rows: [
+          ["stop", "stops", "stopped", "stopping"],
+          ["make", "makes", "(made)", "making"],
+          ["study", "studies", "studied", "studying"],
+          ["play", "plays", "played", "playing"],
+          ["watch", "watches", "watched", "watching"],
+          ["go", "goes", "(went)", "going"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y para la -s hay una regla extra: si la palabra acaba en un sonido silbante (-s, -sh, -ch, -x, -z) o en -o, se añade -ES y no solo -s. Es lo mismo que en español con «lápiz → lápices»: el idioma mete una vocal para poder pronunciarlo.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "He stopped the car.", pron: "ji stopt de kar", es: "Paró el coche." },
+          { en: "She's making dinner.", pron: "shis méi-king dí-ner", es: "Está haciendo la cena." },
+          { en: "He studies every night.", pron: "ji stá-dis év-ri náit", es: "Estudia todas las noches." },
+          { en: "I'm studying English.", pron: "aim stá-diing ín-glish", es: "Estoy estudiando inglés." },
+          { en: "She watches the news.", pron: "shi uó-chis de niús", es: "Ve las noticias." },
+          { en: "They played all day.", pron: "déi pléid ol déi", es: "Jugaron todo el día." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "Pasado de «stop»:", options: ["stoped", "stopped", "stopt"], answer: 1, why: "Consonante + vocal + consonante en sílaba tónica: se dobla." },
+      { q: "Forma -ing de «make»:", options: ["makeing", "making", "makking"], answer: 1, why: "La -e muda desaparece." },
+      { q: "Tercera persona de «study»:", options: ["studys", "studies", "studyes"], answer: 1, why: "Consonante + y → -ies." },
+      { q: "Forma -ing de «study»:", options: ["studing", "studiing", "studying"], answer: 2, why: "Con -ing la y nunca cambia: studying." },
+      { q: "Pasado de «play»:", options: ["plaied", "played", "playd"], answer: 1, why: "Vocal + y: la y se queda tal cual." },
+      { q: "¿Por qué «visit» NO dobla la t?", options: ["Porque acaba en t", "Porque el golpe de voz no cae en la última sílaba", "Porque es irregular"], answer: 1, why: "VI-sit lleva el acento delante: visited, con una sola t." },
+      { q: "¿Por qué «begin» SÍ dobla la n?", options: ["Porque es corto", "Porque el golpe cae en -GIN, la última sílaba", "Porque es irregular"], answer: 1, why: "beGINning: acento al final y CVC." },
+      { q: "Tercera persona de «watch»:", options: ["watchs", "watches", "watchies"], answer: 1, why: "Acabado en sonido silbante: se añade -es." },
+      { q: "Forma -ing de «live»:", options: ["liveing", "living", "livving"], answer: 1, why: "Pierde la -e muda." },
+      { q: "«Rain» en pasado es «rained», sin doblar, porque…", options: ["acaba en dos vocales + consonante", "es irregular", "tiene dos sílabas"], answer: 0, why: "La regla pide consonante + vocal + consonante; «ain» no lo es." },
+      { q: "La -y solo cambia cuando detrás va…", options: ["-ing", "-s o -ed", "cualquier terminación"], answer: 1, why: "studies, studied… pero studying." },
+    ],
+  },
+
+  {
+    id: "preposiciones-movimiento",
+    title: "Preposiciones de movimiento: to, into, from",
+    tag: "Palabras",
+    goal: "Saber cuándo hace falta «to» y cuándo sobra.",
+    blocks: [
+      {
+        t: "p",
+        text: "Las preposiciones de lugar (in, on, at) dicen DÓNDE estás. Estas dicen HACIA dónde vas, y funcionan distinto. La buena noticia es que aquí el español ayuda bastante: «to» es «a» y «from» es «de/desde», casi siempre.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Ejemplo"],
+        rows: [
+          ["to", "a (destino)", "I'm going to the office."],
+          ["from", "de, desde (origen)", "I'm coming from work."],
+          ["into", "dentro de (entrando)", "She walked into the room."],
+          ["out of", "fuera de (saliendo)", "He ran out of the house."],
+          ["through", "a través de", "We drove through the city."],
+          ["across", "al otro lado de", "We walked across the street."],
+          ["toward", "hacia", "He walked toward me."],
+        ],
+      },
+      {
+        t: "p",
+        text: "El problema no es entenderlas: es que hay tres palabras muy comunes que NO llevan «to», y a un español le sale ponérselo porque en español sí decimos «a». Son home, here y there.",
+      },
+      {
+        t: "error",
+        wrong: "I'm going to home. / Come to here.",
+        right: "I'm going home. / Come here.",
+        why: "«Home», «here» y «there» ya llevan la idea de dirección dentro, así que no necesitan preposición. Pero ojo: «I'm going to my house» SÍ lleva «to», porque «house» es un sustantivo normal.",
+      },
+      {
+        t: "table",
+        head: ["Con «to»", "Sin «to»"],
+        rows: [
+          ["go to the office", "go home"],
+          ["go to school", "go there"],
+          ["go to my house", "come here"],
+          ["go to bed", "go abroad"],
+          ["go to work", "go upstairs"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Otra pareja que se confunde: IN y INTO. «In» es dónde estás (quieto), «into» es entrar (movimiento). «She is in the room» es que está dentro; «she walked into the room» es que entró. En español la diferencia la marca el verbo («está en» / «entró en»), y por eso no la notamos.",
+      },
+      {
+        t: "table",
+        head: ["Quieto (in / on / at)", "En movimiento (into / onto / to)"],
+        rows: [
+          ["He is in the car.", "He got into the car."],
+          ["The book is on the table.", "I put the book onto the table."],
+          ["She is at the office.", "She went to the office."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Y el verbo «arrive» tiene su propia trampa: nunca lleva «to». Es «arrive IN» con ciudades y países, y «arrive AT» con sitios concretos. «I arrived to Madrid» es de los errores que más delatan a un hispanohablante, porque en español decimos «llegué A Madrid».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I'm going home now.", pron: "aim góing jóum náu", es: "Me voy a casa ahora." },
+          { en: "She walked into the room.", pron: "shi uokt ín-tu de ruum", es: "Entró en la habitación." },
+          { en: "We arrived in Madrid at ten.", pron: "ui a-ráivd in ma-drid at ten", es: "Llegamos a Madrid a las diez." },
+          { en: "He came from the office.", pron: "ji kéim from di ó-fis", es: "Vino de la oficina." },
+          { en: "We walked across the park.", pron: "ui uokt a-krós de park", es: "Cruzamos el parque." },
+          { en: "Get into the car, please.", pron: "guet ín-tu de kar, pliis", es: "Métete en el coche, por favor." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Me voy a casa» es…", options: ["I'm going to home", "I'm going home", "I'm going at home"], answer: 1, why: "«Home» no lleva preposición cuando indica dirección." },
+      { q: "«Voy a mi casa» es…", options: ["I'm going my house", "I'm going to my house", "I'm going at my house"], answer: 1, why: "«House» sí es un sustantivo normal: lleva «to»." },
+      { q: "«Ven aquí» es…", options: ["Come to here", "Come here", "Come at here"], answer: 1, why: "«Here» y «there» tampoco llevan preposición." },
+      { q: "«Llegué a Madrid» es…", options: ["I arrived to Madrid", "I arrived in Madrid", "I arrived at Madrid"], answer: 1, why: "«Arrive» nunca lleva «to». Con ciudades y países va «in»." },
+      { q: "«Llegué a la estación» es…", options: ["I arrived to the station", "I arrived at the station", "I arrived in the station"], answer: 1, why: "Con sitios concretos, «arrive at»." },
+      { q: "«Entró en la habitación» es…", options: ["She walked in the room", "She walked into the room", "She walked at the room"], answer: 1, why: "Hay movimiento de fuera a dentro: into." },
+      { q: "«Está en el coche» (quieto) es…", options: ["He is into the car", "He is in the car", "He is to the car"], answer: 1, why: "Sin movimiento: in." },
+      { q: "«From» equivale en español a…", options: ["a", "de, desde", "hacia"], answer: 1, why: "Marca el origen: I come from Spain." },
+      { q: "«Cruzamos la calle» es…", options: ["We walked across the street", "We walked through the street", "We walked into the street"], answer: 0, why: "«Across» es de un lado al otro; «through» es atravesar por dentro." },
+      { q: "¿Cuál NO lleva «to»?", options: ["go ___ school", "go ___ bed", "go ___ upstairs"], answer: 2, why: "Upstairs, home, here, there y abroad van sin preposición." },
+      { q: "¿Por qué a un español le sale «to home»?", options: ["Porque suena mejor", "Porque en español decimos «a casa»", "Porque es lo correcto en británico"], answer: 1, why: "Calcamos la «a» española, que ahí no existe en inglés." },
+    ],
+  },
+
+  {
+    id: "preposicion-al-final",
+    title: "La preposición al final: «Who are you talking to?»",
+    tag: "Estructuras",
+    goal: "Preguntar sin colocar la preposición donde la pone el español.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español la preposición va DELANTE de la palabra que pregunta: «¿CON quién hablas?», «¿DE qué estás hablando?». En inglés se queda al final de la frase, colgando: «Who are you talking TO?». A un hispanohablante le parece que la frase está incompleta, y por eso tiende a moverla al principio.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Dónde acabó la preposición"],
+        rows: [
+          ["¿Con quién hablas?", "Who are you talking to?", "al final"],
+          ["¿De qué estás hablando?", "What are you talking about?", "al final"],
+          ["¿A quién se lo diste?", "Who did you give it to?", "al final"],
+          ["¿De dónde eres?", "Where are you from?", "al final"],
+          ["¿En qué estás pensando?", "What are you thinking about?", "al final"],
+          ["¿A qué hora?", "What time?", "aquí no hay preposición"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "With who are you talking? / About what are you thinking?",
+        right: "Who are you talking with? / What are you thinking about?",
+        why: "Poner la preposición delante no es incorrecto del todo, pero suena antiguo y libresco. Nadie habla así. En inglés hablado va SIEMPRE al final.",
+      },
+      {
+        t: "p",
+        text: "La forma más segura de construirlas es partir de la frase afirmativa y quedarte con la preposición donde estaba. «I'm talking to Ana» → quito «Ana», pongo «Who» delante e invierto: «Who am I talking to?». La preposición no se mueve nunca de su sitio.",
+      },
+      {
+        t: "formula",
+        parts: ["WH-", "auxiliar", "sujeto", "verbo", "preposición"],
+        example: "What are you looking for?",
+      },
+      {
+        t: "table",
+        head: ["Afirmación", "Pregunta", "La preposición se quedó"],
+        rows: [
+          ["I'm looking for my keys.", "What are you looking for?", "con «look»"],
+          ["She's waiting for John.", "Who is she waiting for?", "con «wait»"],
+          ["He comes from Italy.", "Where does he come from?", "con «come»"],
+          ["I'm thinking about work.", "What are you thinking about?", "con «think»"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Esto pasa sobre todo con verbos que llevan preposición fija: look FOR, wait FOR, talk TO, think ABOUT, listen TO, depend ON. Si te sabes el verbo con su preposición pegada, la pregunta sale sola: solo tienes que dejarla donde estaba.",
+      },
+      {
+        t: "p",
+        text: "También ocurre fuera de las preguntas, en frases con «that» o sin nada: «This is the house I told you about» («la casa DE LA QUE te hablé»). Igual que antes, la preposición se queda al final y en español viaja al principio.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Who are you talking to?", pron: "juu ar yu tó-king tu", es: "¿Con quién hablas?" },
+          { en: "What are you looking for?", pron: "uót ar yu lú-king for", es: "¿Qué estás buscando?" },
+          { en: "Where are you from?", pron: "uér ar yu from", es: "¿De dónde eres?" },
+          { en: "Who is this present for?", pron: "juu is dis pré-sent for", es: "¿Para quién es este regalo?" },
+          { en: "What are you thinking about?", pron: "uót ar yu zín-king a-báut", es: "¿En qué estás pensando?" },
+          { en: "This is the book I told you about.", pron: "dis is de buk ai tóuld yu a-báut", es: "Este es el libro del que te hablé." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«¿Con quién hablas?» es…", options: ["With who are you talking?", "Who are you talking with?", "Who with are you talking?"], answer: 1, why: "La preposición va al final en inglés hablado." },
+      { q: "«¿De dónde eres?» es…", options: ["From where are you?", "Where are you from?", "Where from are you?"], answer: 1, why: "«From» se queda al final." },
+      { q: "«¿Qué estás buscando?» es…", options: ["What are you looking?", "For what are you looking?", "What are you looking for?"], answer: 2, why: "«Look for» es buscar: la preposición no se separa del verbo." },
+      { q: "¿Por qué a un español le sale ponerla delante?", options: ["Porque suena más formal", "Porque en español va delante: «¿CON quién?»", "Porque el inglés antiguo lo hacía"], answer: 1, why: "Copiamos la posición española sin darnos cuenta." },
+      { q: "«With whom are you speaking?» es…", options: ["incorrecto", "correcto pero suena antiguo y libresco", "lo normal al hablar"], answer: 1, why: "Existe, pero nadie habla así en el día a día." },
+      { q: "«¿En qué estás pensando?» es…", options: ["What are you thinking about?", "In what are you thinking?", "About what you think?"], answer: 0, why: "«Think about», con «about» al final." },
+      { q: "El truco para construirlas es…", options: ["mover la preposición al principio", "partir de la frase afirmativa y dejarla donde estaba", "quitarla"], answer: 1, why: "«I'm looking for X» → «What are you looking for?»" },
+      { q: "«¿Para quién es esto?» es…", options: ["For who is this?", "Who is this for?", "Who for is this?"], answer: 1, why: "«For» al final, igual que las demás." },
+      { q: "«El libro del que te hablé» es…", options: ["The book about I told you", "The book I told you about", "About the book I told you"], answer: 1, why: "Fuera de las preguntas pasa lo mismo: la preposición cierra la frase." },
+      { q: "¿Con qué verbos ocurre más?", options: ["Con los irregulares", "Con los que llevan preposición fija (look for, wait for, talk to)", "Con los modales"], answer: 1, why: "Si te sabes el verbo con su preposición, la pregunta sale sola." },
+      { q: "«¿A quién esperas?» es…", options: ["Who are you waiting for?", "For who are you waiting?", "Who do you wait?"], answer: 0, why: "«Wait for» es esperar a alguien." },
+    ],
+  },
+
+  {
+    id: "causativos",
+    title: "make, let y have: «hacer que alguien haga»",
+    tag: "Verbos",
+    goal: "Decir que alguien te obligó, te dejó o te lo mandó hacer.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español decimos «hacer que alguien haga algo», «dejar que alguien haga algo». Ese «que» pide subjuntivo y complica la frase. El inglés lo resuelve mucho más corto: pone el verbo pelado detrás de la persona, sin «que» y sin «to».",
+      },
+      {
+        t: "formula",
+        parts: ["make / let / have", "persona", "verbo base"],
+        example: "My mom made me clean my room.",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "Significa", "Ejemplo", "En español"],
+        rows: [
+          ["make", "obligar, hacer que", "She made me wait.", "Me hizo esperar."],
+          ["let", "dejar, permitir", "They let me go.", "Me dejaron ir."],
+          ["have", "mandar hacer (a un profesional)", "I had him fix the car.", "Le mandé arreglar el coche."],
+          ["get", "convencer para que", "I got him to help me.", "Conseguí que me ayudara."],
+          ["help", "ayudar a", "She helped me carry it.", "Me ayudó a llevarlo."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con la excepción, porque es la que más se falla: MAKE, LET y HAVE van con el verbo base pelado, pero GET va con «to». «She made me wait» pero «She got me TO wait». No hay lógica que lo explique — es así y hay que aprenderlo suelto. «Help» admite las dos: «help me carry» y «help me to carry» son correctas.",
+      },
+      {
+        t: "error",
+        wrong: "She made me to wait. / They let me to go. / My mom made that I clean my room.",
+        right: "She made me wait. / They let me go. / My mom made me clean my room.",
+        why: "Ni «to» ni «that». El inglés encadena persona + verbo base directamente. El «que» del español no se traduce por nada aquí.",
+      },
+      {
+        t: "p",
+        text: "Hay una diferencia importante entre MAKE y HAVE que en español no se nota, porque los dos caen en «hacer que». MAKE implica que la persona no tenía elección — hay presión. HAVE es neutro: es encargar algo a quien le corresponde hacerlo, normalmente porque le pagas o es su trabajo.",
+      },
+      {
+        t: "table",
+        head: ["Frase", "Qué transmite"],
+        rows: [
+          ["The teacher made us stay late.", "No nos dejó elegir: hubo obligación."],
+          ["I had the mechanic check the brakes.", "Se lo encargué: es su trabajo, sin presión."],
+          ["My boss made me work on Sunday.", "Me obligó, y no me hizo gracia."],
+          ["I had my hair cut.", "Fui a que me lo cortaran: encargo normal."],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y en pasiva, «make» recupera el «to» que no llevaba en activa: «They made me wait» pasa a «I was made TO wait». Es una rareza que solo afecta a make, y la ves sobre todo en textos escritos.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "My mom made me clean my room.", pron: "mai mam méid mi kliin mai ruum", es: "Mi madre me hizo limpiar mi cuarto." },
+          { en: "They didn't let me go.", pron: "déi dí-dent let mi góu", es: "No me dejaron ir." },
+          { en: "I had someone repair the roof.", pron: "ai jad sám-uan ri-pér de ruf", es: "Mandé que me arreglaran el tejado." },
+          { en: "She helped me carry the bags.", pron: "shi jelpt mi ká-ri de bags", es: "Me ayudó a llevar las bolsas." },
+          { en: "I got him to change his mind.", pron: "ai got jim tu chéinch jis máind", es: "Conseguí que cambiara de opinión." },
+          { en: "Let me help you.", pron: "let mi jelp yu", es: "Déjame ayudarte." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Me hizo esperar» es…", options: ["She made me to wait", "She made me wait", "She made that I wait"], answer: 1, why: "Make + persona + verbo base, sin «to» y sin «que»." },
+      { q: "«Me dejaron ir» es…", options: ["They let me to go", "They let me go", "They let that I go"], answer: 1, why: "Let también va con el verbo pelado." },
+      { q: "¿Cuál de estos SÍ lleva «to»?", options: ["make", "let", "get"], answer: 2, why: "«I got him TO help me». Es la excepción del grupo." },
+      { q: "El «que» de «hacer que alguien haga» se traduce…", options: ["por «that»", "por nada: no se traduce", "por «to»"], answer: 1, why: "El inglés encadena persona + verbo directamente." },
+      { q: "«Le mandé arreglar el coche» (a un mecánico) es…", options: ["I made him fix the car", "I had him fix the car", "I let him fix the car"], answer: 1, why: "«Have» es encargar algo a quien le corresponde hacerlo." },
+      { q: "«The teacher made us stay» transmite…", options: ["que nos lo encargó amablemente", "que no tuvimos elección", "que nos dejó quedarnos"], answer: 1, why: "«Make» implica obligación o presión." },
+      { q: "«Déjame ayudarte» es…", options: ["Let me to help you", "Let me help you", "Let me helping you"], answer: 1, why: "Let + persona + verbo base." },
+      { q: "«Conseguí que me ayudara» es…", options: ["I got him help me", "I got him to help me", "I made him to help me"], answer: 1, why: "«Get» es el único del grupo que pide «to»." },
+      { q: "«Help» admite…", options: ["solo verbo base", "solo «to»", "las dos formas"], answer: 2, why: "«Help me carry» y «help me to carry» son correctas." },
+      { q: "En pasiva, «They made me wait» pasa a…", options: ["I was made wait", "I was made to wait", "I was make to wait"], answer: 1, why: "«Make» recupera el «to» en la pasiva: es una rareza propia suya." },
+      { q: "«I had my hair cut» significa…", options: ["Me corté el pelo yo mismo", "Fui a que me lo cortaran", "Le corté el pelo a alguien"], answer: 1, why: "«Have» + cosa + participio: encargar un servicio." },
+    ],
+  },
+
+  {
+    id: "sustantivos-compuestos",
+    title: "«a five-year-old boy»: el sustantivo que no lleva plural",
+    tag: "Palabras",
+    goal: "Formar «una reunión de dos horas» sin poner la -s.",
+    blocks: [
+      {
+        t: "p",
+        text: "Cuando un sustantivo hace de adjetivo delante de otro, se comporta como un adjetivo inglés: se queda invariable. Y como los adjetivos ingleses nunca llevan plural, ese sustantivo tampoco lo lleva, aunque el número que tenga delante sea claramente plural.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Nunca"],
+        rows: [
+          ["una reunión de dos horas", "a two-hour meeting", "a two-hours meeting"],
+          ["un niño de cinco años", "a five-year-old boy", "a five-years-old boy"],
+          ["un viaje de tres días", "a three-day trip", "a three-days trip"],
+          ["un billete de diez euros", "a ten-euro note", "a ten-euros note"],
+          ["un descanso de veinte minutos", "a twenty-minute break", "a twenty-minutes break"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Fíjate en el orden, que también se da la vuelta: el español dice «reunión DE dos horas» (primero la cosa, luego la medida) y el inglés dice «two-hour meeting» (primero la medida, luego la cosa). Es el mismo giro que ya viste con el genitivo sajón y con los adjetivos: en inglés, lo que describe va DELANTE.",
+      },
+      {
+        t: "error",
+        wrong: "a two-hours meeting / He is a five-years-old boy.",
+        right: "a two-hour meeting / He is a five-year-old boy.",
+        why: "Delante del sustantivo, «hour» y «year» son adjetivos, y los adjetivos ingleses no tienen plural. La -s solo vuelve si dices la edad de la forma normal: «He is five years old», sin guiones y sin sustantivo detrás.",
+      },
+      {
+        t: "table",
+        head: ["Como adjetivo (sin -s)", "Como frase normal (con -s)"],
+        rows: [
+          ["a five-year-old boy", "The boy is five years old."],
+          ["a two-hour meeting", "The meeting lasted two hours."],
+          ["a three-day trip", "The trip lasted three days."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Los guiones son la señal: si la expresión va con guiones delante de un sustantivo, es un bloque que funciona como adjetivo, y ahí nunca hay -s. Si no hay guiones y la expresión va suelta detrás del verbo, es una frase normal y sí lleva plural.",
+      },
+      {
+        t: "p",
+        text: "Este mismo mecanismo explica un montón de palabras que ya usas sin pensarlas: «toothbrush» (cepillo de dientes, no «teethbrush»), «shoe shop» (zapatería), «car keys» (llaves del coche). El primer sustantivo va en singular y describe; el segundo es la cosa de verdad, y es el que puede llevar plural.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "It was a two-hour meeting.", pron: "it uós a tuu áu-er míi-ring", es: "Fue una reunión de dos horas." },
+          { en: "He has a five-year-old son.", pron: "ji jas a fáiv yier óuld san", es: "Tiene un hijo de cinco años." },
+          { en: "My son is five years old.", pron: "mai san is fáiv yiers óuld", es: "Mi hijo tiene cinco años." },
+          { en: "We took a three-day trip.", pron: "ui tuk a zrii-déi trip", es: "Hicimos un viaje de tres días." },
+          { en: "Where are the car keys?", pron: "uér ar de kar kiis", es: "¿Dónde están las llaves del coche?" },
+          { en: "I need a new toothbrush.", pron: "ai niid a niú túuz-brash", es: "Necesito un cepillo de dientes nuevo." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Una reunión de dos horas» es…", options: ["a two-hours meeting", "a two-hour meeting", "a meeting of two hours"], answer: 1, why: "Delante del sustantivo, «hour» hace de adjetivo y no lleva -s." },
+      { q: "«Un niño de cinco años» es…", options: ["a five-years-old boy", "a five-year-old boy", "a boy of five years"], answer: 1, why: "Sin -s, con guiones, y delante del sustantivo." },
+      { q: "«Mi hijo tiene cinco años» es…", options: ["My son is five year old", "My son is five years old", "My son has five years"], answer: 1, why: "Aquí sí lleva -s: es una frase normal, no un adjetivo compuesto." },
+      { q: "¿Por qué no lleva -s en «a two-hour meeting»?", options: ["Porque «hour» es incontable", "Porque hace de adjetivo, y los adjetivos ingleses no tienen plural", "Porque va con guion"], answer: 1, why: "Es el mismo motivo que «two red cars», nunca «reds»." },
+      { q: "El orden en inglés es…", options: ["cosa + de + medida", "medida + cosa", "da igual"], answer: 1, why: "«Two-hour meeting»: lo que describe va delante, como todos los adjetivos." },
+      { q: "«Un viaje de tres días» es…", options: ["a three-days trip", "a three-day trip", "a trip of three days"], answer: 1, why: "Singular delante del sustantivo." },
+      { q: "«Cepillo de dientes» es…", options: ["teethbrush", "toothbrush", "teeth brush"], answer: 1, why: "El primer sustantivo va en singular aunque sean varios dientes." },
+      { q: "En un compuesto, ¿cuál puede llevar plural?", options: ["el primero", "el segundo", "ninguno"], answer: 1, why: "«Car keys»: el segundo es la cosa de verdad." },
+      { q: "Los guiones indican que…", options: ["la expresión funciona como un adjetivo", "hay un error", "es plural"], answer: 0, why: "Con guiones y delante de un sustantivo: bloque adjetivo, sin -s." },
+      { q: "«Un descanso de veinte minutos» es…", options: ["a twenty-minutes break", "a twenty-minute break", "a break of twenty minutes"], answer: 1, why: "Minute en singular al hacer de adjetivo." },
+      { q: "«The trip lasted three ___.»", options: ["day", "days", "day's"], answer: 1, why: "Aquí «days» va suelto detrás del verbo: plural normal." },
+    ],
+  },
+
+  {
+    id: "also-too-aswell",
+    title: "also, too, as well y either: los cuatro «también»",
+    tag: "Palabras",
+    goal: "Colocar «también» donde toca en cada caso.",
+    blocks: [
+      {
+        t: "p",
+        text: "El español tiene «también» y «tampoco», y con eso resuelve todo. El inglés tiene cuatro palabras para «también» y una para «tampoco», y lo que las separa no es el significado —significan lo mismo— sino DÓNDE van en la frase y en qué registro se usan.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Dónde va", "Registro", "Ejemplo"],
+        rows: [
+          ["also", "en medio, antes del verbo", "más formal, escrito", "I also speak French."],
+          ["too", "al final de la frase", "el más normal al hablar", "I speak French too."],
+          ["as well", "al final de la frase", "muy natural, informal", "I speak French as well."],
+          ["either", "al final, en NEGATIVAS", "es el «tampoco»", "I don't speak French either."],
+        ],
+      },
+      {
+        t: "p",
+        text: "La regla que resuelve el 90 % de los casos: TOO y AS WELL van al final; ALSO va en medio. Y «also» sigue exactamente la misma regla de posición que «always» o «never»: entre el sujeto y el verbo principal, pero DETRÁS del verbo «to be».",
+      },
+      {
+        t: "table",
+        head: ["Frase", "Dónde cae «also»", "Por qué"],
+        rows: [
+          ["I also work here.", "antes del verbo", "verbo normal"],
+          ["I am also tired.", "detrás de «am»", "con «be» va detrás"],
+          ["I have also finished.", "detrás del auxiliar", "con auxiliar, detrás del primero"],
+          ["I can also swim.", "detrás del modal", "el modal es el auxiliar"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I speak French also. / I don't speak French too.",
+        right: "I speak French too. / I don't speak French either.",
+        why: "«Also» no va al final de la frase, y en negativa el «también» se convierte en «either». Decir «too» en una frase negativa es de los errores más frecuentes del hispanohablante.",
+      },
+      {
+        t: "tip",
+        text: "Para el «tampoco» hay dos opciones y conviene no mezclarlas: si la frase ya es negativa, va EITHER al final («I don't like it either»). Si empiezas la respuesta de cero, va NEITHER al principio con el verbo invertido («Neither do I»). Son la misma idea con dos construcciones distintas.",
+      },
+      {
+        t: "p",
+        text: "Y ojo con «too», que tiene otro significado completamente distinto según dónde esté: al final de la frase es «también», pero delante de un adjetivo es «demasiado». «It's expensive too» es «también es caro»; «It's too expensive» es «es demasiado caro». La posición lo cambia todo.",
+      },
+      {
+        t: "table",
+        head: ["Frase", "Significa"],
+        rows: [
+          ["It's expensive too.", "También es caro."],
+          ["It's too expensive.", "Es demasiado caro."],
+          ["I'm tired too.", "Yo también estoy cansado."],
+          ["I'm too tired.", "Estoy demasiado cansado."],
+        ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I speak French too.", pron: "ai spiik french tuu", es: "También hablo francés." },
+          { en: "I also speak French.", pron: "ai ól-sou spiik french", es: "También hablo francés." },
+          { en: "She's coming as well.", pron: "shis ká-ming as uel", es: "Ella también viene." },
+          { en: "I don't like it either.", pron: "ai dóunt láik it ái-der", es: "A mí tampoco me gusta." },
+          { en: "I am also tired.", pron: "ai am ól-sou tái-erd", es: "Yo también estoy cansado." },
+          { en: "It's too expensive.", pron: "its tuu iks-pén-siv", es: "Es demasiado caro." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«También hablo francés» (al hablar, lo más normal) es…", options: ["I also speak French", "I speak French too", "I speak French also"], answer: 1, why: "«Too» al final es lo más natural en conversación." },
+      { q: "¿Dónde va «also»?", options: ["al final", "en medio, antes del verbo principal", "al principio"], answer: 1, why: "Sigue la regla de «always»: entre sujeto y verbo." },
+      { q: "«Yo también estoy cansado» con «also» es…", options: ["I also am tired", "I am also tired", "I am tired also"], answer: 1, why: "Con el verbo «be», «also» va DETRÁS." },
+      { q: "«A mí tampoco me gusta» es…", options: ["I don't like it too", "I don't like it either", "I don't like it also"], answer: 1, why: "En negativas, «también» se convierte en «either»." },
+      { q: "¿Qué palabra es el «tampoco» al final de una frase?", options: ["too", "either", "as well"], answer: 1, why: "«Either» solo aparece en negativas." },
+      { q: "«It's too expensive» significa…", options: ["También es caro", "Es demasiado caro", "Es bastante caro"], answer: 1, why: "«Too» delante de un adjetivo es «demasiado»." },
+      { q: "«It's expensive too» significa…", options: ["También es caro", "Es demasiado caro", "Es carísimo"], answer: 0, why: "Al final de la frase, «too» es «también»." },
+      { q: "«As well» va…", options: ["al final", "en medio", "al principio"], answer: 0, why: "Como «too», cierra la frase." },
+      { q: "¿Cuál es más formal o de escrito?", options: ["too", "as well", "also"], answer: 2, why: "«Also» es el más formal de los tres." },
+      { q: "«I don't speak French ___» (tampoco)", options: ["too", "either", "also"], answer: 1, why: "Frase negativa: either." },
+      { q: "Si empiezas la respuesta de cero, «yo tampoco» es…", options: ["Either do I", "Neither do I", "Too do I"], answer: 1, why: "«Either» va al final de una frase; «neither» abre la respuesta." },
+    ],
+  },
+
+  {
+    id: "orden-complementos",
+    title: "El orden de los complementos: cómo, dónde, cuándo",
+    tag: "Base",
+    goal: "Colocar los complementos en el orden que espera un nativo.",
+    blocks: [
+      {
+        t: "p",
+        text: "Ya sabes que el inglés fija el orden sujeto + verbo + objeto. Lo que casi nunca se explica es que los complementos que van DETRÁS también tienen un orden fijo, y el español no lo tiene: nosotros los movemos libremente y suena igual de bien. En inglés no.",
+      },
+      {
+        t: "formula",
+        parts: ["verbo", "objeto", "cómo", "dónde", "cuándo"],
+        example: "She sang the song beautifully at the party last night.",
+      },
+      {
+        t: "table",
+        head: ["Posición", "Responde a", "Ejemplo"],
+        rows: [
+          ["1. modo", "¿cómo?", "quietly, well, carefully"],
+          ["2. lugar", "¿dónde?", "at home, in Madrid, here"],
+          ["3. tiempo", "¿cuándo?", "yesterday, at six, every day"],
+        ],
+      },
+      {
+        t: "p",
+        text: "El error clásico del hispanohablante es meter el tiempo antes del lugar, porque en español lo hacemos constantemente: «estudié ayer en casa» suena perfecto. En inglés hay que decir «I studied at home yesterday»: primero dónde, después cuándo.",
+      },
+      {
+        t: "error",
+        wrong: "I studied yesterday at home. / She works every day in an office.",
+        right: "I studied at home yesterday. / She works in an office every day.",
+        why: "El orden es lugar y luego tiempo, nunca al revés. En español los dos órdenes suenan bien, así que hay que corregirlo a conciencia.",
+      },
+      {
+        t: "p",
+        text: "Hay una excepción muy usada: el complemento de tiempo puede irse al PRINCIPIO de la frase, y ahí suena perfectamente natural. Se hace cuando quieres darle importancia o situar la escena. Lo que no puede es quedarse en medio.",
+      },
+      {
+        t: "table",
+        head: ["Correcto", "Correcto", "Incorrecto"],
+        rows: [
+          ["I studied at home yesterday.", "Yesterday I studied at home.", "I studied yesterday at home."],
+          ["We met in Madrid last year.", "Last year we met in Madrid.", "We met last year in Madrid."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Y una regla que se salta todo lo anterior: NADA se mete entre el verbo y su objeto directo. «I like very much coffee» está mal por eso; es «I like coffee very much». Si dudas, primero cierra el verbo con su objeto y luego añade lo demás.",
+      },
+      {
+        t: "error",
+        wrong: "I like very much this city. / He speaks very well English.",
+        right: "I like this city very much. / He speaks English very well.",
+        why: "El objeto va pegado al verbo. Los adverbios y complementos esperan su turno detrás.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I studied at home yesterday.", pron: "ai stá-did at jóum yés-ter-dei", es: "Estudié ayer en casa." },
+          { en: "She works in an office every day.", pron: "shi uérks in an ó-fis év-ri déi", es: "Trabaja todos los días en una oficina." },
+          { en: "He speaks English very well.", pron: "ji spiiks ín-glish vé-ri uel", es: "Habla inglés muy bien." },
+          { en: "Last year we met in Madrid.", pron: "last yier ui met in ma-drid", es: "El año pasado nos conocimos en Madrid." },
+          { en: "I like this city very much.", pron: "ai láik dis sí-ri vé-ri mach", es: "Me gusta mucho esta ciudad." },
+          { en: "They arrived here late last night.", pron: "déi a-ráivd jier léit last náit", es: "Llegaron aquí tarde anoche." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "El orden de los complementos es…", options: ["cuándo, dónde, cómo", "cómo, dónde, cuándo", "dónde, cuándo, cómo"], answer: 1, why: "Modo, lugar y tiempo, en ese orden." },
+      { q: "«Estudié ayer en casa» es…", options: ["I studied yesterday at home", "I studied at home yesterday", "I yesterday studied at home"], answer: 1, why: "Primero el lugar, después el tiempo." },
+      { q: "¿Dónde SÍ puede ir el tiempo, aparte del final?", options: ["en medio", "al principio de la frase", "entre el verbo y el objeto"], answer: 1, why: "«Yesterday I studied at home» es perfectamente natural." },
+      { q: "«Me gusta mucho esta ciudad» es…", options: ["I like very much this city", "I like this city very much", "I very much like this city"], answer: 1, why: "Nada se mete entre el verbo y su objeto directo." },
+      { q: "«Habla inglés muy bien» es…", options: ["He speaks very well English", "He speaks English very well", "He very well speaks English"], answer: 1, why: "Primero el objeto (English), luego el adverbio." },
+      { q: "¿Por qué a un español le sale «yesterday at home»?", options: ["Porque es más corto", "Porque en español los dos órdenes suenan bien", "Porque es lo correcto en británico"], answer: 1, why: "El español no fija ese orden, así que no lo notamos." },
+      { q: "«Trabaja todos los días en una oficina» es…", options: ["She works every day in an office", "She works in an office every day", "She every day works in an office"], answer: 1, why: "Lugar antes que tiempo." },
+      { q: "La regla que se salta a todas las demás es…", options: ["el tiempo va siempre al final", "nada se mete entre el verbo y su objeto", "el modo va primero"], answer: 1, why: "Cierra el verbo con su objeto y luego añade lo demás." },
+      { q: "«Cantó la canción maravillosamente» — ¿dónde va «beautifully»?", options: ["antes de «the song»", "después de «the song»", "al principio"], answer: 1, why: "Detrás del objeto: «She sang the song beautifully»." },
+      { q: "«Llegaron aquí anoche» es…", options: ["They arrived last night here", "They arrived here last night", "They here arrived last night"], answer: 1, why: "«Here» es lugar y va antes que el tiempo." },
+      { q: "En español este orden…", options: ["es igual de estricto", "no está fijado, por eso cuesta", "no existe"], answer: 1, why: "Podemos decirlo de varias maneras y todas suenan bien." },
+    ],
+  },
+
+  {
+    id: "pronunciacion-s",
+    title: "Cómo suena la -s final",
+    tag: "Empieza aquí",
+    goal: "Saber si la -s suena «s», «z» o «is».",
+    blocks: [
+      {
+        t: "p",
+        text: "La -s aparece por todas partes: plurales, tercera persona, posesivos. Y no suena siempre igual — tiene tres pronunciaciones distintas, exactamente igual que la -ed del pasado. La buena noticia es que no hay que elegir: sale sola según el sonido que va antes.",
+      },
+      {
+        t: "table",
+        head: ["Suena", "Cuándo", "Ejemplos"],
+        rows: [
+          ["/s/ como en español", "tras sonido sordo: p, t, k, f", "books, cats, stops, laughs"],
+          ["/z/ zumbando", "tras sonido sonoro: vocales, b, d, g, l, m, n, r, v", "dogs, cars, plays, gives"],
+          ["/ɪz/ una sílaba entera", "tras sonido silbante: s, z, sh, ch, x, ge", "buses, watches, boxes, changes"],
+        ],
+      },
+      {
+        t: "p",
+        text: "El caso importante es el tercero, porque cambia el número de sílabas. «Watch» tiene una sílaba y «watches» tiene dos. Si no lo haces, la palabra no se entiende: «watches» dicho como «uochs» no suena a nada.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Con -s", "Sílabas"],
+        rows: [
+          ["book", "books (buks)", "1 → 1"],
+          ["dog", "dogs (dogs, con la s zumbando)", "1 → 1"],
+          ["watch", "watches (uó-chis)", "1 → 2"],
+          ["bus", "buses (bá-sis)", "1 → 2"],
+          ["box", "boxes (bók-sis)", "1 → 2"],
+          ["page", "pages (péi-yis)", "1 → 2"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "El truco para no tener que pensarlo: pon la mano en la garganta. Si la última letra hace vibrar (dog, car, play), la -s vibra también y suena /z/. Si no vibra (book, cat, stop), la -s tampoco y suena /s/. Es el mismo mecanismo que la -ed, así que si ya te sabes aquella, esta es gratis.",
+      },
+      {
+        t: "error",
+        wrong: "«watches» dicho «uochs» / «buses» dicho «bass»",
+        right: "«watches» = uó-chis / «buses» = bá-sis",
+        why: "Tras un sonido silbante la -s necesita una vocal delante para poder pronunciarse, y eso añade una sílaba entera. Es lo mismo que en español con «lápiz → lápices».",
+      },
+      {
+        t: "p",
+        text: "Para un hispanohablante lo más difícil no es el tercer caso, sino el segundo: la -s que ZUMBA. En español la ese nunca vibra, así que decimos «dogs» con la ese española. No es un error grave y se te entiende, pero es una de las cosas que más marcan el acento extranjero. Practicarlo es fácil: alarga la ese de «dogs» hasta que notes el cosquilleo.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "The books are on the table.", pron: "de buks ar on de téi-bol", es: "Los libros están en la mesa." },
+          { en: "My dogs love the park.", pron: "mai dogs lav de park", es: "A mis perros les encanta el parque." },
+          { en: "She watches the news.", pron: "shi uó-chis de niús", es: "Ve las noticias." },
+          { en: "There are two buses.", pron: "der ar tuu bá-sis", es: "Hay dos autobuses." },
+          { en: "He always changes his mind.", pron: "ji ól-ueis chéin-yis jis máind", es: "Siempre cambia de opinión." },
+          { en: "The cats are sleeping.", pron: "de kats ar slíi-ping", es: "Los gatos están durmiendo." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "¿Cuántas maneras hay de pronunciar la -s final?", options: ["Una", "Dos", "Tres"], answer: 2, why: "/s/, /z/ y /ɪz/, según el sonido que va antes." },
+      { q: "En «books» la -s suena…", options: ["como la ese española", "zumbando (/z/)", "como una sílaba aparte"], answer: 0, why: "Tras un sonido sordo (k), la -s es sorda." },
+      { q: "En «dogs» la -s suena…", options: ["como la ese española", "zumbando (/z/)", "como una sílaba aparte"], answer: 1, why: "Tras un sonido sonoro (g), la -s vibra." },
+      { q: "«Watches» tiene…", options: ["una sílaba", "dos sílabas", "tres sílabas"], answer: 1, why: "uó-chis: tras un silbante, la -s añade sílaba." },
+      { q: "¿Tras qué sonidos la -s añade una sílaba entera?", options: ["p, t, k", "s, sh, ch, x, ge", "vocales"], answer: 1, why: "Los silbantes necesitan una vocal para poder pegar la -s." },
+      { q: "«Buses» se pronuncia…", options: ["bass", "bá-sis", "biu-ses"], answer: 1, why: "Dos sílabas: bá-sis." },
+      { q: "El truco para saber si zumba es…", options: ["contar las letras", "poner la mano en la garganta", "mirar si es plural"], answer: 1, why: "Si la letra anterior vibra, la -s vibra." },
+      { q: "Esta regla es la misma que la de…", options: ["la -ed del pasado", "la -ing", "los artículos"], answer: 0, why: "Sordo/sonoro/silbante: idéntico mecanismo." },
+      { q: "Lo que más marca el acento español aquí es…", options: ["no añadir la sílaba", "no hacer zumbar la -s", "pronunciarla muy fuerte"], answer: 1, why: "En español la ese nunca vibra, y se nota." },
+      { q: "«Boxes» tiene…", options: ["una sílaba", "dos sílabas", "tres sílabas"], answer: 1, why: "bók-sis: la x es silbante." },
+      { q: "«Cats» y «dogs» se pronuncian…", options: ["las dos con ese española", "cats con /s/ y dogs con /z/", "las dos zumbando"], answer: 1, why: "La t es sorda y la g es sonora." },
+    ],
+  },
+
+  {
+    id: "vocales-parecidas",
+    title: "sheep o ship: las vocales que confundes",
+    tag: "Pronunciación",
+    goal: "Distinguir las parejas de vocales que en español son una sola.",
+    blocks: [
+      {
+        t: "p",
+        text: "El español tiene cinco vocales y el inglés tiene el doble. Eso significa que hay parejas de sonidos ingleses que a tu oído le llegan como una sola vocal española, y por eso confundes palabras que para un nativo no se parecen en nada. No es que oigas mal: es que tu idioma nunca te pidió distinguirlos.",
+      },
+      {
+        t: "table",
+        head: ["Pareja", "Corta", "Larga", "En esta app"],
+        rows: [
+          ["i", "ship (barco)", "sheep (oveja)", "ship / shiip"],
+          ["i", "sit (sentarse)", "seat (asiento)", "sit / siit"],
+          ["i", "live (vivir)", "leave (irse)", "liv / liiv"],
+          ["u", "full (lleno)", "fool (tonto)", "ful / fuul"],
+          ["a", "cat (gato)", "cut (cortar)", "kat / kat"],
+        ],
+      },
+      {
+        t: "p",
+        text: "La primera pareja es la famosa, y la diferencia no es solo de duración aunque lo parezca. La corta (ship) se dice con la boca más relajada y el sonido tira ligeramente hacia la «e» española. La larga (sheep) es una i tensa y estirada, como cuando dices «sííí». Si solo alargas la i española, se entiende, pero el contraste no queda claro.",
+      },
+      {
+        t: "tip",
+        text: "Truco práctico: para la corta, relaja la mandíbula y piensa en una i que se acerca a la e — algo entre «ship» y «shep». Para la larga, sonríe y tensa. Suena exagerado al principio, y precisamente por eso funciona: los hispanohablantes tendemos a quedarnos en el punto medio, que es donde no se distingue nada.",
+      },
+      {
+        t: "p",
+        text: "La última fila de la tabla es la que peor se lleva esta notación, y conviene decirlo claro: «cat» y «cut» se escriben los dos «kat» en esta app, porque el español no tiene ninguna letra para el sonido de «cat». Es una a más abierta, dicha con la boca ancha, tirando a «e». En «cut» es la a española normal.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Cómo se escribe aquí", "Cómo suena de verdad"],
+        rows: [
+          ["cat", "kat", "a muy abierta, tirando a «e»"],
+          ["cut", "kat", "a española normal"],
+          ["bad", "bad", "a muy abierta, tirando a «e»"],
+          ["bed", "bed", "e española normal"],
+          ["man", "man", "a muy abierta"],
+          ["men", "men", "e española normal"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "Decir «I want a sheet of paper» con la i corta.",
+        right: "Alarga la i: shiit, no «shit».",
+        why: "Es el ejemplo que se pone siempre porque el malentendido es real y muy incómodo. Lo mismo pasa con «beach» y «sheet»: si acortas la i, dices otra palabra bastante distinta.",
+      },
+      {
+        t: "p",
+        text: "No hace falta dominar esto para que te entiendan — el contexto salva casi todo. Pero saber que la distinción EXISTE ya cambia cómo escuchas: a partir de ahora las vas a oír, y oírlas es el primer paso para decirlas.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "The ship is big.", pron: "de ship is big", es: "El barco es grande." },
+          { en: "The sheep is white.", pron: "de shiip is uáit", es: "La oveja es blanca." },
+          { en: "Please sit on this seat.", pron: "pliis sit on dis siit", es: "Siéntate en este asiento, por favor." },
+          { en: "I live here, I won't leave.", pron: "ai liv jier, ai uóunt liiv", es: "Vivo aquí, no me voy a ir." },
+          { en: "The glass is full.", pron: "de glas is ful", es: "El vaso está lleno." },
+          { en: "I need a sheet of paper.", pron: "ai niid a shiit ov péi-per", es: "Necesito una hoja de papel." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "¿Por qué confundimos «ship» y «sheep»?", options: ["Porque se escriben parecido", "Porque el español tiene una sola i y el inglés dos", "Porque son sinónimos"], answer: 1, why: "Tu idioma nunca te pidió distinguir esos dos sonidos." },
+      { q: "«Sheep» (oveja) lleva la i…", options: ["corta y relajada", "larga y tensa", "igual que en español"], answer: 1, why: "shiip: i estirada, como cuando dices «sííí»." },
+      { q: "«Ship» (barco) lleva la i…", options: ["larga y tensa", "corta y relajada, tirando a «e»", "muda"], answer: 1, why: "Boca más relajada, sonido entre i y e." },
+      { q: "«Leave» significa…", options: ["vivir", "irse", "dejar caer"], answer: 1, why: "«Live» (liv) es vivir; «leave» (liiv) es irse." },
+      { q: "¿Cuántas vocales tiene el inglés frente al español?", options: ["Las mismas cinco", "Aproximadamente el doble", "Menos"], answer: 1, why: "De ahí que varias parejas suenen iguales a nuestro oído." },
+      { q: "«Cat» y «cut» en esta app se escriben…", options: ["distinto", "igual, «kat», porque el español no tiene esa vocal", "no aparecen"], answer: 1, why: "La a de «cat» es más abierta y no hay letra española para ella." },
+      { q: "La «a» de «cat» tira hacia…", options: ["la o", "la e", "la u"], answer: 1, why: "Es una a muy abierta, con la boca ancha, cercana a la e." },
+      { q: "La «a» de «cut» es…", options: ["la a española normal", "muy abierta", "una e"], answer: 0, why: "Por eso «cut» y «cat» se escriben igual aquí pero no suenan igual." },
+      { q: "El error del hispanohablante suele ser…", options: ["exagerar la diferencia", "quedarse en un punto medio donde no se distingue", "no pronunciar la vocal"], answer: 1, why: "Exagerar al principio es justo lo que ayuda." },
+      { q: "«Full» y «fool» se diferencian en…", options: ["la consonante", "la duración y tensión de la u", "el acento"], answer: 1, why: "ful (corta) frente a fuul (larga)." },
+      { q: "Saber que la distinción existe sirve para…", options: ["nada, si no la dices", "empezar a OÍRLA, que es el primer paso", "aprobar exámenes"], answer: 1, why: "Oírlas es lo que después te permite decirlas." },
+    ],
+  },
+
+  {
+    id: "letras-mudas",
+    title: "Letras que no se pronuncian",
+    tag: "Pronunciación",
+    goal: "Dejar de pronunciar la k de «knife» y la b de «climb».",
+    blocks: [
+      {
+        t: "p",
+        text: "El inglés escribe letras que no dice. No son excepciones sueltas: son grupos con patrón, casi todos restos de cómo se pronunciaban las palabras hace siglos. Si te aprendes los grupos, dejas de fallar en decenas de palabras a la vez.",
+      },
+      {
+        t: "table",
+        head: ["Grupo", "Muda", "Ejemplos"],
+        rows: [
+          ["kn-", "la k", "know (nóu), knife (náif), knee, knock"],
+          ["wr-", "la w", "write (ráit), wrong (rong), wrist"],
+          ["-mb", "la b final", "climb (kláim), thumb, lamb, comb"],
+          ["-gh", "casi siempre muda", "night (náit), light, though (dóu)"],
+          ["h- inicial", "en algunas", "hour (áu-er), honest (ó-nest)"],
+          ["-t- en -sten", "la t", "listen (lí-sen), castle, whistle"],
+          ["ps-", "la p", "psychology, psychiatrist"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Ojo con la «h», porque va justo al revés de lo que espera un español. En español la h NUNCA suena; en inglés casi siempre SÍ suena (house, have, help), y solo enmudece en un puñado de palabras: hour, honest, honor, heir. Es decir, el error del hispanohablante aquí es el contrario del habitual: se come una h que sí había que decir.",
+      },
+      {
+        t: "error",
+        wrong: "«have» dicho «av» / «know» dicho «kanou» / «climb» dicho «klaimb»",
+        right: "jav / nóu / kláim",
+        why: "La h inglesa se pronuncia (en esta app se escribe «j»), pero la k de kn- y la b de -mb son mudas del todo.",
+      },
+      {
+        t: "tip",
+        text: "Regla práctica para la «gh»: casi nunca suena. En «night», «light», «through» o «though» no se dice nada. Solo suena, y como una F, en un grupito pequeño: «enough» (i-náf), «laugh» (laf), «cough», «tough» (taf). Si ves «gh» y no es una de esas, no la digas.",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Se escribe", "Se dice", "Letra muda"],
+        rows: [
+          ["knife", "k-n-i-f-e", "náif", "k y e"],
+          ["write", "w-r-i-t-e", "ráit", "w y e"],
+          ["climb", "c-l-i-m-b", "kláim", "b"],
+          ["hour", "h-o-u-r", "áu-er", "h"],
+          ["listen", "l-i-s-t-e-n", "lí-sen", "t"],
+          ["island", "i-s-l-a-n-d", "ái-land", "s"],
+          ["answer", "a-n-s-w-e-r", "án-ser", "w"],
+          ["half", "h-a-l-f", "jaf", "l"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y la más silenciosa de todas: la -e final. Casi nunca se pronuncia, pero no está de adorno — su trabajo es alargar la vocal de antes. «Hat» es «jat» y «hate» es «jéit»; «bit» es «bit» y «bite» es «báit». La e no suena, pero cambia la palabra entera.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I know how to write.", pron: "ai nóu jáu tu ráit", es: "Sé escribir." },
+          { en: "Be careful with that knife.", pron: "bi kér-ful uid dat náif", es: "Ten cuidado con ese cuchillo." },
+          { en: "It took an hour and a half.", pron: "it tuk an áu-er and a jaf", es: "Llevó una hora y media." },
+          { en: "Listen to the answer.", pron: "lí-sen tu di án-ser", es: "Escucha la respuesta." },
+          { en: "He's an honest man.", pron: "jis an ó-nest man", es: "Es un hombre honesto." },
+          { en: "That's the wrong island.", pron: "dats de rong ái-land", es: "Esa es la isla equivocada." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "En «knife», ¿qué letra no suena?", options: ["la f", "la k", "la i"], answer: 1, why: "El grupo kn- siempre pierde la k: náif." },
+      { q: "En «write», ¿qué letra no suena?", options: ["la w", "la r", "la t"], answer: 0, why: "El grupo wr- pierde la w: ráit." },
+      { q: "En «climb», ¿qué letra no suena?", options: ["la c", "la l", "la b final"], answer: 2, why: "El grupo -mb pierde la b: kláim." },
+      { q: "La «h» inglesa…", options: ["nunca suena, como en español", "casi siempre suena", "solo suena al final"], answer: 1, why: "House, have, help sí suenan; solo enmudece en hour, honest y poco más." },
+      { q: "«Hour» se pronuncia…", options: ["jáu-er", "áu-er", "jor"], answer: 1, why: "Es una de las pocas con h muda." },
+      { q: "El grupo «gh»…", options: ["siempre suena como g", "casi nunca suena", "siempre suena como f"], answer: 1, why: "En night, light y though no se dice nada." },
+      { q: "¿En cuál suena la «gh», y como F?", options: ["night", "though", "enough"], answer: 2, why: "enough (i-náf), laugh, tough y cough." },
+      { q: "En «listen», ¿qué letra no suena?", options: ["la s", "la t", "la n"], answer: 1, why: "lí-sen, sin la t. Igual que castle y whistle." },
+      { q: "¿Para qué sirve la -e final muda?", options: ["Para nada, es decorativa", "Para alargar la vocal de antes", "Para marcar el plural"], answer: 1, why: "hat/hate, bit/bite: la e no suena pero cambia la vocal." },
+      { q: "El error típico del español con la h es…", options: ["pronunciarla cuando no toca", "comérsela cuando sí hay que decirla", "cambiarla por f"], answer: 1, why: "Como en español es muda, decimos «av» en vez de «jav»." },
+      { q: "En «answer», ¿qué letra no suena?", options: ["la w", "la s", "la r"], answer: 0, why: "án-ser, sin la w." },
+    ],
+  },
+
+
 ];
 
 export const getLesson = (id) => LESSONS.find((l) => l.id === id);
