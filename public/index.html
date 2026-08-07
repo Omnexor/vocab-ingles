@@ -33,18 +33,28 @@
           <p class="tagline" id="saludo">Inglés, palabra a palabra</p>
         </div>
       </div>
-      <div class="streak" id="streak-badge" title="Días seguidos estudiando">
-        <span class="flame" aria-hidden="true">🔥</span>
-        <span class="streak-copy"><b id="streak-count">0</b><small>racha</small></span>
+      <div class="topbar-acciones">
+        <div class="streak" id="streak-badge" title="Días seguidos estudiando">
+          <span class="flame" aria-hidden="true">🔥</span>
+          <span class="streak-copy"><b id="streak-count">0</b><small>racha</small></span>
+        </div>
+        <!-- Ajustes sale de la barra de abajo: se toca una vez al mes y allí
+             ocupaba sitio fijo. Aquí está igual de a mano y no roba espacio. -->
+        <button class="icon-btn" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
       </div>
     </header>
 
-    <!-- Barra de progreso del día: siempre visible, dice qué te queda -->
+    <!-- La sesión del día: además de decir qué te queda, es el botón que te
+         lleva a lo que toca ahora. Antes era solo texto y había que adivinar
+         a qué pestaña ir. -->
     <div class="daybar" id="daybar">
-      <div class="daybar-meta">
-        <span class="daybar-label">Tu sesión de hoy</span>
-        <p class="daybar-text" id="daybar-text" aria-live="polite"></p>
-      </div>
+      <button class="daybar-btn" id="daybar-btn">
+        <span class="daybar-meta">
+          <span class="daybar-label">Tu sesión de hoy</span>
+          <span class="daybar-text" id="daybar-text" aria-live="polite"></span>
+        </span>
+        <span class="daybar-go" id="daybar-go" aria-hidden="true">▶</span>
+      </button>
       <div class="daybar-track" id="daybar-track" role="progressbar" aria-label="Progreso de la sesión" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <span id="daybar-fill"></span>
       </div>
@@ -54,29 +64,34 @@
       <!-- HOY -->
       <section class="view is-active" data-view="hoy">
         <div class="view-head view-head-featured">
-          <span class="eyebrow">Plan diario</span>
           <h2>Palabras de hoy</h2>
           <p class="muted" id="hoy-sub">Cargando…</p>
         </div>
+        <!-- El objetivo y la categoría se eligen una vez y luego estorban cada
+             día: van plegados detrás de una línea que resume cómo los tienes. -->
         <div class="daily-plan">
-          <div class="plan-copy">
-            <h3>Prepara tu sesión</h3>
-            <p>Elige un objetivo cómodo y el vocabulario que más te interesa.</p>
-          </div>
-          <div class="stepper" role="group" aria-label="Objetivo diario de palabras">
-            <span class="stepper-label">Objetivo diario</span>
-            <div class="stepper-control">
-              <button type="button" id="menos" aria-label="Reducir objetivo diario">−</button>
-              <b id="cuantas">5</b>
-              <button type="button" id="mas" aria-label="Aumentar objetivo diario">+</button>
+          <button class="plan-toggle" id="plan-toggle" aria-expanded="false" aria-controls="plan-config">
+            <span class="plan-resumen" id="plan-resumen">Objetivo 5 · Un poco de todo</span>
+            <span class="plan-editar">Cambiar</span>
+          </button>
+          <div class="plan-config" id="plan-config" hidden>
+            <div class="stepper" role="group" aria-label="Objetivo diario de palabras">
+              <span class="stepper-label">Objetivo diario</span>
+              <div class="stepper-control">
+                <button type="button" id="menos" aria-label="Reducir objetivo diario">−</button>
+                <b id="cuantas">5</b>
+                <button type="button" id="mas" aria-label="Aumentar objetivo diario">+</button>
+              </div>
+              <span class="stepper-unit">palabras nuevas</span>
             </div>
-            <span class="stepper-unit">palabras nuevas</span>
+            <p class="hint-line">¿Qué quieres practicar?</p>
+            <div class="chips" id="chips-categoria" role="group" aria-label="Tipo de palabra"></div>
           </div>
-          <p class="hint-line">¿Qué quieres practicar?</p>
-          <div class="chips" id="chips-categoria" role="group" aria-label="Tipo de palabra"></div>
         </div>
-        <div id="hoy-cards" class="cards"></div>
+        <!-- Las acciones van ANTES de las tarjetas: el botón principal estaba a
+             1963px, casi dos pantallas y media de scroll cada día. -->
         <div id="hoy-actions" class="row-actions today-actions"></div>
+        <div id="hoy-cards" class="cards"></div>
       </section>
 
       <!-- REPASO -->
@@ -96,6 +111,8 @@
             <h2>Juegos</h2>
             <p class="muted" id="juegos-sub"></p>
           </div>
+          <!-- Con doce juegos eliges a ciegas. La app ya sabe qué llevas flojo. -->
+          <div id="juego-sugerido"></div>
           <p class="hint-line">¿Con qué quieres jugar?</p>
           <div class="chips" id="chips-juegos" role="group" aria-label="Categoría para jugar"></div>
           <div id="juegos-lista" class="game-grid"></div>
@@ -142,7 +159,7 @@
       <!-- LISTA -->
       <section class="view" data-view="lista">
         <div class="view-head">
-          <h2>Mis palabras</h2>
+          <h2>Palabras</h2>
           <p class="muted" id="lista-sub"></p>
         </div>
 
@@ -319,13 +336,10 @@
         <span class="tab-ico" aria-hidden="true">🎮</span><span class="tab-txt">Juegos</span>
       </button>
       <button class="tab" data-view="lecciones">
-        <span class="tab-ico" aria-hidden="true">📖</span><span class="tab-txt">Lecciones</span>
+        <span class="tab-ico" aria-hidden="true">📖</span><span class="tab-txt">Aprender</span>
       </button>
       <button class="tab" data-view="lista">
         <span class="tab-ico" aria-hidden="true">📋</span><span class="tab-txt">Palabras</span>
-      </button>
-      <button class="tab" data-view="ajustes">
-        <span class="tab-ico" aria-hidden="true">⚙️</span><span class="tab-txt">Ajustes</span>
       </button>
     </nav>
 

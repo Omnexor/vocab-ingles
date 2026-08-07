@@ -24,6 +24,7 @@ const defaults = () => ({
   lessons: {}, // id -> { best: 0-100, done: bool, last: "YYYY-MM-DD" }
   lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
+  gamesLast: {}, // id -> fecha de la última partida, para saber qué tienes olvidado
   confusiones: {}, // "palabra|palabra" -> veces que has cambiado una por otra
 });
 
@@ -355,6 +356,28 @@ function renderStepper() {
   $("#cuantas").textContent = n;
   $("#menos").disabled = n <= 1;
   $("#mas").disabled = n >= 50;
+  renderPlanResumen();
+}
+
+/**
+ * La línea que resume el plan cuando está plegado.
+ *
+ * El objetivo y la categoría se eligen una vez, pero ocupaban los primeros
+ * 470px de la pantalla todos los días. Plegados, se ven de un vistazo y se
+ * abren cuando de verdad quieres cambiarlos.
+ */
+function renderPlanResumen() {
+  const cat = CATEGORIAS.find((c) => c.id === store.settings.category);
+  $("#plan-resumen").textContent = `Objetivo ${store.settings.daily} · ${cat ? cat.nombre : "Un poco de todo"}`;
+}
+
+function togglePlan(abrir) {
+  const config = $("#plan-config");
+  const boton = $("#plan-toggle");
+  const abierto = abrir ?? config.hidden;
+  config.hidden = !abierto;
+  boton.setAttribute("aria-expanded", String(abierto));
+  boton.querySelector(".plan-editar").textContent = abierto ? "Listo" : "Cambiar";
 }
 
 function cambiarDiarias(n) {
@@ -389,6 +412,7 @@ function renderChipsCategoria() {
       store.settings.category = b.dataset.cat;
       save();
       renderChipsCategoria();
+      renderPlanResumen();
       await addMoreWords();
     };
   });
@@ -429,16 +453,17 @@ async function renderHoy() {
 
   cards.innerHTML = aviso + words.map((w) => wordCard(w, { blurred: store.settings.tapar })).join("");
 
-  const pendientes = dueWords().length;
   const faltanObjetivo = Math.max(store.settings.daily - words.length, 0);
+  // Aquí solo van las tres herramientas que actúan sobre las tarjetas, y por
+  // eso van encima de ellas. El "Repasar ahora" que había se quitó: la barra
+  // del día, justo arriba, ya dice "Repasar N" y está en todas las secciones,
+  // así que era el mismo botón dos veces y empujaba las palabras fuera de la
+  // pantalla.
   actions.innerHTML = `
-    <button class="btn" id="go-repaso">${pendientes ? `Repasar ahora · ${pendientes}` : "Repaso al día ✓"}</button>
     <button class="btn btn-ghost" id="listen-all"><span aria-hidden="true">🔊</span> Escuchar</button>
     <button class="btn btn-ghost" id="more-words">+ ${faltanObjetivo ? `Completar objetivo · ${faltanObjetivo}` : "Más palabras"}</button>
-    <button class="btn btn-quiet" id="toggle-tapar">${store.settings.tapar ? "👁 Mostrar respuestas" : "🙈 Ocultar respuestas"}</button>`;
+    <button class="btn btn-quiet" id="toggle-tapar">${store.settings.tapar ? "👁 Mostrar" : "🙈 Ocultar"}</button>`;
 
-  $("#go-repaso").disabled = !pendientes;
-  $("#go-repaso").onclick = () => showView("repaso");
   $("#listen-all").onclick = async () => {
     const btn = $("#listen-all");
     const run = ++speechRun;
@@ -594,6 +619,11 @@ function renderRepaso(restart = true) {
       .sort()
       .find((d) => d > todayStr());
     const puedeRepetir = store.words.length >= 4;
+    // Terminar el repaso no es terminar la sesión: en vez de dejarte mirando
+    // un "ya está" sin salida, se encadena con el juego que te viene bien.
+    // (Las palabras nuevas no hacen falta ofrecerlas aquí: ensureDailyBatch
+    // las prepara al arrancar, así que a estas alturas ya las tienes.)
+    const sugerido = juegoRecomendado();
     sub.textContent = "";
     box.innerHTML = `
       <div class="empty">
@@ -602,9 +632,18 @@ function renderRepaso(restart = true) {
         ${proxima ? `<br />Vuelve el ${new Date(proxima).toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}.` : ""}
       </div>
       ${
+        sugerido
+          ? `<button class="sugerido" data-juego="${esc(sugerido.id)}">
+               <span class="sugerido-eyebrow">Sigue la sesión</span>
+               <span class="sugerido-nombre">${sugerido.def.emoji} ${esc(sugerido.def.nombre)}</span>
+               <span class="sugerido-motivo">${esc(sugerido.motivo)}</span>
+             </button>`
+          : ""
+      }
+      ${
         puedeRepetir
           ? `<div class="row-actions">
-               <button class="btn" id="repetir-repaso">🔁 Repasar otra vez</button>
+               <button class="btn btn-ghost" id="repetir-repaso">🔁 Repasar otra vez</button>
              </div>
              <p class="hint-line">
                Una vuelta voluntaria con tus palabras. No cambia las fechas de
@@ -1254,6 +1293,10 @@ function guardarRecord(id, valor, menorEsMejor = false) {
   const mejor =
     actual === undefined ? esMarca : menorEsMejor ? valor < actual : valor > actual;
   if (mejor) store.games[id] = valor;
+  // Se apunta siempre, aunque no sea récord: es lo que permite recomendarte la
+  // destreza que llevas más tiempo sin tocar.
+  store.gamesLast = store.gamesLast || {};
+  store.gamesLast[id] = todayStr();
   registerStudyDay();
   save();
   return mejor;
@@ -1397,6 +1440,61 @@ function renderChipsJuegos() {
   });
 }
 
+/**
+ * Qué juego te conviene ahora.
+ *
+ * Con doce juegos elegías a ciegas, y la app ya sabe lo que llevas flojo:
+ *   1. Si has mezclado palabras, eso es lo más rentable: es tu error concreto.
+ *   2. Si no, el juego que no hayas tocado nunca —para que no se quede ninguna
+ *      destreza sin practicar— y luego el que lleve más tiempo sin jugarse.
+ * Solo se proponen juegos que ahora mismo se pueden jugar con tu vocabulario.
+ */
+function juegoRecomendado() {
+  const pool = gamePool().length;
+  const jugables = JUEGOS.filter((g) => pool >= g.minimo && (g.id !== "hablar" || hayMicrofono));
+  if (!jugables.length) return null;
+
+  if (paresConfusos().length && jugables.some((g) => g.id === "confusas")) {
+    const n = paresConfusos().length;
+    return {
+      id: "confusas",
+      def: JUEGOS.find((g) => g.id === "confusas"),
+      motivo: `Llevas ${n} ${n === 1 ? "pareja apuntada" : "parejas apuntadas"} que mezclas. Es lo que más te renta ahora.`,
+    };
+  }
+
+  const ultima = store.gamesLast || {};
+  const nunca = jugables.filter((g) => !ultima[g.id]);
+  if (nunca.length) {
+    const g = nunca[0];
+    return { id: g.id, def: g, motivo: "Todavía no lo has probado, y entrena algo que no tocas en los demás." };
+  }
+
+  const conDias = jugables
+    .map((g) => ({ g, dias: diffDays(todayStr(), ultima[g.id]) }))
+    .sort((a, b) => b.dias - a.dias);
+  const { g, dias } = conDias[0];
+  if (dias < 2) return null; // los has tocado todos hace nada: no hay nada que recomendar
+  return { id: g.id, def: g, motivo: `Llevas ${dias} días sin jugarlo.` };
+}
+
+function renderJuegoSugerido() {
+  const caja = $("#juego-sugerido");
+  const s = juegoRecomendado();
+  if (!s) {
+    caja.innerHTML = "";
+    return;
+  }
+  caja.innerHTML = `
+    <button class="sugerido" data-juego="${esc(s.id)}">
+      <span class="sugerido-eyebrow">Hoy te toca</span>
+      <span class="sugerido-nombre">${s.def.emoji} ${esc(s.def.nombre)}</span>
+      <span class="sugerido-motivo">${esc(s.motivo)}</span>
+    </button>`;
+  // Lo abre el listener global de [data-juego]: poner aquí otro onclick
+  // lanzaría la partida dos veces.
+}
+
 function renderJuegosIndex() {
   pararJuego();
   $("#juego-activo").hidden = true;
@@ -1404,6 +1502,7 @@ function renderJuegosIndex() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   renderChipsJuegos();
+  renderJuegoSugerido();
 
   const pool = gamePool().length;
   const lios = paresConfusos().length;
@@ -1452,6 +1551,10 @@ function abrirJuego(id) {
   }
 
   pararJuego();
+  // Se puede llegar desde fuera de Juegos (la sugerencia al acabar el repaso),
+  // así que la sección tiene que estar delante o la partida se montaría dentro
+  // de una vista oculta y no la verías.
+  activarVista("juegos");
   $("#juegos-index").hidden = true;
   const box = $("#juego-activo");
   box.hidden = false;
@@ -3583,14 +3686,28 @@ function renderAjustes() {
  * Navegación
  * ------------------------------------------------------------------ */
 
-function showView(name) {
-  if (name !== "juegos") pararJuego();
+/**
+ * Pone una sección delante, sin repintarla.
+ *
+ * Separado de showView porque se puede abrir un juego desde fuera de Juegos
+ * (la sugerencia al terminar el repaso): hay que traer la sección al frente,
+ * pero repintar su índice borraría la partida que se acaba de montar.
+ */
+function activarVista(name) {
   $$(".tab").forEach((t) => {
     const active = t.dataset.view === name;
     t.classList.toggle("is-active", active);
     t.setAttribute("aria-current", active ? "page" : "false");
   });
+  // Ajustes ya no es una pestaña: su estado activo lo marca el engranaje.
+  $("#btn-ajustes").classList.toggle("is-active", name === "ajustes");
+  $("#btn-ajustes").setAttribute("aria-current", name === "ajustes" ? "page" : "false");
   $$(".view").forEach((v) => v.classList.toggle("is-active", v.dataset.view === name));
+}
+
+function showView(name) {
+  if (name !== "juegos") pararJuego();
+  activarVista(name);
   if (name === "hoy") renderHoy();
   if (name === "repaso") renderRepaso(true);
   if (name === "juegos") renderJuegosIndex();
@@ -3601,6 +3718,40 @@ function showView(name) {
   }
   if (name === "ajustes") renderAjustes();
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/**
+ * El siguiente paso de la sesión, en un sitio solo.
+ *
+ * Hay cuatro sitios donde practicar (Hoy, Repaso, Juegos, Aprender) y antes
+ * nada te decía cuál tocaba: la barra del día era texto muerto. Ahora es el
+ * botón principal y encadena la sesión entera —nuevas → repaso → juego—, que
+ * es lo que convierte dos pestañas sueltas en un hábito.
+ */
+function siguientePaso() {
+  const pendientes = dueWords().length;
+  if (pendientes) {
+    return {
+      vista: "repaso",
+      texto: `Repasar <b>${pendientes}</b> ${pendientes === 1 ? "palabra" : "palabras"}`,
+      cta: "▶",
+    };
+  }
+  if (store.daily.date !== todayStr()) {
+    return {
+      vista: "hoy",
+      texto: `Empezar con <b>${store.settings.daily}</b> ${store.settings.daily === 1 ? "palabra nueva" : "palabras nuevas"}`,
+      cta: "▶",
+    };
+  }
+  // Solo lleva a Juegos: la recomendación concreta está arriba del todo ahí,
+  // así que no hace falta abrir la partida a bocajarro desde la cabecera.
+  const j = juegoRecomendado();
+  return {
+    vista: "juegos",
+    texto: `Día hecho ✓ · ${j ? `prueba ${esc(j.def.emoji)} ${esc(j.def.nombre)}` : "juega un rato"}`,
+    cta: "🎮",
+  };
 }
 
 function updateChrome() {
@@ -3622,11 +3773,11 @@ function updateChrome() {
 
   $("#daybar-fill").style.width = `${pct}%`;
   $("#daybar-track").setAttribute("aria-valuenow", String(pct));
-  $("#daybar-text").innerHTML = pendientes
-    ? `<b>${pendientes}</b> ${pendientes === 1 ? "palabra" : "palabras"} por repasar${hechas ? ` · ${hechas} ya ${hechas === 1 ? "hecha" : "hechas"}` : ""}`
-    : store.words.length
-      ? `Repaso al día ✓${hechas ? ` · ${hechas} ${hechas === 1 ? "repasada" : "repasadas"} hoy` : ""}`
-      : "Empieza con las palabras de hoy";
+
+  const paso = siguientePaso();
+  $("#daybar-text").innerHTML = `${paso.texto}${hechas ? ` · ${hechas} ${hechas === 1 ? "hecha" : "hechas"} hoy` : ""}`;
+  $("#daybar-go").textContent = paso.cta;
+  $("#daybar-btn").dataset.vista = paso.vista;
 }
 
 /* ------------------------------------------------------------------ *
@@ -3637,6 +3788,33 @@ $("#tabs").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
   if (tab) showView(tab.dataset.view);
 });
+
+// La barra del día lleva a lo que toca ahora.
+$("#daybar-btn").addEventListener("click", () => showView($("#daybar-btn").dataset.vista || "hoy"));
+
+// Ajustes vive en la cabecera, no en la barra de abajo.
+$("#btn-ajustes").addEventListener("click", () => showView("ajustes"));
+
+$("#plan-toggle").addEventListener("click", () => togglePlan());
+
+/**
+ * La cabecera encoge al bajar.
+ *
+ * Es pegajosa y ocupaba 91px siempre; con la barra del día y la navegación,
+ * casi un tercio de la pantalla del móvil era cromo. Al bajar, la marca sobra
+ * —ya sabes en qué app estás— y se queda en una línea con la racha.
+ */
+let cabeceraEncogida = false;
+addEventListener(
+  "scroll",
+  () => {
+    const encoger = window.scrollY > 40;
+    if (encoger === cabeceraEncogida) return;
+    cabeceraEncogida = encoger;
+    $(".topbar").classList.toggle("is-compact", encoger);
+  },
+  { passive: true },
+);
 
 // Un solo listener para todos los botones de audio, presentes o futuros.
 document.addEventListener("click", (e) => {

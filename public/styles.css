@@ -172,6 +172,51 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 .brand h1 { font-size: 22px; }
 .tagline { margin: 1px 0 0; font-size: 12px; color: var(--muted); }
 
+.topbar-acciones { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.icon-btn:hover { border-color: var(--accent); }
+.icon-btn.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* La cabecera es pegajosa y se llevaba 91px de pantalla siempre. Al bajar, la
+   marca sobra —ya sabes en qué app estás— y se queda en una línea. */
+.topbar { transition: padding 0.2s ease; }
+.topbar .brand-kicker,
+.topbar .tagline {
+  overflow: hidden;
+  max-height: 20px;
+  opacity: 1;
+  transition: max-height 0.2s ease, opacity 0.15s ease, margin 0.2s ease;
+}
+.topbar.is-compact { padding: 8px 20px; }
+.topbar.is-compact .brand-kicker,
+.topbar.is-compact .tagline {
+  max-height: 0;
+  margin: 0;
+  opacity: 0;
+}
+.topbar.is-compact .logo { width: 32px; height: 32px; border-radius: 10px; font-size: 16px; }
+.topbar.is-compact .brand h1 { font-size: 17px; }
+.topbar.is-compact .icon-btn { width: 34px; height: 34px; border-radius: 10px; font-size: 15px; }
+@media (prefers-reduced-motion: reduce) {
+  .topbar, .topbar .brand-kicker, .topbar .tagline { transition: none; }
+}
+
 .streak {
   display: flex;
   align-items: center;
@@ -307,8 +352,37 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
   background: color-mix(in srgb, var(--card) 80%, transparent);
   border-block: 1px solid var(--line);
 }
-.daybar-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+/* La barra del día es el botón principal de la app: dice qué toca y te lleva. */
+.daybar-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 11px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.daybar-meta { display: grid; gap: 3px; flex: 1; min-width: 0; }
 .daybar-label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.daybar-go {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: transform 0.15s ease;
+}
+.daybar-btn:hover .daybar-go { transform: scale(1.06); }
+.daybar-btn:active .daybar-go { transform: scale(0.96); }
 .daybar-track {
   height: 7px;
   background: color-mix(in srgb, var(--line) 80%, transparent);
@@ -325,11 +399,12 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 }
 .daybar-text {
   margin: 0;
-  font-size: 13px;
-  color: var(--muted);
-  text-align: right;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
 }
-.daybar-text b { color: var(--text); }
+.daybar-text b { color: var(--accent); }
 
 /* ---------- textos de ayuda ---------- */
 .hint-line {
@@ -777,22 +852,80 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 }
 
 /* ---------- cuántas palabras hoy ---------- */
+/* El plan del día, plegado.
+   Abierto ocupaba los primeros 470px de pantalla todos los días para algo que
+   se decide una vez. Ahora es una línea con el resumen y se abre a demanda. */
 .daily-plan {
-  display: grid;
-  grid-template-columns: minmax(180px, 0.8fr) minmax(300px, 1.2fr);
-  gap: 16px 32px;
-  margin-bottom: 24px;
-  padding: 22px;
+  margin-bottom: 18px;
   background: color-mix(in srgb, var(--card) 92%, transparent);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
-.plan-copy { grid-row: span 3; padding: 3px 0; }
-.plan-copy h3 { font-size: 18px; }
-.plan-copy p { max-width: 32ch; margin: 7px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.plan-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.plan-toggle:hover { background: var(--bg-soft); }
+.plan-resumen { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plan-editar {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+.plan-config {
+  display: grid;
+  gap: 12px;
+  padding: 4px 18px 18px;
+  border-top: 1px solid var(--line);
+}
+/* Sin esto el plan plegado seguía ocupando 275px: `display: grid` de autor gana
+   al `display: none` que el navegador aplica al atributo hidden. */
+.plan-config[hidden] { display: none; }
 .daily-plan .hint-line { margin: 4px 0 0; }
 .daily-plan .chips { margin-bottom: -4px; padding-bottom: 4px; }
+
+/* Tarjeta de "esto es lo que te toca ahora": en Juegos y al acabar el repaso. */
+.sugerido {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sugerido:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.sugerido-eyebrow {
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sugerido-nombre { font-size: 18px; font-weight: 750; letter-spacing: -0.02em; }
+.sugerido-motivo { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
 .stepper {
   display: flex;
@@ -1010,16 +1143,9 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 .btn-again:hover:not(:disabled),
 .btn-easy:hover:not(:disabled) { box-shadow: none; }
 
-.today-actions { margin: 24px 0 8px; }
-.today-actions #go-repaso { flex: 1 1 100%; min-height: 52px; }
-.today-actions .btn:not(#go-repaso) { flex: 1 1 180px; }
-.today-actions #go-repaso:disabled {
-  opacity: 1;
-  background: color-mix(in srgb, var(--ok) 14%, var(--card));
-  border-color: color-mix(in srgb, var(--ok) 36%, var(--line));
-  color: var(--ok);
-  box-shadow: none;
-}
+/* Herramientas de las tarjetas: una sola fila compacta encima de ellas. */
+.today-actions { margin: 0 0 16px; gap: 8px; }
+.today-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 10px; font-size: 14px; }
 
 /* ---------- quiz ---------- */
 .quiz-progress {
@@ -1527,7 +1653,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
   .card { padding: 20px 17px; }
   .filtros { flex-direction: column; }
   .filtros #filtro-lista { width: 100%; }
-  .today-actions .btn:not(#go-repaso) { flex-basis: calc(50% - 5px); padding-inline: 10px; }
+  .today-actions .btn { font-size: 13px; padding-inline: 6px; }
 }
 
 @media (min-width: 720px) {
