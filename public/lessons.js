@@ -205,6 +205,26 @@ export const LESSONS = [
         text: "Se usa para lo habitual y lo permanente: lo que haces cada día, lo que eres, lo que es verdad en general.",
       },
       {
+        t: "p",
+        text: "Lo primero que hay que asumir viniendo del español: el verbo inglés casi no se conjuga. Donde el español tiene seis formas distintas, el inglés tiene DOS. Toda la conjugación del presente inglés se reduce a poner o no poner una -s.",
+      },
+      {
+        t: "table",
+        head: ["Persona", "Español", "Inglés"],
+        rows: [
+          ["yo", "trabajo", "I work"],
+          ["tú", "trabajas", "you work"],
+          ["él / ella", "trabaja", "he / she works"],
+          ["nosotros", "trabajamos", "we work"],
+          ["vosotros", "trabajáis", "you work"],
+          ["ellos", "trabajan", "they work"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Seis formas en español, dos en inglés: «work» y «works». Esa es toda la conjugación. La buena noticia es que hay muy poco que memorizar; la mala es que la única marca que queda, la -s de he/she/it, se olvida constantemente precisamente porque es la única.",
+      },
+      {
         t: "table",
         head: ["", "Forma", "Ejemplo"],
         rows: [
@@ -213,6 +233,24 @@ export const LESSONS = [
           ["Negativa", "don't / doesn't + base", "She doesn't work on Fridays."],
           ["Pregunta", "Do / Does + sujeto + base", "Do you work here?"],
         ],
+      },
+      {
+        t: "p",
+        text: "Y ahora la parte que más desconcierta: el «do» de las preguntas y las negativas NO SE TRADUCE. No significa «hacer» ahí. Es una pieza que el inglés necesita para construir la frase y que en español simplemente no existe. Si intentas traducirlo, no encuentras por dónde: desaparece.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Qué pasó con el «do»"],
+        rows: [
+          ["Do you work here?", "¿Trabajas aquí?", "Desaparece: el español pregunta con la entonación."],
+          ["I don't work here.", "No trabajo aquí.", "«don't» pasa a ser solo «no»."],
+          ["Does she work here?", "¿Trabaja ella aquí?", "Desaparece; la -s se va con él."],
+          ["She doesn't work here.", "Ella no trabaja aquí.", "«doesn't» es «no», y se lleva la -s."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con esto: cuando aparece «does» o «doesn't», la -s YA ESTÁ en el auxiliar, así que el verbo vuelve a la forma base. Se dice «She doesn't work», nunca «She doesn't works». La -s solo se pone una vez, y la lleva el primero de los dos.",
       },
       {
         t: "tip",
@@ -243,6 +281,12 @@ export const LESSONS = [
       { q: "¿Cuál lleva -es?", options: ["run", "go", "read"], answer: 1, why: "Verbos acabados en -o llevan -es: goes. También watches, finishes, misses." },
       { q: "¿Dónde va «always»?", options: ["I go always to the gym.", "I always go to the gym.", "Always I go to the gym."], answer: 1, why: "Los adverbios de frecuencia van entre el sujeto y el verbo principal." },
       { q: "«___ she speak French?»", options: ["Do", "Does", "Is"], answer: 1, why: "Tercera persona del singular en pregunta: «Does»." },
+      { q: "¿Cuántas formas distintas tiene un verbo inglés en presente?", options: ["Seis, como en español", "Dos: base y base + -s", "Una sola"], answer: 1, why: "Solo «work» y «works». El español tiene seis; el inglés, dos." },
+      { q: "«Do you work here?» ¿Cómo se traduce el «do»?", options: ["Como «hacer»", "No se traduce: desaparece en español", "Como «sí»"], answer: 1, why: "Es una pieza gramatical del inglés que el español no tiene: «¿Trabajas aquí?»" },
+      { q: "¿Cuál está bien?", options: ["She doesn't works here", "She doesn't work here", "She don't works here"], answer: 1, why: "La -s ya está en «doesn't», así que el verbo vuelve a la base." },
+      { q: "«No trabajo los viernes» es…", options: ["I no work on Fridays", "I don't work on Fridays", "I not work on Fridays"], answer: 1, why: "El «no» español se convierte en «don't», no en «no» suelto." },
+      { q: "«Ellos no ven la tele» es…", options: ["They doesn't watch TV", "They don't watch TV", "They don't watches TV"], answer: 1, why: "Con they el auxiliar es don't, y el verbo va en base." },
+      { q: "Tercera persona de «finish»:", options: ["finishs", "finishes", "finish"], answer: 1, why: "Acabados en -sh, -ch, -ss, -x y -o llevan -es: finishes, watches, goes." },
     ],
   },
 
@@ -261,6 +305,30 @@ export const LESSONS = [
       {
         t: "p",
         text: "Es el equivalente a «estoy haciendo». Se usa para lo que ocurre en este momento, o para algo temporal que está pasando estos días aunque no justo ahora.",
+      },
+      {
+        t: "p",
+        text: "La traducción es mecánica y encaja pieza por pieza con el español. «am / is / are» es el verbo ESTAR, y la terminación «-ing» es exactamente el «-ando / -iendo» español. No hay nada que interpretar: se sustituye una pieza por otra.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Pieza por pieza"],
+        rows: [
+          ["I am working", "Estoy trabajando", "am = estoy · work-ing = trabaj-ando"],
+          ["She is eating", "Está comiendo", "is = está · eat-ing = com-iendo"],
+          ["We are waiting", "Estamos esperando", "are = estamos · wait-ing = esper-ando"],
+          ["They are living here", "Están viviendo aquí", "are = están · liv-ing = viv-iendo"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "El error más típico del español es comerse el verbo «to be»: decir «I working» en vez de «I am working». En español el «estoy» se puede omitir en algunos contextos, pero en inglés NUNCA: sin am/is/are la frase no existe. Si dices «-ing», antes tiene que ir am, is o are sí o sí.",
+      },
+      {
+        t: "error",
+        wrong: "I working right now. / She working.",
+        right: "I am working right now. / She is working.",
+        why: "El -ing solo nunca basta: necesita am, is o are delante. Es el equivalente a decir «yo trabajando» en vez de «estoy trabajando».",
       },
       {
         t: "table",
@@ -296,6 +364,11 @@ export const LESSONS = [
       { q: "«She ___ to work by bus every day.»", options: ["is going", "goes", "go"], answer: 1, why: "«Every day» indica costumbre → presente simple." },
       { q: "Forma -ing de «write»:", options: ["writeing", "writing", "writting"], answer: 1, why: "Los verbos acabados en -e muda pierden la e: write → writing, make → making." },
       { q: "«We ___ dinner at eight tonight.» (plan cerrado)", options: ["are having", "have", "will have"], answer: 0, why: "Para planes ya acordados con hora y fecha se usa el presente continuo." },
+      { q: "La terminación «-ing» equivale en español a…", options: ["-ar / -er / -ir (infinitivo)", "-ando / -iendo", "-ado / -ido (participio)"], answer: 1, why: "work-ing = trabaj-ando, eat-ing = com-iendo." },
+      { q: "«Estoy trabajando» es…", options: ["I working", "I am working", "I work"], answer: 1, why: "am/is/are es el «estoy/está/estamos»: sin él la frase no existe." },
+      { q: "¿Qué falta en «She working now»?", options: ["Nada, está bien", "Falta «is» delante", "Sobra el -ing"], answer: 1, why: "El -ing siempre necesita am, is o are delante." },
+      { q: "«Están viviendo aquí» es…", options: ["They living here", "They are living here", "They live here"], answer: 1, why: "are = están, living = viviendo. Las dos piezas hacen falta." },
+      { q: "«I work in a hotel» y «I'm working in a hotel»…", options: ["significan lo mismo", "el primero es mi trabajo, el segundo es temporal", "el segundo está mal"], answer: 1, why: "Simple = costumbre o hecho permanente; continuo = ahora o temporal." },
     ],
   },
 
@@ -323,6 +396,39 @@ export const LESSONS = [
       {
         t: "tip",
         text: "Con «did» y «didn't», el verbo vuelve a la forma base. «I didn't went» está mal; es «I didn't go». El pasado ya lo marca el «did».",
+      },
+      {
+        t: "p",
+        text: "Aquí hay una simplificación enorme respecto al español, y conviene verla para no complicarse: el pasado inglés tiene UNA sola forma para todas las personas. Donde el español dice hablé, hablaste, habló, hablamos, hablasteis, hablaron, el inglés dice «talked» seis veces.",
+      },
+      {
+        t: "table",
+        head: ["Persona", "Español", "Inglés"],
+        rows: [
+          ["yo", "hablé", "I talked"],
+          ["tú", "hablaste", "you talked"],
+          ["él / ella", "habló", "he / she talked"],
+          ["nosotros", "hablamos", "we talked"],
+          ["vosotros", "hablasteis", "you talked"],
+          ["ellos", "hablaron", "they talked"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y otra simplificación que despista al principio: el español tiene DOS pasados que se usan a todas horas —el indefinido (hablé) y el imperfecto (hablaba)— y el inglés los mete a los dos en la misma forma. «I worked there» puede ser «trabajé allí» o «trabajaba allí»: lo decide el contexto, no el verbo.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Puede ser", "O también"],
+        rows: [
+          ["I worked in Madrid.", "Trabajé en Madrid.", "Trabajaba en Madrid."],
+          ["She lived alone.", "Vivió sola.", "Vivía sola."],
+          ["We ate at eight.", "Comimos a las ocho.", "Comíamos a las ocho."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si quieres marcar claramente el imperfecto español («trabajaba», en el sentido de costumbre pasada), el inglés tiene una forma específica: «used to work». Eso ya no es ambiguo: significa siempre «solía trabajar / trabajaba antes». Lo tienes entero en la lección «used to y would».",
       },
       {
         t: "p",
@@ -367,6 +473,11 @@ export const LESSONS = [
       { q: "Pasado de «buy»:", options: ["buyed", "bought", "buied"], answer: 1, why: "Irregular: buy → bought." },
       { q: "«___ they finish the project?»", options: ["Did", "Do", "Were"], answer: 0, why: "Pregunta en pasado con verbo normal → «Did»." },
       { q: "¿Cuál pide pasado simple?", options: ["I've lived here for years.", "I lived there in 2015.", "I have just arrived."], answer: 1, why: "«In 2015» es un momento concreto y terminado." },
+      { q: "¿Cuántas formas tiene un verbo regular inglés en pasado?", options: ["Seis, una por persona", "Una sola para todas las personas", "Dos"], answer: 1, why: "«talked» vale para I, you, he, we, you y they." },
+      { q: "«I worked in Madrid» puede significar…", options: ["solo «trabajé en Madrid»", "«trabajé» o «trabajaba»: lo decide el contexto", "solo «trabajaba en Madrid»"], answer: 1, why: "El inglés no distingue indefinido e imperfecto en esta forma." },
+      { q: "Para dejar claro «trabajaba antes» (costumbre pasada) se usa…", options: ["I worked", "I used to work", "I was working"], answer: 1, why: "«Used to» marca la costumbre pasada sin ambigüedad." },
+      { q: "«Ellos vinieron ayer» es…", options: ["They comed yesterday", "They came yesterday", "They did came yesterday"], answer: 1, why: "come es irregular: came. Y no lleva «did» en afirmativa." },
+      { q: "«¿Compraste el pan?» es…", options: ["Did you buy the bread?", "Did you bought the bread?", "You bought the bread?"], answer: 0, why: "Con «did» el verbo vuelve a la base: buy, no bought." },
     ],
   },
 
@@ -506,6 +617,25 @@ export const LESSONS = [
         text: "El inglés tiene tres futuros y no son intercambiables. La diferencia está en cuánta decisión previa hay.",
       },
       {
+        t: "p",
+        text: "La traducción literal ayuda a colocarlos, porque el español también tiene dos futuros y se reparten casi igual. WILL + verbo es la terminación -É / -Á del español (I will go = iré, it will be = será), exactamente el mismo mecanismo que el -ía de «would». Y BE GOING TO es literalmente «ir a»: I am going to eat = «voy a comer», pieza por pieza.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Qué pasó"],
+        rows: [
+          ["I will go", "Iré", "go → ir + é"],
+          ["It will be easy", "Será fácil", "be → ser + á"],
+          ["They will call you", "Te llamarán", "call → llamar + án"],
+          ["I am going to eat", "Voy a comer", "am going to = voy a"],
+          ["She is going to study", "Va a estudiar", "is going to = va a"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Los tres modales del -ÍA y el del -É son el mismo truco: el inglés añade una palabra delante donde el español cambia la terminación. WILL = -é / -á (iré). WOULD = -ía (iría). Si te sabes esa pareja, ya sabes cuándo va cada uno: pregúntate si en español dirías «iré» o «iría».",
+      },
+      {
         t: "table",
         head: ["Forma", "Cuándo se usa", "Ejemplo"],
         rows: [
@@ -543,6 +673,11 @@ export const LESSONS = [
       { q: "«Call me as soon as you ___.»", options: ["will arrive", "arrive", "are arriving"], answer: 1, why: "Después de «as soon as» no se usa will: va presente." },
       { q: "Negativa de «will»:", options: ["willn't", "won't", "don't will"], answer: 1, why: "will not → won't." },
       { q: "«I ___ the dentist at four tomorrow.» (cita cerrada)", options: ["will see", "am seeing", "see"], answer: 1, why: "Plan con hora y fecha ya acordado → presente continuo." },
+      { q: "«Will» equivale a qué terminación española?", options: ["-ía (iría)", "-é / -á (iré, será)", "-ando (yendo)"], answer: 1, why: "will go = iré, will be = será. El -ía es «would»." },
+      { q: "«Será fácil» es…", options: ["It would be easy", "It will be easy", "It is going to easy"], answer: 1, why: "Ser-Á lleva -á: will be." },
+      { q: "«Sería fácil» (condicional) es…", options: ["It will be easy", "It would be easy", "It is easy"], answer: 1, why: "Ser-ÍA lleva -ía: would be." },
+      { q: "«Voy a comer» se traduce literalmente como…", options: ["I will eat", "I am going to eat", "I go to eat"], answer: 1, why: "«be going to» es literalmente «ir a»: am going to = voy a." },
+      { q: "«Te llamarán mañana» es…", options: ["They will call you tomorrow", "They would call you tomorrow", "They are calling you tomorrow"], answer: 0, why: "Llamar-ÁN lleva -án: will call." },
     ],
   },
 
