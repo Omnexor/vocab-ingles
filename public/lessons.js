@@ -2130,6 +2130,11 @@ export const LESSONS = [
       { q: "«I have ___ money, so I can't buy it.» (casi nada)", options: ["a little", "little", "a few"], answer: 1, why: "«Little» (sin a) es negativo: casi no tengo." },
       { q: "«Would you like ___ coffee?» (ofrecimiento)", options: ["any", "some", "much"], answer: 1, why: "En ofrecimientos y peticiones, some, aunque sea pregunta." },
       { q: "«I don't have ___ questions.»", options: ["some", "any", "much"], answer: 1, why: "Negativa → any." },
+      { q: "«Mucho» se dice de dos maneras en inglés según…", options: ["si es formal o informal", "si el sustantivo se puede contar o no", "si es presente o pasado"], answer: 1, why: "Many para contables (many books), much para incontables (much time)." },
+      { q: "«Mucho tiempo» es…", options: ["many time", "much time", "many times"], answer: 1, why: "«Time» aquí es incontable: much." },
+      { q: "«Muchos amigos» es…", options: ["much friends", "many friends", "much of friends"], answer: 1, why: "«Friends» se puede contar: many." },
+      { q: "«A lot of» sirve para…", options: ["solo contables", "solo incontables", "para los dos"], answer: 2, why: "Por eso es la salida segura cuando dudas entre much y many." },
+      { q: "«Pocas sillas» (contable) es…", options: ["little chairs", "few chairs", "much chairs"], answer: 1, why: "Few para contables, little para incontables (little time)." },
     ],
   },
 
@@ -2290,6 +2295,11 @@ export const LESSONS = [
       { q: "«She can drive, ___?»", options: ["can't she", "doesn't she", "isn't she"], answer: 0, why: "Se repite el mismo auxiliar o modal de la frase: can." },
       { q: "«You went to the party, ___?»", options: ["didn't you", "weren't you", "don't you"], answer: 0, why: "Pasado simple sin auxiliar visible → se usa did." },
       { q: "«Let's go, ___?»", options: ["don't we", "shall we", "won't we"], answer: 1, why: "Con «let's», la coletilla fija es siempre «shall we?»." },
+      { q: "El español tiene «¿verdad?» y «¿no?». ¿Cuántas coletillas tiene el inglés?", options: ["Dos, igual", "Una sola", "Una distinta para cada frase"], answer: 2, why: "La coletilla se fabrica con el auxiliar de la frase: cambia en cada caso." },
+      { q: "La regla básica de las coletillas es…", options: ["repetir el verbo principal", "frase afirmativa → coletilla negativa, y al revés", "usar siempre «right?»"], answer: 1, why: "«You're tired, aren't you?» / «You aren't tired, are you?»" },
+      { q: "«Eres español, ¿verdad?» es…", options: ["You are Spanish, are you?", "You are Spanish, aren't you?", "You are Spanish, no?"], answer: 1, why: "Afirmativa → coletilla negativa, con el mismo auxiliar (are → aren't)." },
+      { q: "«She works here, ___?»", options: ["doesn't she", "does she", "isn't she"], answer: 0, why: "No hay auxiliar en la frase, así que se trae «does», y en negativo." },
+      { q: "En la conversación real, ¿para qué sirven sobre todo?", options: ["Para preguntar de verdad", "Para buscar confirmación o dar conversación", "Para sonar formal"], answer: 1, why: "Casi nunca preguntan en serio: buscan acuerdo o mantienen el intercambio." },
     ],
   },
   {
@@ -2420,6 +2430,11 @@ export const LESSONS = [
       { q: "«Do you ___ French?»", options: ["talk", "say", "speak"], answer: 2, why: "Con idiomas siempre speak." },
       { q: "«We ___ about the project for an hour.»", options: ["talked", "told", "said"], answer: 0, why: "Conversar sobre algo: talk about." },
       { q: "«Please ___ the truth.»", options: ["say", "tell", "speak"], answer: 1, why: "«tell the truth» es una combinación fija." },
+      { q: "Lo que decide entre SAY y TELL es…", options: ["el significado", "si mencionas a la persona justo detrás", "el tiempo verbal"], answer: 1, why: "Con persona detrás, tell (tell me). Sin persona, say (say something)." },
+      { q: "«Me dijo la verdad» es…", options: ["He said me the truth", "He told me the truth", "He spoke me the truth"], answer: 1, why: "Hay persona («me») justo detrás: tell." },
+      { q: "«Dijo que estaba cansado» es…", options: ["He said he was tired", "He told he was tired", "He spoke he was tired"], answer: 0, why: "Sin persona detrás: say." },
+      { q: "«Hablo inglés» es…", options: ["I say English", "I tell English", "I speak English"], answer: 2, why: "Para idiomas siempre «speak»." },
+      { q: "«Estuvimos hablando una hora» (conversación) es…", options: ["We said for an hour", "We talked for an hour", "We told for an hour"], answer: 1, why: "«Talk» es conversar; say y tell son «decir»." },
     ],
   },
 
@@ -2580,6 +2595,10 @@ export const LESSONS = [
       { q: "«Would you like ___ water?»", options: ["any", "some", "no"], answer: 1, why: "Es un ofrecimiento → some, aunque sea pregunta." },
       { q: "«We don't have ___ time.»", options: ["some", "any", "no any"], answer: 1, why: "Negativa → any (o «we have no time»)." },
       { q: "¿Cuál es correcta?", options: ["I don't know nothing", "I don't know anything", "I don't know no thing"], answer: 1, why: "Una sola negación por frase: don't + anything." },
+      { q: "«Quiero agua» (en español no ponemos nada delante) es…", options: ["I want water", "I want some water", "Las dos valen, «some» suena más natural"], answer: 2, why: "El inglés casi siempre pone algo delante; «some water» es lo natural." },
+      { q: "En afirmativa se usa…", options: ["some", "any", "cualquiera"], answer: 0, why: "Some en afirmativa; any en negativa y pregunta." },
+      { q: "«¿Tienes hermanos?» es…", options: ["Do you have some brothers?", "Do you have any brothers?", "Do you have brothers?"], answer: 1, why: "Pregunta normal → any." },
+      { q: "¿Por qué a un español se le olvida some/any?", options: ["Porque son difíciles de pronunciar", "Porque en español muchas veces no ponemos nada delante", "Porque no existen"], answer: 1, why: "«Quiero agua», «¿Tienes hermanos?»: el español va sin determinante y el inglés no." },
     ],
   },
 
@@ -3838,7 +3857,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "«it's» es it is; «its» sin apóstrofo es el posesivo."
-      }
+      },
+      { q: "«Mi coche» y «el mío» son en inglés…", options: ["los dos «my»", "my car / mine", "los dos «mine»"], answer: 1, why: "«My» siempre lleva sustantivo detrás; «mine» va solo." },
+      { q: "«Es mío» es…", options: ["It's my", "It's mine", "It's me"], answer: 1, why: "Sin sustantivo detrás se usa la forma larga: mine." },
+      { q: "«Me lo dio a mí» — ¿qué forma va detrás del verbo?", options: ["I", "me", "my"], answer: 1, why: "Detrás del verbo o de una preposición va la forma objeto: me, him, her, us, them." },
+      { q: "«Lo hice yo mismo» es…", options: ["I did it me", "I did it myself", "I did it my"], answer: 1, why: "Los reflexivos acaban en -self / -selves: myself, yourself, themselves." }
     ]
   },
   {
@@ -3965,7 +3988,11 @@ export const LESSONS = [
         ],
         "answer": 1,
         "why": "Still en negativa añade el matiz de «y ya está tardando»."
-      }
+      },
+      { q: "«Todavía» (sigue pasando) es…", options: ["still", "yet", "already"], answer: 0, why: "«I still live here» = todavía vivo aquí." },
+      { q: "«¿Ya has terminado?» es…", options: ["Have you already finished?", "Have you finished yet?", "Have you still finished?"], answer: 1, why: "En preguntas, «ya» es «yet» y va al final." },
+      { q: "«Ya he comido» (antes de lo esperado) es…", options: ["I have eaten yet", "I have already eaten", "I still have eaten"], answer: 1, why: "En afirmativa, «ya» es «already»." },
+      { q: "¿Dónde va «yet» en la frase?", options: ["Al principio", "Al final", "Entre el auxiliar y el verbo"], answer: 1, why: "«Yet» va siempre al final, en negativas y preguntas." }
     ]
   },
   {
@@ -4483,7 +4510,11 @@ export const LESSONS = [
         ],
         "answer": 0,
         "why": "El plural de that es those."
-      }
+      },
+      { q: "El español tiene tres distancias (este, ese, aquel). ¿Cuántas tiene el inglés?", options: ["Tres también", "Dos: cerca y lejos", "Una sola"], answer: 1, why: "This/these (cerca) y that/those (lejos). «Ese» y «aquel» caen los dos en «that»." },
+      { q: "«Estos libros» es…", options: ["this books", "these books", "those books"], answer: 1, why: "Cerca y plural: these." },
+      { q: "«Aquellas casas» es…", options: ["these houses", "those houses", "that houses"], answer: 1, why: "Lejos y plural: those. «Ese» y «aquel» comparten palabra en inglés." },
+      { q: "«This» y «these» se diferencian en…", options: ["la distancia", "el número (uno o varios)", "el género"], answer: 1, why: "Los dos son «cerca»; this es singular y these plural." }
     ]
   },
   {
