@@ -129,9 +129,12 @@
             <p class="muted" id="lecciones-sub"></p>
           </div>
 
-          <div class="seg" role="tablist" aria-label="Tipo de contenido">
+          <div class="seg seg-3" role="tablist" aria-label="Tipo de contenido">
             <button class="seg-btn is-active" id="modo-gramatica" role="tab" aria-selected="true">
               Gramática
+            </button>
+            <button class="seg-btn" id="modo-frases" role="tab" aria-selected="false">
+              Frases
             </button>
             <button class="seg-btn" id="modo-lecturas" role="tab" aria-selected="false">
               Lecturas
@@ -140,6 +143,17 @@
 
           <div id="panel-gramatica">
             <div id="lecciones-lista" class="lesson-grid"></div>
+          </div>
+
+          <!-- Frases hechas: lo que un nativo suelta entero y no se saca del
+               vocabulario suelto. -->
+          <div id="panel-frases" hidden>
+            <p class="hint-line">
+              Frases que se dicen enteras, tal cual. Toca una para ver de dónde
+              sale, cuándo se usa y dónde está la trampa.
+            </p>
+            <div class="chips" id="chips-frases" role="group" aria-label="Tipo de frase"></div>
+            <div id="frases-lista"></div>
           </div>
 
           <div id="panel-lecturas" hidden>

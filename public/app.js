@@ -6,6 +6,7 @@ import { CUENTOS } from "./stories.js";
 import { IRREGULARES, FORMA_A_BASE, CONTRACCIONES } from "./irregulars.js";
 import { conjugar, verbosConjugables } from "./conjugar.js";
 import { EJERCICIOS_MODALES } from "./modals.js";
+import { FRASES, CATEGORIAS_FRASES, contextosDe } from "./phrases.js";
 
 /* ------------------------------------------------------------------ *
  * Estado
@@ -1147,6 +1148,14 @@ const JUEGOS = [
     record: "aciertos",
   },
   {
+    id: "frases",
+    emoji: "🗣️",
+    nombre: "Frases hechas",
+    desc: "Te doy la situación y eliges qué se dice de verdad en inglés. Con el porqué al final.",
+    minimo: 0,
+    record: "aciertos",
+  },
+  {
     id: "falsos",
     emoji: "🎭",
     nombre: "Falsos amigos",
@@ -1170,6 +1179,7 @@ const GRUPOS_JUEGOS = [
   { nombre: "Oído y pronunciación", pista: "reconocerla y decirla", juegos: ["escucha", "hablar", "dictado"] },
   { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
   { nombre: "Gramática", pista: "las formas que no se deducen", juegos: ["irregulares", "modales"] },
+  { nombre: "Cómo se dice", pista: "lo que sale entero, sin traducir", juegos: ["frases"] },
   { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
   { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
 ];
@@ -1578,6 +1588,7 @@ function abrirJuego(id) {
   if (id === "dictado") iniciarDictado(pool);
   if (id === "irregulares") iniciarIrregulares(pool);
   if (id === "modales") iniciarModales(pool);
+  if (id === "frases") iniciarFrasesJuego(pool);
   if (id === "falsos") iniciarFalsos(pool);
   if (id === "confusas") iniciarConfusas(pool);
 
@@ -2874,6 +2885,116 @@ function renderModales() {
   }
 }
 
+/* ---------- 🗣️ Frases hechas ---------- */
+
+function iniciarFrasesJuego(pool) {
+  juego = {
+    pool,
+    items: mezclar(FRASES).slice(0, 10),
+    i: 0,
+    aciertos: 0,
+    fallos: 0,
+    nose: 0,
+    pistas: 0,
+    pista: 0,
+    falladas: [],
+    elegida: null,
+  };
+  renderFrasesJuego();
+}
+
+function renderFrasesJuego() {
+  if (!juego) return;
+  const { items, i } = juego;
+
+  if (i >= items.length) {
+    const esRecord = guardarRecord("frases", limpios(juego));
+    const pool = juego.pool;
+    pantallaFinal(`${juego.aciertos} de ${items.length}`, detalle(juego, esRecord), esRecord, () => iniciarFrasesJuego(pool));
+    juego = null;
+    return;
+  }
+
+  const f = items[i];
+  const respondida = juego.elegida !== null;
+  const noLaSabia = juego.elegida === NO_LO_SE;
+  const acerto = juego.elegida === f.en;
+
+  // Los distractores son frases REALES de otras situaciones. Así el juego no
+  // se gana descartando lo que suena mal, sino sabiendo cuál encaja aquí.
+  const opciones = opcionesFijas(() =>
+    mezclar([f, ...mezclar(FRASES.filter((x) => x.id !== f.id && x.es !== f.es)).slice(0, 2)]),
+  );
+
+  $("#game-box").innerHTML = `
+    <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
+    <div class="card">
+      <p class="quiz-count">¿Qué se dice en inglés?</p>
+      <p class="quiz-q">${esc(f.situacion)}</p>
+    </div>
+    ${respondida ? "" : cajaPista(`En español sería: <em>${esc(f.es)}</em>`)}
+    <div class="options" id="op-frases">
+      ${opciones
+        .map((o) => {
+          let cls = "option option-frase";
+          if (respondida && o.en === f.en) cls += " is-right";
+          else if (respondida && o.en === juego.elegida) cls += " is-wrong";
+          return `<button class="${cls}" data-en="${esc(o.en)}" ${respondida ? "disabled" : ""} lang="en">${esc(o.en)}</button>`;
+        })
+        .join("")}
+    </div>
+    ${
+      respondida
+        ? ""
+        : `<div class="row-actions">
+             ${botonPista()}
+             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
+           </div>`
+    }
+    ${
+      respondida
+        ? `<div class="explain ${acerto ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
+             <b>${acerto ? "Correcto" : `Es: ${esc(f.en)}`}</b>
+             <p>${esc(f.pron)} — ${esc(f.es)}</p>
+             <p>${esc(f.porque)}</p>
+             ${f.ojo ? `<p><b>⚠️ Ojo:</b> ${esc(f.ojo)}</p>` : ""}
+           </div>
+           <div class="row-actions">
+             <button class="btn btn-ghost" data-speak="${esc(f.en)}">🔊 Oírla</button>
+             <button class="btn" id="next-frases">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>
+           </div>`
+        : ""
+    }`;
+
+  if (!respondida) {
+    $$("#op-frases .option").forEach((b) => {
+      b.onclick = () => {
+        juego.elegida = b.dataset.en;
+        if (juego.elegida === f.en) acertar();
+        else {
+          juego.fallos += 1;
+          juego.falladas.push({ en: f.en, es: f.es, pron: f.pron });
+        }
+        renderFrasesJuego();
+      };
+    });
+    $("#nose").onclick = () => {
+      juego.elegida = NO_LO_SE;
+      juego.nose += 1;
+      juego.falladas.push({ en: f.en, es: f.es, pron: f.pron });
+      renderFrasesJuego();
+    };
+    if ($("#pista")) $("#pista").onclick = () => usarPista(renderFrasesJuego);
+  } else {
+    $("#next-frases").onclick = () => {
+      juego.i += 1;
+      juego.elegida = null;
+      juego.pista = 0;
+      renderFrasesJuego();
+    };
+  }
+}
+
 /* ---------- 🎭 Falsos amigos ---------- */
 
 function iniciarFalsos(pool) {
@@ -3123,7 +3244,7 @@ function renderLeccionesIndex() {
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
   $("#lecciones-sub").textContent =
-    `${hechas} de ${LESSONS.length} lecciones superadas · ${CUENTOS.length} cuentos y ${LECTURAS.length} lecturas`;
+    `${hechas} de ${LESSONS.length} lecciones superadas · ${FRASES.length} frases hechas · ${CUENTOS.length + LECTURAS.length} textos`;
   renderLecturasIndex();
 
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
@@ -3369,12 +3490,113 @@ let lecturaAbierta = null;
 
 function cambiarModoAprender(modo) {
   modoAprender = modo;
-  $("#modo-gramatica").classList.toggle("is-active", modo === "gramatica");
-  $("#modo-gramatica").setAttribute("aria-selected", String(modo === "gramatica"));
-  $("#modo-lecturas").classList.toggle("is-active", modo === "lecturas");
-  $("#modo-lecturas").setAttribute("aria-selected", String(modo === "lecturas"));
+  for (const [id, sel] of [
+    ["gramatica", "#modo-gramatica"],
+    ["frases", "#modo-frases"],
+    ["lecturas", "#modo-lecturas"],
+  ]) {
+    $(sel).classList.toggle("is-active", modo === id);
+    $(sel).setAttribute("aria-selected", String(modo === id));
+  }
   $("#panel-gramatica").hidden = modo !== "gramatica";
+  $("#panel-frases").hidden = modo !== "frases";
   $("#panel-lecturas").hidden = modo !== "lecturas";
+  if (modo === "frases") renderFrases();
+}
+
+/* ------------------------------------------------------------------ *
+ * Frases hechas
+ *
+ * Hay frases que un nativo suelta enteras y que palabra por palabra no
+ * significan nada. Aquí van explicadas por dentro: de dónde sale la forma, en
+ * qué situación cabe y dónde está la trampa para quien viene del español.
+ * ------------------------------------------------------------------ */
+
+let catFrase = "idioms";
+let fraseAbierta = null;
+
+function renderChipsFrases() {
+  const cont = $("#chips-frases");
+  cont.innerHTML = CATEGORIAS_FRASES.map(
+    (c) =>
+      `<button class="chip ${catFrase === c.id ? "is-active" : ""}" data-catfrase="${c.id}" aria-pressed="${catFrase === c.id}">${c.emoji} ${esc(c.nombre)}</button>`,
+  ).join("");
+  $$("[data-catfrase]", cont).forEach((b) => {
+    b.onclick = () => {
+      if (catFrase === b.dataset.catfrase) return;
+      catFrase = b.dataset.catfrase;
+      fraseAbierta = null;
+      renderFrases();
+    };
+  });
+}
+
+function renderFrases() {
+  renderChipsFrases();
+  const cat = CATEGORIAS_FRASES.find((c) => c.id === catFrase);
+  const suyas = FRASES.filter((f) => f.cat === catFrase);
+
+  // Las de situación van agrupadas por contexto (restaurante, aeropuerto…):
+  // es como se buscan de verdad, cuando estás a punto de meterte en una.
+  const contextos = contextosDe(catFrase);
+  const grupos = contextos.length
+    ? contextos.map((ctx) => ({ titulo: ctx, frases: suyas.filter((f) => f.contexto === ctx) }))
+    : [{ titulo: "", frases: suyas }];
+
+  $("#frases-lista").innerHTML = `
+    <p class="frases-sub">${suyas.length} frases · ${esc(cat.pista)}</p>
+    ${grupos
+      .map(
+        (g) => `
+      ${g.titulo ? `<h3 class="frase-grupo">${esc(g.titulo)}</h3>` : ""}
+      <div class="frase-grid">${g.frases.map(tarjetaFrase).join("")}</div>`,
+      )
+      .join("")}`;
+
+  $$("#frases-lista [data-frase]").forEach((b) => {
+    b.onclick = (e) => {
+      if (e.target.closest("[data-speak]")) return; // el altavoz no abre ni cierra
+      fraseAbierta = fraseAbierta === b.dataset.frase ? null : b.dataset.frase;
+      renderFrases();
+    };
+  });
+}
+
+function tarjetaFrase(f) {
+  const abierta = fraseAbierta === f.id;
+  return `
+    <article class="frase-card ${abierta ? "is-open" : ""}" data-frase="${esc(f.id)}" role="button" tabindex="0" aria-expanded="${abierta}">
+      <div class="frase-head">
+        <div class="frase-textos">
+          ${f.mal ? `<p class="frase-mal"><s lang="en">${esc(f.mal)}</s></p>` : ""}
+          <p class="frase-en" lang="en">${esc(f.en)}</p>
+          <p class="frase-pron">${esc(f.pron)}</p>
+          <p class="frase-es">${esc(f.es)}</p>
+        </div>
+        <button class="speak" data-speak="${esc(f.en)}" aria-label="Escuchar">🔊</button>
+      </div>
+      ${
+        abierta
+          ? `<div class="frase-detalle">
+               ${f.literal ? `<p class="frase-literal"><b>Palabra por palabra:</b> ${esc(f.literal)} <em>— y por eso no se puede traducir así.</em></p>` : ""}
+               <p><b>De dónde sale</b><br>${esc(f.porque)}</p>
+               <p><b>Cuándo se dice</b><br>${esc(f.cuando)}</p>
+               ${f.ojo ? `<p class="frase-ojo"><b>⚠️ Ojo</b><br>${esc(f.ojo)}</p>` : ""}
+               <div class="frase-ejemplos">
+                 ${f.ejemplos
+                   .map(
+                     ([en, es]) => `<p class="frase-ejemplo">
+                        <span lang="en">${esc(en)}</span>
+                        <button class="speak speak-sm" data-speak="${esc(en)}" aria-label="Escuchar">🔊</button>
+                        <em>${esc(es)}</em>
+                      </p>`,
+                   )
+                   .join("")}
+               </div>
+             </div>`
+          : `<p class="frase-mas">Tocar para ver por qué se dice así</p>`
+      }
+    </article>`;
 }
 
 const NIVEL_NOMBRE = { basico: "Básico", intermedio: "Intermedio", avanzado: "Avanzado" };
@@ -3870,6 +4092,7 @@ $("#chips-verbos").addEventListener("click", (e) => {
   renderPanelVerbos();
 });
 $("#modo-gramatica").addEventListener("click", () => cambiarModoAprender("gramatica"));
+$("#modo-frases").addEventListener("click", () => cambiarModoAprender("frases"));
 $("#modo-lecturas").addEventListener("click", () => cambiarModoAprender("lecturas"));
 
 $("#set-level").addEventListener("change", (e) => {

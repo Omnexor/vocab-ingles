@@ -26,7 +26,7 @@
  *
  * Al tocar cualquiera de los archivos de NUCLEO, sube VERSION.
  */
-const VERSION = 2;
+const VERSION = 3;
 const CACHE = `vocab-v${VERSION}`;
 
 // El núcleo se refresca junto: son los archivos que se rompen si no encajan
@@ -43,6 +43,7 @@ const BASICOS = [
   "./irregulars.js",
   "./conjugar.js",
   "./modals.js",
+  "./phrases.js",
   "./vocabulario.json",
   "./manifest.json",
   "./icon.svg",

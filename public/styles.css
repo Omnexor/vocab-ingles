@@ -553,6 +553,79 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 .rl-es { color: var(--muted); font-size: 14px; }
 
 /* Panel de verbos */
+/* ---------- Frases hechas ---------- */
+.frases-sub { margin: 14px 0 12px; color: var(--muted); font-size: 13px; }
+.frase-grupo {
+  margin: 22px 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.frase-grid { display: grid; gap: 10px; }
+.frase-card {
+  padding: 15px 17px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.frase-card:hover { border-color: var(--line-strong); }
+.frase-card.is-open { border-color: var(--accent); }
+.frase-head { display: flex; align-items: flex-start; gap: 12px; }
+.frase-textos { flex: 1; min-width: 0; }
+.frase-mal { margin: 0 0 4px; color: var(--danger); font-size: 14px; }
+.frase-mal s { text-decoration-thickness: 1.5px; }
+.frase-en { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.frase-pron { margin: 3px 0 0; color: var(--accent); font-size: 13px; font-style: italic; }
+.frase-es { margin: 5px 0 0; color: var(--muted); font-size: 14.5px; }
+.frase-mas { margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+.frase-card.is-open .frase-mas { display: none; }
+
+.frase-detalle {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.frase-detalle p { margin: 0 0 12px; }
+.frase-detalle p:last-child { margin-bottom: 0; }
+.frase-detalle b { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.frase-literal {
+  padding: 10px 12px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+}
+.frase-literal b, .frase-ojo b { text-transform: none; letter-spacing: 0; font-size: inherit; color: var(--text); }
+.frase-ojo {
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--warn) 10%, var(--bg-soft));
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+}
+.frase-ejemplos { display: grid; gap: 10px; margin-top: 4px; }
+.frase-ejemplo {
+  margin: 0 !important;
+  padding: 11px 13px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+}
+.frase-ejemplo span { font-weight: 600; }
+.frase-ejemplo em { display: block; margin-top: 3px; color: var(--muted); font-size: 13.5px; }
+
+/* En el juego las opciones son frases enteras: necesitan varias líneas. */
+.option-frase {
+  white-space: normal;
+  text-align: left;
+  line-height: 1.45;
+  height: auto;
+  min-height: 52px;
+  padding-block: 12px;
+}
+
 .verbos-cuenta {
   margin: 10px 0 0;
   font-size: 13px;
