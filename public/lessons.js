@@ -4756,6 +4756,864 @@ export const LESSONS = [
       { q: "¿Qué conviene entrenar además del vocabulario?", options: ["Solo leer","Escuchar mucho para acostumbrar el oído al enlace","Escribir a mano"], answer: 1, why: "El enlace solo se domina oyéndolo, no estudiándolo." },
     ]
   },
+  /* ------------------------------------------------------------------ *
+   * DIEZ LECCIONES NUEVAS
+   *
+   * Todas nacen del mismo sitio: cosas que el español reparte de una manera
+   * y el inglés de otra, y que hasta ahora no tenían lección propia.
+   * ------------------------------------------------------------------ */
+
+  {
+    id: "ser-estar-tener",
+    title: "ser, estar y tener: casi todo es «be»",
+    tag: "Base",
+    goal: "Dejar de decir «I have 30 years» y «I have hungry».",
+    blocks: [
+      {
+        t: "p",
+        text: "El español tiene «ser» y «estar», y el inglés solo tiene «be» para los dos. Eso es una buena noticia: donde nosotros dudamos («es aburrido» o «está aburrido»), el inglés no tiene que elegir. La mala noticia viene después: un montón de cosas que en español van con TENER, en inglés también van con «be».",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Qué verbo usa cada uno"],
+        rows: [
+          ["Soy español.", "I am Spanish.", "ser → be"],
+          ["Estoy cansado.", "I am tired.", "estar → be"],
+          ["Tengo 30 años.", "I am 30 years old.", "tener → ¡be!"],
+          ["Tengo hambre.", "I am hungry.", "tener → ¡be!"],
+          ["Tengo frío.", "I am cold.", "tener → ¡be!"],
+          ["Tengo razón.", "I am right.", "tener → ¡be!"],
+        ],
+      },
+      {
+        t: "p",
+        text: "El motivo es sencillo cuando lo ves: en inglés «hungry», «cold», «afraid» o «right» son ADJETIVOS, no sustantivos. Son «hambriento», «frío» en el sentido de «friolento», «asustado», «acertado». Y a un adjetivo le corresponde el verbo «be», igual que en «estoy cansado». El español eligió decirlo con sustantivos («tengo hambre» = poseo hambre) y por eso usa «tener».",
+      },
+      {
+        t: "error",
+        wrong: "I have 30 years. / I have hungry. / I have cold.",
+        right: "I am 30 years old. / I am hungry. / I am cold.",
+        why: "Con la edad, el hambre, la sed, el frío, el calor, el miedo, la razón y la prisa, el inglés usa «be». «I have hungry» ni siquiera es una frase: hungry es un adjetivo, no una cosa que se pueda tener.",
+      },
+      {
+        t: "table",
+        head: ["Español con TENER", "Inglés con BE", "Literalmente"],
+        rows: [
+          ["Tengo sed.", "I am thirsty.", "Estoy sediento."],
+          ["Tengo calor.", "I am hot.", "Estoy acalorado."],
+          ["Tengo miedo.", "I am afraid.", "Estoy asustado."],
+          ["Tengo sueño.", "I am sleepy.", "Estoy soñoliento."],
+          ["Tengo prisa.", "I am in a hurry.", "Estoy con prisa."],
+          ["Tienes razón.", "You are right.", "Estás en lo cierto."],
+          ["No tienes razón.", "You are wrong.", "Estás equivocado."],
+          ["Tiene suerte.", "He is lucky.", "Es afortunado."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco para acordarte: si en español la frase es «tengo + sustantivo» y ese sustantivo describe cómo te sientes o cómo estás, en inglés casi seguro que es «be + adjetivo». Con «tener» solo se quedan las posesiones de verdad: I have a car, I have a brother, I have time.",
+      },
+      {
+        t: "p",
+        text: "Y para la edad hay un detalle más: «I am 30 years old» se puede acortar a «I am 30», pero NUNCA a «I have 30». Y la pregunta también cambia de verbo: no es «¿cuántos años tienes?» sino «How OLD ARE you?», literalmente «¿cómo de viejo eres?».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "How old are you?", pron: "jáu óuld ar yu", es: "¿Cuántos años tienes?" },
+          { en: "I'm thirty years old.", pron: "áim zér-ti yiers óuld", es: "Tengo treinta años." },
+          { en: "I'm hungry and thirsty.", pron: "áim ján-gri and zérs-ti", es: "Tengo hambre y sed." },
+          { en: "Are you cold?", pron: "ar yu kóuld", es: "¿Tienes frío?" },
+          { en: "She's afraid of dogs.", pron: "shis a-fréid ov dogs", es: "Le tienen miedo los perros." },
+          { en: "You're right, I'm sorry.", pron: "yur ráit, áim só-ri", es: "Tienes razón, lo siento." },
+          { en: "I'm in a hurry.", pron: "áim in a já-ri", es: "Tengo prisa." },
+          { en: "But I have a car and a house.", pron: "bat ai jav a kar and a jáus", es: "Pero tengo un coche y una casa." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Tengo 25 años» es…", options: ["I have 25 years", "I am 25 years old", "I have 25 years old"], answer: 1, why: "La edad va con «be», nunca con «have»." },
+      { q: "«Tengo hambre» es…", options: ["I have hunger", "I have hungry", "I am hungry"], answer: 2, why: "«Hungry» es un adjetivo: pide «be»." },
+      { q: "¿Por qué «I have hungry» no existe?", options: ["Porque falta un artículo", "Porque «hungry» es adjetivo, no sustantivo", "Porque el orden está mal"], answer: 1, why: "No puedes «tener» un adjetivo: hungry es «hambriento»." },
+      { q: "«¿Cuántos años tienes?» es…", options: ["How many years do you have?", "How old are you?", "What age do you have?"], answer: 1, why: "Literalmente «¿cómo de viejo eres?»." },
+      { q: "«Tengo frío» es…", options: ["I have cold", "I am cold", "It is cold"], answer: 1, why: "«I am cold» = yo tengo frío. «It is cold» sería «hace frío»." },
+      { q: "«Tienes razón» es…", options: ["You have reason", "You are right", "You have right"], answer: 1, why: "«Right» es adjetivo: estás en lo cierto." },
+      { q: "«Ser» y «estar» en inglés…", options: ["son dos verbos distintos", "son el mismo verbo: be", "no existen"], answer: 1, why: "«I am Spanish» y «I am tired» usan el mismo verbo." },
+      { q: "¿Cuál SÍ lleva «have»?", options: ["Tengo sed", "Tengo un coche", "Tengo prisa"], answer: 1, why: "«Have» se queda con las posesiones de verdad: I have a car." },
+      { q: "«Tengo miedo» es…", options: ["I have fear", "I am afraid", "I have afraid"], answer: 1, why: "Afraid es adjetivo: be afraid." },
+      { q: "«Tengo prisa» es…", options: ["I have hurry", "I am in a hurry", "I am hurry"], answer: 1, why: "La fórmula fija es «be in a hurry»." },
+      { q: "«Hace frío hoy» (el tiempo, no tú) es…", options: ["I am cold today", "It is cold today", "There is cold today"], answer: 1, why: "Para el clima el sujeto es «it»: it is cold." },
+      { q: "«Tiene suerte» es…", options: ["He has luck", "He is lucky", "He has lucky"], answer: 1, why: "«Lucky» es adjetivo: be lucky." },
+    ],
+  },
+
+  {
+    id: "like-gustar",
+    title: "like y «gustar»: el sujeto cambia de sitio",
+    tag: "Estructuras",
+    goal: "Traducir «me gusta» sin darle la vuelta a la frase.",
+    blocks: [
+      {
+        t: "p",
+        text: "Esta es de las traducciones que más engañan, porque no basta con cambiar las palabras: hay que cambiar QUIÉN manda en la frase. En «me gusta el café», el sujeto es EL CAFÉ (el café me gusta a mí) y yo soy el complemento. En inglés es exactamente al revés: «I like coffee», donde el sujeto soy YO y el café es lo que recibe la acción.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Quién es el sujeto", "Inglés", "Quién es el sujeto"],
+        rows: [
+          ["Me gusta el café.", "el café", "I like coffee.", "yo"],
+          ["Me gustan los perros.", "los perros", "I like dogs.", "yo"],
+          ["Le gusta bailar.", "bailar", "She likes dancing.", "ella"],
+          ["Nos gusta la música.", "la música", "We like music.", "nosotros"],
+          ["No les gusta esperar.", "esperar", "They don't like waiting.", "ellos"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "Me like coffee. / The coffee likes me.",
+        right: "I like coffee.",
+        why: "«Me» no puede ser sujeto en inglés: el sujeto es «I». Y «the coffee likes me» significaría que al café le gustas tú, que es justo lo contrario.",
+      },
+      {
+        t: "p",
+        text: "De aquí sale otra consecuencia que se falla mucho: como el sujeto es la persona, la -s de la tercera persona va en «like», no en la cosa. «A ella le gusta el café» es «She likeS coffee». Si te fijas en el español, la -s parece que debería ir con la cosa («le gustaN los perros»), y por eso sale mal.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Dónde va la -s"],
+        rows: [
+          ["Le gusta el café.", "She likes coffee.", "en «likes», porque el sujeto es ella"],
+          ["Le gustan los perros.", "She likes dogs.", "sigue en «likes»: el sujeto no cambió"],
+          ["Me gustan los perros.", "I like dogs.", "sin -s: el sujeto soy yo"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y ojo con lo que va detrás de «like»: si es un verbo, se pone en -ing, no en infinitivo. «Me gusta leer» es «I like reading». También vale «I like to read», pero «I like read» no existe nunca.",
+      },
+      {
+        t: "table",
+        head: ["Expresión", "Significa", "Ejemplo"],
+        rows: [
+          ["would like", "querría / me gustaría", "I would like a coffee."],
+          ["look like", "parecerse a", "She looks like her mother."],
+          ["feel like", "apetecer", "I feel like a coffee."],
+          ["be like", "cómo es (carácter)", "What is she like?"],
+          ["like", "como (comparación)", "He runs like a machine."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con «would like» y «like» a secas, que no significan lo mismo: «I like coffee» es «me gusta el café» en general, y «I would like a coffee» es «querría un café» ahora mismo, pidiéndolo. En un bar, decir «I like a coffee» suena raro; lo natural es «I'd like a coffee, please».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I like coffee.", pron: "ai láik kó-fi", es: "Me gusta el café." },
+          { en: "She likes dogs.", pron: "shi láiks dogs", es: "Le gustan los perros." },
+          { en: "We don't like waiting.", pron: "ui dóunt láik uéi-ting", es: "No nos gusta esperar." },
+          { en: "Do you like music?", pron: "du yu láik miúu-sik", es: "¿Te gusta la música?" },
+          { en: "I'd like a coffee, please.", pron: "áid láik a kó-fi, pliis", es: "Querría un café, por favor." },
+          { en: "She looks like her mother.", pron: "shi luks láik jer má-der", es: "Se parece a su madre." },
+          { en: "I feel like a coffee.", pron: "ai fiil láik a kó-fi", es: "Me apetece un café." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Me gusta el café» es…", options: ["Me like coffee", "I like coffee", "The coffee likes me"], answer: 1, why: "En inglés el sujeto es la persona: I like." },
+      { q: "¿Por qué en español decimos «me gustaN los perros», en plural?", options: ["Porque el sujeto son los perros, no yo", "Porque «me» es plural", "Porque suena mejor"], answer: 0, why: "El verbo concuerda con lo que gusta. En inglés no: el sujeto es la persona y el verbo no cambia." },
+      { q: "«Le gustan los perros» es…", options: ["She like dogs", "She likes dogs", "She likes dog"], answer: 1, why: "La -s va en el verbo porque el sujeto es ella, aunque en español el plural esté en «gustan»." },
+      { q: "«Me gusta leer» es…", options: ["I like read", "I like reading", "I like to reading"], answer: 1, why: "Detrás de like va -ing (o «to read»), nunca el verbo desnudo." },
+      { q: "En un bar, para pedir un café dices…", options: ["I like a coffee", "I'd like a coffee", "I am liking a coffee"], answer: 1, why: "«Would like» es «querría»; «like» a secas es un gusto general." },
+      { q: "«Se parece a su madre» es…", options: ["She likes her mother", "She looks like her mother", "She is like her mother"], answer: 1, why: "«Look like» es parecerse físicamente." },
+      { q: "«Me apetece un café» es…", options: ["I feel like a coffee", "I like a coffee", "I would a coffee"], answer: 0, why: "«Feel like» es apetecer." },
+      { q: "«¿Cómo es ella?» (de carácter) es…", options: ["How is she?", "What is she like?", "What does she like?"], answer: 1, why: "«What is she like?» pregunta cómo es. «What does she like?» pregunta qué le gusta." },
+      { q: "«What does she like?» pregunta…", options: ["cómo es ella", "qué le gusta", "a quién se parece"], answer: 1, why: "Con «does» es el verbo «like»: qué le gusta." },
+      { q: "¿Por qué falla tanto esta estructura?", options: ["Porque «like» es irregular", "Porque el sujeto está en un sitio distinto en cada idioma", "Porque se pronuncia raro"], answer: 1, why: "En español manda la cosa; en inglés, la persona." },
+      { q: "«No nos gusta esperar» es…", options: ["We not like wait", "We don't like waiting", "Us don't like waiting"], answer: 1, why: "Sujeto «we», negación con don't y el verbo detrás en -ing." },
+    ],
+  },
+
+  {
+    id: "verbo-get",
+    title: "get: el verbo que sirve para todo",
+    tag: "Verbos",
+    goal: "Entender un verbo que no tiene una sola traducción.",
+    blocks: [
+      {
+        t: "p",
+        text: "«Get» es probablemente el verbo más usado del inglés hablado, y es justo el que peor se enseña, porque no tiene UNA traducción: tiene una docena. La buena noticia es que no hay que memorizarlas sueltas — lo que decide el significado es qué clase de palabra va detrás.",
+      },
+      {
+        t: "table",
+        head: ["Detrás de get va…", "Significa", "Ejemplo", "En español"],
+        rows: [
+          ["un sustantivo", "conseguir, recibir", "I got a letter.", "Recibí una carta."],
+          ["un adjetivo", "ponerse, volverse", "It's getting cold.", "Está empezando a hacer frío."],
+          ["un lugar", "llegar", "I got home late.", "Llegué tarde a casa."],
+          ["un participio", "pasiva informal", "He got fired.", "Lo despidieron."],
+          ["una persona + a", "traer, ir a por", "I'll get you a coffee.", "Te traigo un café."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "La regla que resuelve la mitad de los casos: GET + ADJETIVO significa CAMBIAR de estado, no estar en él. «I am tired» es «estoy cansado»; «I get tired» es «me canso». «She is angry» es «está enfadada»; «she gets angry» es «se enfada». Ese matiz de cambio es lo que en español expresamos con «ponerse», «volverse» o un verbo reflexivo.",
+      },
+      {
+        t: "table",
+        head: ["be + adjetivo (estado)", "get + adjetivo (cambio)"],
+        rows: [
+          ["I am tired. — Estoy cansado.", "I get tired. — Me canso."],
+          ["She is angry. — Está enfadada.", "She gets angry. — Se enfada."],
+          ["It is dark. — Está oscuro.", "It gets dark. — Oscurece."],
+          ["He is better. — Está mejor.", "He gets better. — Mejora."],
+        ],
+      },
+      {
+        t: "p",
+        text: "Y luego está la familia de phrasal verbs con get, que son de los más frecuentes del idioma. Aquí el significado ya no se deduce: hay que aprendérselos, pero son pocos y salen constantemente.",
+      },
+      {
+        t: "table",
+        head: ["Phrasal", "Significa", "Ejemplo"],
+        rows: [
+          ["get up", "levantarse", "I get up at seven."],
+          ["get on / get off", "subir / bajar (transporte)", "Get on the bus."],
+          ["get in / get out", "entrar / salir (coche)", "Get in the car."],
+          ["get along with", "llevarse bien con", "I get along with my boss."],
+          ["get over", "superar algo", "She got over the flu."],
+          ["get back", "volver / recuperar", "I got back at ten."],
+          ["get rid of", "deshacerse de", "Get rid of that box."],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I am getting 30 years. / I get angry with you? (queriendo decir «¿estás enfadado?»)",
+        right: "I am 30 years old. / Are you angry?",
+        why: "«Get» marca el CAMBIO, no el estado. Si quieres decir cómo está alguien ahora, va «be»; «get» es cómo llegó a estarlo.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I got a message from her.", pron: "ai got a mé-sich from jer", es: "Recibí un mensaje suyo." },
+          { en: "It's getting late.", pron: "its gué-ring léit", es: "Se está haciendo tarde." },
+          { en: "What time did you get home?", pron: "uót táim did yu guet jóum", es: "¿A qué hora llegaste a casa?" },
+          { en: "I get tired very quickly.", pron: "ai guet tái-erd vé-ri kuík-li", es: "Me canso muy rápido." },
+          { en: "We get along really well.", pron: "ui guet a-lóng ríi-li uel", es: "Nos llevamos muy bien." },
+          { en: "I'll get you a glass of water.", pron: "ail guet yu a glas ov uó-rer", es: "Te traigo un vaso de agua." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "¿Qué decide el significado de «get»?", options: ["El tiempo verbal", "Qué clase de palabra va detrás", "Si es formal o informal"], answer: 1, why: "Sustantivo, adjetivo, lugar o participio: cada uno le da un sentido." },
+      { q: "«I get tired» significa…", options: ["Estoy cansado", "Me canso", "Estuve cansado"], answer: 1, why: "Get + adjetivo es el CAMBIO de estado, no el estado." },
+      { q: "«Estoy cansado» es…", options: ["I get tired", "I am tired", "I have tired"], answer: 1, why: "Para el estado va «be»; «get» sería «me canso»." },
+      { q: "«It's getting dark» es…", options: ["Está oscuro", "Está oscureciendo", "Estaba oscuro"], answer: 1, why: "El cambio en marcha: se está haciendo de noche." },
+      { q: "«I got home at ten» significa…", options: ["Conseguí una casa a las diez", "Llegué a casa a las diez", "Me fui de casa a las diez"], answer: 1, why: "Get + lugar = llegar." },
+      { q: "«He got fired» significa…", options: ["Consiguió fuego", "Lo despidieron", "Se enfadó"], answer: 1, why: "Get + participio es una pasiva informal: fue despedido." },
+      { q: "«Nos llevamos bien» es…", options: ["We get up well", "We get along well", "We get over well"], answer: 1, why: "«Get along with» es llevarse bien." },
+      { q: "«Levantarse» (de la cama) es…", options: ["get up", "get in", "get on"], answer: 0, why: "Get up. «Get on» es subirse a un transporte." },
+      { q: "«Superar una gripe» es…", options: ["get over the flu", "get off the flu", "get up the flu"], answer: 0, why: "«Get over» es superar algo, físico o emocional." },
+      { q: "«She gets angry» es…", options: ["Está enfadada", "Se enfada", "Estaba enfadada"], answer: 1, why: "Otra vez el cambio: se enfada, no está enfadada." },
+      { q: "«Deshacerse de algo» es…", options: ["get rid of", "get out of", "get back of"], answer: 0, why: "«Get rid of» es la fórmula fija." },
+      { q: "«Te traigo un café» es…", options: ["I'll get you a coffee", "I'll get a coffee you", "I'll take you a coffee"], answer: 0, why: "Get + persona + cosa: traer algo a alguien." },
+    ],
+  },
+
+  {
+    id: "numeros-horas-fechas",
+    title: "Números, horas y fechas",
+    tag: "Palabras",
+    goal: "Decir la hora, el año y la fecha sin bloquearte.",
+    blocks: [
+      {
+        t: "p",
+        text: "Es de lo primero que necesitas en la vida real —una hora, una fecha, un precio— y de lo que menos se practica. Además tiene varias trampas donde el español no ayuda nada.",
+      },
+      {
+        t: "p",
+        text: "Empecemos por la hora. El inglés tiene dos maneras y las dos se usan: la fácil (decir los números seguidos) y la clásica (con past y to). La fácil funciona siempre, así que si dudas, tira de ella.",
+      },
+      {
+        t: "table",
+        head: ["Hora", "Forma fácil", "Forma clásica"],
+        rows: [
+          ["3:00", "three o'clock", "three o'clock"],
+          ["3:15", "three fifteen", "a quarter past three"],
+          ["3:30", "three thirty", "half past three"],
+          ["3:45", "three forty-five", "a quarter to four"],
+          ["3:20", "three twenty", "twenty past three"],
+          ["3:50", "three fifty", "ten to four"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con «past» y «to»: PAST es «y» (past three = y tres) y TO es «menos», pero contando hacia la hora SIGUIENTE. «Las cuatro menos cuarto» es «a quarter to FOUR», no «to three». En español nombramos la hora que viene igual, así que aquí sí coincidimos.",
+      },
+      {
+        t: "p",
+        text: "Los años son la trampa más famosa. Hasta 1999 se dicen en dos parejas de cifras: 1990 no es «one thousand nine hundred ninety», es «nineteen ninety» (diecinueve-noventa). A partir de 2000 hay dos costumbres, y las dos son correctas.",
+      },
+      {
+        t: "table",
+        head: ["Año", "Se dice", "Literalmente"],
+        rows: [
+          ["1985", "nineteen eighty-five", "diecinueve ochenta y cinco"],
+          ["1990", "nineteen ninety", "diecinueve noventa"],
+          ["2000", "two thousand", "dos mil"],
+          ["2005", "two thousand five", "dos mil cinco"],
+          ["2024", "twenty twenty-four", "veinte veinticuatro"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Las fechas llevan número ordinal: no es «five of May», es «May fifth» o «the fifth of May». Y en Estados Unidos el mes va DELANTE, tanto al hablar como al escribir en cifras: 03/07 es el 7 de marzo, no el 3 de julio.",
+      },
+      {
+        t: "table",
+        head: ["Fecha", "Americano", "Ojo"],
+        rows: [
+          ["5 de mayo", "May fifth", "mes + ordinal"],
+          ["1 de enero", "January first", "no «January one»"],
+          ["3 de julio en cifras", "7/3 en España, 3/7 en EE. UU.", "el mes va primero"],
+          ["en 2020", "in 2020", "los años llevan «in»"],
+          ["el lunes", "on Monday", "los días llevan «on»"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I was born the 5 of May of 1990. / It's the three and a half.",
+        right: "I was born on May fifth, 1990. / It's three thirty.",
+        why: "Las fechas van con ordinal y sin «of» delante del año. Y la media hora no es «and a half»: es «half past three» o directamente «three thirty».",
+      },
+      {
+        t: "tip",
+        text: "Los números grandes NO llevan «and» en el sitio donde el español pone «y»: 250 es «two hundred fifty» en americano. Y «hundred», «thousand» y «million» nunca llevan -s cuando van con un número: «two hundred», no «two hundreds».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "It's half past three.", pron: "its jaf past zrii", es: "Son las tres y media." },
+          { en: "The meeting is at a quarter to five.", pron: "de míi-ring is at a kuór-ter tu fáiv", es: "La reunión es a las cinco menos cuarto." },
+          { en: "I was born in nineteen ninety.", pron: "ai uós born in náin-tíin náin-ti", es: "Nací en 1990." },
+          { en: "My birthday is on May fifth.", pron: "mai bérz-dei is on méi fifz", es: "Mi cumpleaños es el 5 de mayo." },
+          { en: "There are two hundred fifty people.", pron: "der ar tuu ján-dred fíf-ti píi-pol", es: "Hay doscientas cincuenta personas." },
+          { en: "See you at seven thirty.", pron: "sii yu at sé-ven zér-ti", es: "Nos vemos a las siete y media." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«1990» se dice…", options: ["one thousand nine hundred ninety", "nineteen ninety", "nine hundred ninety"], answer: 1, why: "Los años hasta 1999 van en dos parejas: nineteen ninety." },
+      { q: "«Las tres y media» es…", options: ["three and a half", "half past three", "three past half"], answer: 1, why: "«Half past three», o directamente «three thirty»." },
+      { q: "«Las cuatro menos cuarto» es…", options: ["a quarter to three", "a quarter to four", "a quarter past three"], answer: 1, why: "«To» cuenta hacia la hora siguiente: to FOUR." },
+      { q: "«Past» significa…", options: ["menos", "y", "en punto"], answer: 1, why: "«Ten past three» = las tres y diez." },
+      { q: "«El 5 de mayo» es…", options: ["the five of May", "May fifth", "May five"], answer: 1, why: "Las fechas llevan número ordinal: fifth." },
+      { q: "En Estados Unidos, «03/07» es…", options: ["3 de julio", "7 de marzo", "depende"], answer: 1, why: "El mes va delante en el formato americano." },
+      { q: "«250» en americano es…", options: ["two hundred and fifty", "two hundred fifty", "two hundreds fifty"], answer: 1, why: "Sin «and» y sin -s en hundred." },
+      { q: "«Doscientos» nunca es…", options: ["two hundred", "two hundreds", "200"], answer: 1, why: "Hundred, thousand y million no llevan -s tras un número." },
+      { q: "«En 2020» es…", options: ["on 2020", "at 2020", "in 2020"], answer: 2, why: "Los años llevan «in»." },
+      { q: "«2024» se suele decir…", options: ["two zero two four", "twenty twenty-four", "two thousand and twenty-four"], answer: 1, why: "Desde 2010 lo normal es leerlo en dos parejas otra vez." },
+      { q: "Si dudas con la hora, la forma segura es…", options: ["decir los números seguidos", "usar siempre past", "usar siempre to"], answer: 0, why: "«Three forty-five» siempre funciona y nadie lo dice mal." },
+    ],
+  },
+
+  {
+    id: "tambien-tampoco",
+    title: "«Yo también» y «yo tampoco»",
+    tag: "Estructuras",
+    goal: "Contestar «So do I» y «Neither do I» sin pensarlo.",
+    blocks: [
+      {
+        t: "p",
+        text: "En español tienes dos frases y te sirven para toda la vida: «yo también» y «yo tampoco». En inglés no hay una fórmula fija: la respuesta se construye con el AUXILIAR de la frase que acabas de oír, así que cambia en cada caso. Es de las cosas que más delatan a un hispanohablante, porque nos quedamos en «me too» para todo.",
+      },
+      {
+        t: "formula",
+        parts: ["So / Neither", "auxiliar", "sujeto"],
+        example: "I love coffee. — So do I.",
+      },
+      {
+        t: "table",
+        head: ["Frase", "«Yo también»", "Por qué ese auxiliar"],
+        rows: [
+          ["I like coffee.", "So do I.", "Presente simple → do"],
+          ["I am tired.", "So am I.", "El verbo be se repite tal cual"],
+          ["I went there.", "So did I.", "Pasado simple → did"],
+          ["I have finished.", "So have I.", "Present perfect → have"],
+          ["I can swim.", "So can I.", "El modal se repite"],
+          ["I will come.", "So will I.", "Futuro → will"],
+        ],
+      },
+      {
+        t: "p",
+        text: "Para «yo tampoco» se usa NEITHER, y aquí hay una trampa: el auxiliar va en POSITIVO aunque la idea sea negativa. La negación ya la lleva «neither», y en inglés no caben dos negaciones en la misma frase.",
+      },
+      {
+        t: "table",
+        head: ["Frase negativa", "«Yo tampoco»", "Nunca"],
+        rows: [
+          ["I don't like it.", "Neither do I.", "Neither don't I."],
+          ["I'm not tired.", "Neither am I.", "Neither am not I."],
+          ["I didn't go.", "Neither did I.", "Neither didn't I."],
+          ["I can't swim.", "Neither can I.", "Neither can't I."],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "I don't like it. — Me neither do. / Also I.",
+        right: "I don't like it. — Neither do I. / Me neither.",
+        why: "«Me too» y «me neither» existen y son correctos, pero solo en registro informal y sin nada detrás. Si empiezas con «so» o «neither», detrás va auxiliar + sujeto, en ese orden y con el verbo invertido.",
+      },
+      {
+        t: "tip",
+        text: "La versión de bolsillo, para salir del paso en cualquier conversación informal: «Me too» para lo afirmativo y «Me neither» para lo negativo. Siempre funcionan. Pero «so do I» y «neither do I» suenan bastante mejor, y como el auxiliar es el mismo que usarías para hacer la pregunta, ya te lo sabes.",
+      },
+      {
+        t: "p",
+        text: "Y si quieres decir lo CONTRARIO —«pues yo no» o «pues yo sí»— la fórmula es todavía más corta: sujeto + auxiliar, sin darle la vuelta. «I love coffee» — «I don't». «I don't like it» — «I do».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I love this song. — So do I.", pron: "ai lav dis song. — sóu du ai", es: "Me encanta esta canción. — Y a mí." },
+          { en: "I'm really tired. — So am I.", pron: "áim ríi-li tái-erd. — sóu am ai", es: "Estoy muy cansado. — Yo también." },
+          { en: "I can't drive. — Neither can I.", pron: "ai kant dráiv. — nái-der kan ai", es: "No sé conducir. — Yo tampoco." },
+          { en: "I didn't like the movie. — Neither did I.", pron: "ai dí-dent láik de múu-vi. — nái-der did ai", es: "No me gustó la película. — A mí tampoco." },
+          { en: "I love coffee. — I don't.", pron: "ai lav kó-fi. — ai dóunt", es: "Me encanta el café. — Pues a mí no." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«I like coffee» — «Yo también» es…", options: ["So do I", "So I do", "Also I"], answer: 0, why: "So + auxiliar + sujeto, con el verbo invertido." },
+      { q: "«I am tired» — «Yo también» es…", options: ["So do I", "So am I", "So I am"], answer: 1, why: "Con «be» se repite el propio verbo: so am I." },
+      { q: "«I went there» — «Yo también» es…", options: ["So do I", "So did I", "So went I"], answer: 1, why: "Pasado simple → el auxiliar es «did»." },
+      { q: "«I don't like it» — «Yo tampoco» es…", options: ["Neither don't I", "Neither do I", "So don't I"], answer: 1, why: "«Neither» ya niega: el auxiliar va en positivo." },
+      { q: "¿Por qué «Neither don't I» está mal?", options: ["Porque el orden es otro", "Porque habría dos negaciones en la misma frase", "Porque «neither» no existe"], answer: 1, why: "En inglés solo cabe una negación por frase." },
+      { q: "«I can't swim» — «Yo tampoco» es…", options: ["Neither can I", "Neither can't I", "So can I"], answer: 0, why: "El modal se repite en positivo detrás de neither." },
+      { q: "«Me too» y «Me neither»…", options: ["están mal", "valen, pero son informales", "solo valen por escrito"], answer: 1, why: "Son correctos en conversación informal y siempre funcionan." },
+      { q: "«I love coffee» — «Pues yo no» es…", options: ["I don't", "So don't I", "Neither do I"], answer: 0, why: "Para lo contrario: sujeto + auxiliar, sin invertir." },
+      { q: "«I have finished» — «Yo también» es…", options: ["So do I", "So have I", "So am I"], answer: 1, why: "Se repite el auxiliar de la frase: have." },
+      { q: "¿De dónde sale el auxiliar de la respuesta?", options: ["Siempre es «do»", "Del verbo de la frase que acabas de oír", "Del sujeto"], answer: 1, why: "Es el mismo que usarías para hacer la pregunta de esa frase." },
+      { q: "«I don't like it» — «Pues a mí sí» es…", options: ["I do", "So do I", "Neither do I"], answer: 0, why: "Para llevar la contraria en positivo: I do." },
+    ],
+  },
+
+  {
+    id: "contracciones",
+    title: "Contracciones: I'm, don't, it's",
+    tag: "Base",
+    goal: "Entender las formas cortas, que son las normales al hablar.",
+    blocks: [
+      {
+        t: "p",
+        text: "En los libros ves «I am», «do not», «she will». En la calle nadie habla así: se dice «I'm», «don't», «she'll». Las contracciones no son inglés descuidado — son el inglés normal. Usar siempre la forma larga suena raro y, sobre todo, si no las reconoces al oído no entiendes nada, porque son justo las palabras que más se repiten.",
+      },
+      {
+        t: "table",
+        head: ["Larga", "Corta", "Ejemplo"],
+        rows: [
+          ["I am", "I'm", "I'm ready."],
+          ["you are", "you're", "You're late."],
+          ["he is / he has", "he's", "He's here."],
+          ["we are", "we're", "We're waiting."],
+          ["they are", "they're", "They're coming."],
+          ["do not", "don't", "I don't know."],
+          ["does not", "doesn't", "She doesn't care."],
+          ["did not", "didn't", "We didn't go."],
+          ["cannot", "can't", "I can't swim."],
+          ["will not", "won't", "He won't come."],
+          ["I would / I had", "I'd", "I'd like a coffee."],
+          ["I will", "I'll", "I'll call you."],
+        ],
+      },
+      {
+        t: "p",
+        text: "Hay dos contracciones que valen para DOS cosas distintas, y solo el contexto las separa. «'s» puede ser «is» o «has». Y «'d» puede ser «would» o «had». Lo que decide es lo que viene detrás.",
+      },
+      {
+        t: "table",
+        head: ["Ves", "Es", "Cómo lo sabes"],
+        rows: [
+          ["He's tired.", "He is tired.", "Detrás va un adjetivo → is"],
+          ["He's finished.", "He has finished.", "Detrás va un participio → has"],
+          ["I'd like it.", "I would like it.", "Detrás va un verbo base → would"],
+          ["I'd finished.", "I had finished.", "Detrás va un participio → had"],
+        ],
+      },
+      {
+        t: "error",
+        wrong: "Its raining. / The dog wagged it's tail.",
+        right: "It's raining. / The dog wagged its tail.",
+        why: "«It's» con apóstrofo es «it is» o «it has». «Its» sin apóstrofo es el posesivo (su). Es el error de escritura más frecuente del inglés, y lo cometen también los nativos.",
+      },
+      {
+        t: "tip",
+        text: "Una que sorprende: «won't» viene de «will not», aunque no lo parezca. Es un resto del inglés antiguo, donde «will» se decía «wol». No intentes deducirla — es la única irregular de la lista, y hay que aprenderla suelta.",
+      },
+      {
+        t: "p",
+        text: "En respuestas cortas afirmativas NO se contrae nunca: se dice «Yes, I am», no «Yes, I'm». La contracción necesita algo detrás donde apoyarse; si la frase acaba ahí, la palabra recupera su forma larga. En negativo sí se contrae: «No, I'm not».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I'm not sure.", pron: "áim not shur", es: "No estoy seguro." },
+          { en: "She doesn't live here anymore.", pron: "shi dá-sent liv jier e-ni-mór", es: "Ya no vive aquí." },
+          { en: "We won't be late.", pron: "ui uóunt bi léit", es: "No llegaremos tarde." },
+          { en: "He's already left.", pron: "jis ol-ré-di left", es: "Ya se ha ido." },
+          { en: "I'd like to help.", pron: "áid láik tu jelp", es: "Me gustaría ayudar." },
+          { en: "It's raining and its color is gray.", pron: "its réi-ning and its ká-lor is gréi", es: "Está lloviendo y su color es gris." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Don't» es la forma corta de…", options: ["do not", "does not", "did not"], answer: 0, why: "Does not → doesn't; did not → didn't." },
+      { q: "En «He's finished», el «'s» es…", options: ["is", "has", "does"], answer: 1, why: "Detrás va un participio, así que es «has finished»." },
+      { q: "En «He's tired», el «'s» es…", options: ["is", "has", "was"], answer: 0, why: "Detrás va un adjetivo: he is tired." },
+      { q: "«Won't» viene de…", options: ["would not", "will not", "want not"], answer: 1, why: "Es irregular por razones históricas: hay que aprenderla suelta." },
+      { q: "«Its» sin apóstrofo es…", options: ["it is", "el posesivo (su)", "it has"], answer: 1, why: "«It's» con apóstrofo es it is / it has." },
+      { q: "«Está lloviendo» es…", options: ["Its raining", "It's raining", "Its' raining"], answer: 1, why: "Aquí es «it is», así que lleva apóstrofo." },
+      { q: "En «I'd like a coffee», el «'d» es…", options: ["had", "would", "did"], answer: 1, why: "Detrás va un verbo base (like) → would." },
+      { q: "Respuesta corta a «Are you ready?»", options: ["Yes, I'm.", "Yes, I am.", "Yes, am I."], answer: 1, why: "En afirmativas cortas no se contrae nunca." },
+      { q: "Las contracciones son…", options: ["inglés incorrecto", "el inglés normal al hablar", "solo de Estados Unidos"], answer: 1, why: "Usar siempre la forma larga suena artificial." },
+      { q: "«She doesn't care» en forma larga es…", options: ["She does not care", "She do not care", "She did not care"], answer: 0, why: "doesn't = does not." },
+      { q: "¿Por qué importa reconocerlas al oído?", options: ["Porque se escriben distinto", "Porque son las palabras que más se repiten al hablar", "Porque son más formales"], answer: 1, why: "Si no las identificas, pierdes el hilo de la frase entera." },
+    ],
+  },
+
+  {
+    id: "adverbios-modo",
+    title: "Adverbios: la terminación -ly",
+    tag: "Palabras",
+    goal: "Saber cuándo es «good» y cuándo «well».",
+    blocks: [
+      {
+        t: "p",
+        text: "Aquí la correspondencia con el español es directa y muy cómoda: la terminación inglesa «-ly» es nuestro «-mente». Slow → slowly = lento → lentamente. Si te sabes el adjetivo, te sabes el adverbio.",
+      },
+      {
+        t: "table",
+        head: ["Adjetivo", "Adverbio", "Español"],
+        rows: [
+          ["slow", "slowly", "lento → lentamente"],
+          ["quick", "quickly", "rápido → rápidamente"],
+          ["careful", "carefully", "cuidadoso → cuidadosamente"],
+          ["easy", "easily", "fácil → fácilmente (la y pasa a i)"],
+          ["happy", "happily", "feliz → felizmente"],
+          ["terrible", "terribly", "terrible → terriblemente (pierde la e)"],
+        ],
+      },
+      {
+        t: "p",
+        text: "La diferencia de fondo: el ADJETIVO describe una cosa o una persona (a slow car), y el ADVERBIO describe cómo se hace algo (he drives slowly). En español lo distinguimos igual, así que la lógica ya la tienes; lo que falla es que el inglés es más estricto y no te deja usar el adjetivo en lugar del adverbio.",
+      },
+      {
+        t: "error",
+        wrong: "She sings good. / He drives very careful.",
+        right: "She sings well. / He drives very carefully.",
+        why: "«Good» es adjetivo y «well» es su adverbio, y son palabras distintas. Si describe CÓMO se hace algo, hace falta el adverbio.",
+      },
+      {
+        t: "table",
+        head: ["Adjetivo", "Adverbio", "Ejemplo"],
+        rows: [
+          ["good (bueno)", "well (bien)", "a good singer / she sings well"],
+          ["fast (rápido)", "fast (rápido)", "a fast car / he drives fast"],
+          ["hard (duro)", "hard (duro)", "hard work / he works hard"],
+          ["late (tarde)", "late (tarde)", "a late train / he arrived late"],
+          ["early (temprano)", "early (temprano)", "an early flight / I got up early"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con «hard» y «hardly», que parecen pareja y no lo son. «He works hard» es «trabaja duro». «He hardly works» es «apenas trabaja» — justo lo contrario. Lo mismo con «late» y «lately»: «lately» no es «tarde», es «últimamente».",
+      },
+      {
+        t: "p",
+        text: "Y al revés: no todo lo que acaba en -ly es adverbio. «Friendly», «lovely», «lonely» y «silly» son ADJETIVOS, aunque lleven la terminación. Por eso no puedes decir «he smiled friendly»; hay que rodearlo: «he smiled in a friendly way».",
+      },
+      {
+        t: "table",
+        head: ["Palabra", "Qué es", "Cuidado"],
+        rows: [
+          ["friendly", "adjetivo", "a friendly dog, no «he barked friendly»"],
+          ["lovely", "adjetivo", "a lovely day"],
+          ["lonely", "adjetivo", "a lonely street"],
+          ["hardly", "adverbio", "apenas, no «duramente»"],
+          ["lately", "adverbio", "últimamente, no «tarde»"],
+        ],
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Please speak slowly.", pron: "pliis spiik slóu-li", es: "Habla despacio, por favor." },
+          { en: "She sings very well.", pron: "shi sings vé-ri uel", es: "Canta muy bien." },
+          { en: "He works hard every day.", pron: "ji uérks jard év-ri déi", es: "Trabaja duro todos los días." },
+          { en: "I hardly know him.", pron: "ai járd-li nóu jim", es: "Apenas lo conozco." },
+          { en: "Read the instructions carefully.", pron: "riid di ins-trák-shons kér-fu-li", es: "Lee las instrucciones con atención." },
+          { en: "They arrived late.", pron: "déi a-ráivd léit", es: "Llegaron tarde." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "La terminación «-ly» equivale en español a…", options: ["-mente", "-ando", "-ado"], answer: 0, why: "slow → slowly = lento → lentamente." },
+      { q: "«Canta bien» es…", options: ["She sings good", "She sings well", "She sings goodly"], answer: 1, why: "«Well» es el adverbio de «good»; son palabras distintas." },
+      { q: "Adverbio de «easy»:", options: ["easyly", "easily", "easy"], answer: 1, why: "La -y pasa a -i antes de -ly: easily." },
+      { q: "«He works hard» significa…", options: ["Apenas trabaja", "Trabaja duro", "Trabaja tarde"], answer: 1, why: "«Hard» es adjetivo y adverbio a la vez: duro." },
+      { q: "«He hardly works» significa…", options: ["Trabaja duro", "Apenas trabaja", "Trabaja bien"], answer: 1, why: "«Hardly» es «apenas», lo contrario de lo que parece." },
+      { q: "«Friendly» es…", options: ["un adverbio", "un adjetivo, aunque acabe en -ly", "las dos cosas"], answer: 1, why: "Como lovely, lonely y silly: adjetivos con terminación -ly." },
+      { q: "«Lately» significa…", options: ["tarde", "últimamente", "lentamente"], answer: 1, why: "«Tarde» es «late»; «lately» es últimamente." },
+      { q: "«Conduce rápido» es…", options: ["He drives fastly", "He drives fast", "He drives quick"], answer: 1, why: "«Fast» no tiene forma en -ly: sirve para las dos cosas." },
+      { q: "¿Qué describe un adverbio?", options: ["Una cosa o persona", "Cómo se hace algo", "Cuántos hay"], answer: 1, why: "El adjetivo describe la cosa; el adverbio, la acción." },
+      { q: "«Lee con atención» es…", options: ["Read careful", "Read carefully", "Read with care attention"], answer: 1, why: "Describe cómo leer: hace falta el adverbio." },
+      { q: "«Un perro amistoso» es…", options: ["a friendly dog", "a friendlyly dog", "a friend dog"], answer: 0, why: "«Friendly» ya es el adjetivo." },
+    ],
+  },
+
+  {
+    id: "dos-objetos",
+    title: "Dos objetos: «give me the book»",
+    tag: "Estructuras",
+    goal: "Colocar bien «me lo dio» y «se lo di a ella».",
+    blocks: [
+      {
+        t: "p",
+        text: "Hay verbos que llevan dos complementos a la vez: alguien da ALGO a ALGUIEN. En español resolvemos esto con pronombres pegados al verbo («me lo dio», «dáselo»), y el inglés no puede hacer eso: tiene que colocar las palabras en un orden concreto, y hay dos órdenes posibles.",
+      },
+      {
+        t: "formula",
+        parts: ["verbo", "persona", "cosa"],
+        example: "He gave me the book.",
+      },
+      {
+        t: "formula",
+        parts: ["verbo", "cosa", "to / for", "persona"],
+        example: "He gave the book to me.",
+      },
+      {
+        t: "table",
+        head: ["Orden", "Ejemplo", "En español"],
+        rows: [
+          ["persona + cosa", "She sent me an email.", "Me mandó un correo."],
+          ["cosa + to + persona", "She sent an email to me.", "Mandó un correo a mí."],
+          ["persona + cosa", "Can you pass me the salt?", "¿Me pasas la sal?"],
+          ["cosa + to + persona", "Can you pass the salt to me?", "¿Le pasas la sal a él?"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "La clave es la preposición: si la persona va DELANTE, no lleva nada («give me the book»). Si va DETRÁS, necesita «to» o «for» («give the book to me»). Poner las dos cosas a la vez es el error más común: «give to me the book» no existe.",
+      },
+      {
+        t: "error",
+        wrong: "He gave to me the book. / He explained me the problem.",
+        right: "He gave me the book. / He explained the problem to me.",
+        why: "Con la persona delante no se pone «to». Y ojo: no todos los verbos admiten los dos órdenes. «Explain», «say», «describe» y «suggest» SIEMPRE necesitan la preposición: explain something TO someone.",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "¿Admite «verbo + persona + cosa»?", "Ejemplo correcto"],
+        rows: [
+          ["give", "sí", "give me the book"],
+          ["send", "sí", "send me an email"],
+          ["tell", "sí", "tell me the truth"],
+          ["buy", "sí (con for)", "buy me a coffee"],
+          ["explain", "NO", "explain the problem to me"],
+          ["say", "NO", "say something to me"],
+          ["describe", "NO", "describe the house to me"],
+          ["suggest", "NO", "suggest a place to me"],
+        ],
+      },
+      {
+        t: "p",
+        text: "¿Y cuándo se elige cada orden? Cuando las dos formas valen, el inglés pone al final la información NUEVA o la más importante. «I gave John the keys» pone el foco en las llaves; «I gave the keys to John» lo pone en John. Si uno de los dos es un pronombre corto (me, him, it), casi siempre va delante, porque lo conocido va primero.",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Can you pass me the salt?", pron: "kan yu pas mi de solt", es: "¿Me pasas la sal?" },
+          { en: "She sent me a message.", pron: "shi sent mi a mé-sich", es: "Me mandó un mensaje." },
+          { en: "I'll buy you a coffee.", pron: "ail bái yu a kó-fi", es: "Te invito a un café." },
+          { en: "He explained the rules to us.", pron: "ji iks-pléind de ruuls tu as", es: "Nos explicó las normas." },
+          { en: "Tell me the truth.", pron: "tel mi de truz", es: "Dime la verdad." },
+          { en: "Give the keys to John, not to me.", pron: "guiv de kiis tu yon, not tu mi", es: "Dale las llaves a John, no a mí." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Me dio el libro» es…", options: ["He gave to me the book", "He gave me the book", "He gave the book me"], answer: 1, why: "Con la persona delante no se pone «to»." },
+      { q: "«Dio el libro a María» es…", options: ["He gave the book to Maria", "He gave to Maria the book", "He gave the book Maria"], answer: 0, why: "Con la persona detrás hace falta «to»." },
+      { q: "¿Cuál es el error más típico?", options: ["Olvidar el artículo", "Poner «to» con la persona delante", "Usar el plural"], answer: 1, why: "«Give to me the book» junta los dos órdenes y no existe." },
+      { q: "«Me explicó el problema» es…", options: ["He explained me the problem", "He explained the problem to me", "He explained to me the problem"], answer: 1, why: "«Explain» SIEMPRE lleva la persona detrás con «to»." },
+      { q: "¿Cuál de estos verbos NO admite «verbo + persona + cosa»?", options: ["give", "send", "explain"], answer: 2, why: "Explain, say, describe y suggest necesitan siempre la preposición." },
+      { q: "«¿Me pasas la sal?» es…", options: ["Can you pass to me the salt?", "Can you pass me the salt?", "Can you pass the salt me?"], answer: 1, why: "Persona delante, sin preposición." },
+      { q: "«Te invito a un café» (te compro un café) es…", options: ["I'll buy you a coffee", "I'll buy to you a coffee", "I'll buy a coffee you"], answer: 0, why: "«Buy» admite persona + cosa; con la persona detrás sería «for you»." },
+      { q: "Con «buy», si la persona va detrás lleva…", options: ["to", "for", "nada"], answer: 1, why: "«Buy a coffee FOR you»: algunos verbos usan for en vez de to." },
+      { q: "«Dime la verdad» es…", options: ["Say me the truth", "Tell me the truth", "Tell to me the truth"], answer: 1, why: "«Tell» admite persona delante; «say» no." },
+      { q: "Cuando valen los dos órdenes, al final va…", options: ["lo más corto", "la información nueva o más importante", "siempre la persona"], answer: 1, why: "El inglés cierra la frase con lo que quiere destacar." },
+      { q: "Un pronombre corto (me, him, it) suele ir…", options: ["delante", "detrás", "da igual"], answer: 0, why: "Lo ya conocido va primero: «give me the book»." },
+    ],
+  },
+
+  {
+    id: "imperativo-peticiones",
+    title: "Órdenes, «let's» y peticiones educadas",
+    tag: "Estructuras",
+    goal: "Pedir cosas sin sonar borde.",
+    blocks: [
+      {
+        t: "p",
+        text: "El imperativo inglés es lo más fácil de toda la gramática: es el verbo base, tal cual, sin sujeto y sin cambiar nada. «Come», «wait», «open the door». No hay tú/usted ni vosotros/ustedes: una sola forma para todo el mundo.",
+      },
+      {
+        t: "table",
+        head: ["Español", "Inglés", "Detalle"],
+        rows: [
+          ["Espera.", "Wait.", "Verbo base, sin sujeto."],
+          ["Esperad.", "Wait.", "La misma forma: no hay plural."],
+          ["Espere usted.", "Wait.", "Tampoco hay forma de cortesía."],
+          ["No esperes.", "Don't wait.", "El negativo se hace con «don't»."],
+          ["No abras la puerta.", "Don't open the door.", "Siempre «don't», también en plural."],
+        ],
+      },
+      {
+        t: "p",
+        text: "Para el «vamos a…» que incluye al que habla, el inglés usa LET'S, que es la contracción de «let us» (déjanos). «Vamos a comer» es «Let's eat». El negativo es «Let's not»: «Let's not talk about it».",
+      },
+      {
+        t: "error",
+        wrong: "We go to eat. / Let's to eat. / Let's eating.",
+        right: "Let's eat.",
+        why: "Detrás de «let's» va el verbo base pelado: ni «to» ni «-ing». Y «we go» es una afirmación («vamos», en el sentido de que lo hacemos), no una propuesta.",
+      },
+      {
+        t: "p",
+        text: "Ahora la parte que de verdad importa: el imperativo a secas suena BRUSCO en inglés, bastante más que en español. «Give me a coffee» en un bar suena a orden militar. El inglés compensa esa brusquedad con fórmulas de cortesía, y usarlas no es opcional: es lo que separa sonar educado de sonar borde sin querer.",
+      },
+      {
+        t: "table",
+        head: ["Fórmula", "Nivel", "Ejemplo"],
+        rows: [
+          ["Imperativo + please", "directo pero aceptable", "Open the window, please."],
+          ["Can you…?", "informal, normal entre amigos", "Can you open the window?"],
+          ["Could you…?", "educado, sirve para todo", "Could you open the window?"],
+          ["Would you mind…?", "muy educado (+ -ing)", "Would you mind opening the window?"],
+          ["I was wondering if…", "el más formal", "I was wondering if you could help."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si solo te quedas con una, quédate con «Could you…, please?»: funciona en cualquier situación, con cualquier persona, y nunca suena ni brusco ni excesivo. Y ojo con «Would you mind…?», que lleva trampa: significa «¿te importaría…?», así que la respuesta afirmativa es «No, not at all» — decir «yes» sería «sí me importa».",
+      },
+      {
+        t: "p",
+        text: "El imperativo también se usa para cosas que no son órdenes, y ahí no suena brusco en absoluto: instrucciones (Mix the eggs), indicaciones (Turn left), avisos (Be careful), invitaciones (Have a seat) y buenos deseos (Have a nice day).",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "Could you help me, please?", pron: "kud yu jelp mi, pliis", es: "¿Podrías ayudarme, por favor?" },
+          { en: "Let's go home.", pron: "lets góu jóum", es: "Vámonos a casa." },
+          { en: "Don't worry about it.", pron: "dóunt uó-ri a-báut it", es: "No te preocupes por eso." },
+          { en: "Would you mind waiting a moment?", pron: "uúd yu máind uéi-ting a móu-ment", es: "¿Te importaría esperar un momento?" },
+          { en: "Turn left at the traffic light.", pron: "tern left at de trá-fik láit", es: "Gira a la izquierda en el semáforo." },
+          { en: "Have a nice day!", pron: "jav a náis déi", es: "¡Que tengas un buen día!" },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "El imperativo inglés es…", options: ["el verbo base sin sujeto", "el verbo con -s", "el verbo con to"], answer: 0, why: "«Wait», «come», «open»: nada más." },
+      { q: "«Esperad» (a varias personas) es…", options: ["Waits", "Wait", "You wait"], answer: 1, why: "Hay una sola forma para singular y plural." },
+      { q: "«No abras la puerta» es…", options: ["Not open the door", "Don't open the door", "No open the door"], answer: 1, why: "El imperativo negativo se hace con «don't»." },
+      { q: "«Vamos a comer» (propuesta) es…", options: ["We go to eat", "Let's eat", "Let's to eat"], answer: 1, why: "«Let's» + verbo base, sin «to»." },
+      { q: "«Let's» es la contracción de…", options: ["let is", "let us", "let as"], answer: 1, why: "Literalmente «déjanos»." },
+      { q: "El negativo de «let's» es…", options: ["Let's don't", "Let's not", "Don't let's"], answer: 1, why: "«Let's not talk about it»." },
+      { q: "En un bar, «Give me a coffee» suena…", options: ["educado", "brusco, como una orden", "formal"], answer: 1, why: "El imperativo pelado es más brusco en inglés que en español." },
+      { q: "La fórmula que sirve para casi todo es…", options: ["Give me…", "Could you…, please?", "You must…"], answer: 1, why: "Educada sin resultar excesiva, en cualquier contexto." },
+      { q: "Detrás de «Would you mind» va…", options: ["el verbo base", "to + infinitivo", "el verbo en -ing"], answer: 2, why: "«Would you mind waiting?»" },
+      { q: "A «Would you mind opening the window?» se contesta que sí con…", options: ["Yes, of course", "No, not at all", "Yes, I mind"], answer: 1, why: "Pregunta si te IMPORTA: decir «no» es acceder." },
+      { q: "¿Cuál NO es una orden aunque use imperativo?", options: ["Have a nice day!", "Open the door!", "Wait here!"], answer: 0, why: "El imperativo también sirve para deseos, avisos e instrucciones." },
+    ],
+  },
+
+  {
+    id: "wish-ojala",
+    title: "wish y hope: los dos «ojalá»",
+    tag: "Estructuras",
+    goal: "Decir «ojalá» según sea posible o imposible.",
+    blocks: [
+      {
+        t: "p",
+        text: "«Ojalá» sirve en español para dos cosas muy distintas: para algo que todavía puede pasar («ojalá venga mañana») y para lamentarse de algo que ya no tiene arreglo («ojalá tuviera más tiempo»). El inglés las separa en dos verbos, y elegir mal cambia por completo lo que estás diciendo.",
+      },
+      {
+        t: "table",
+        head: ["Verbo", "Se usa para", "Ejemplo", "En español"],
+        rows: [
+          ["hope", "algo posible, que aún puede pasar", "I hope it doesn't rain.", "Ojalá no llueva."],
+          ["wish", "algo imposible o un lamento", "I wish I had more time.", "Ojalá tuviera más tiempo."],
+        ],
+      },
+      {
+        t: "p",
+        text: "La gramática también los separa. HOPE va con presente o futuro normal, como cualquier verbo. WISH, en cambio, arrastra el verbo un tiempo hacia atrás, exactamente igual que el condicional 2: si hablas del presente, el verbo va en pasado; si hablas del pasado, va en past perfect.",
+      },
+      {
+        t: "table",
+        head: ["Cuándo", "Fórmula", "Ejemplo", "En español"],
+        rows: [
+          ["presente imposible", "wish + pasado", "I wish I knew the answer.", "Ojalá supiera la respuesta."],
+          ["presente imposible (be)", "wish + were", "I wish I were taller.", "Ojalá fuera más alto."],
+          ["pasado (arrepentimiento)", "wish + had + participio", "I wish I had studied.", "Ojalá hubiera estudiado."],
+          ["molestia con alguien", "wish + would", "I wish you would listen.", "Ojalá me escucharas."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Si te acuerdas de los condicionales, esto ya te lo sabes: WISH usa exactamente el mismo desplazamiento. Donde el español pone subjuntivo («supiera», «fuera», «hubiera estudiado»), el inglés pone un tiempo pasado. Es el mismo mecanismo que en «If I had money, I would travel».",
+      },
+      {
+        t: "error",
+        wrong: "I wish it doesn't rain tomorrow. / I hope I had more money.",
+        right: "I hope it doesn't rain tomorrow. / I wish I had more money.",
+        why: "Mañana todavía puede no llover: eso es posible, así que va «hope». Y tener más dinero ahora mismo no depende de ti: eso es un deseo imposible, así que va «wish». Cambiarlos suena raro y confunde al que escucha.",
+      },
+      {
+        t: "p",
+        text: "Un detalle que sorprende: con «wish» se usa «were» para todas las personas, también con I, he y she. «I wish I were rich», no «I wish I was rich». En conversación muy informal se oye «was», pero «were» es la forma correcta y la que se espera por escrito. Es el mismo «were» de «If I were you».",
+      },
+      {
+        t: "p",
+        text: "Y una fórmula más, «I wish you…», que no lleva ningún desplazamiento porque no es un lamento sino un buen deseo: «I wish you luck», «I wish you a happy birthday». Ahí «wish» significa simplemente «desear».",
+      },
+      {
+        t: "examples",
+        items: [
+          { en: "I hope you feel better soon.", pron: "ai jóup yu fiil bé-rer suun", es: "Ojalá te mejores pronto." },
+          { en: "I wish I had more time.", pron: "ai uish ai jad mor táim", es: "Ojalá tuviera más tiempo." },
+          { en: "I wish I were taller.", pron: "ai uish ai uér tó-ler", es: "Ojalá fuera más alto." },
+          { en: "I wish I had studied more.", pron: "ai uish ai jad stá-did mor", es: "Ojalá hubiera estudiado más." },
+          { en: "I hope it doesn't rain tomorrow.", pron: "ai jóup it dá-sent réin tu-mó-rou", es: "Ojalá no llueva mañana." },
+          { en: "I wish you good luck.", pron: "ai uish yu gud lak", es: "Te deseo buena suerte." },
+        ],
+      },
+    ],
+    quiz: [
+      { q: "«Ojalá no llueva mañana» (todavía es posible) es…", options: ["I wish it doesn't rain", "I hope it doesn't rain", "I wish it wouldn't rain"], answer: 1, why: "Algo que aún puede pasar va con «hope»." },
+      { q: "«Ojalá tuviera más tiempo» es…", options: ["I hope I have more time", "I wish I had more time", "I wish I have more time"], answer: 1, why: "Deseo imposible ahora mismo: wish + pasado." },
+      { q: "¿Qué diferencia a «hope» de «wish»?", options: ["El registro", "Si lo deseado es posible o imposible", "El tiempo verbal solamente"], answer: 1, why: "Hope para lo posible; wish para lo imposible o el lamento." },
+      { q: "Detrás de «wish», hablando del presente, va…", options: ["presente", "pasado", "futuro"], answer: 1, why: "«I wish I knew»: el verbo retrocede un tiempo." },
+      { q: "«Ojalá fuera más alto» es…", options: ["I wish I am taller", "I wish I were taller", "I hope I were taller"], answer: 1, why: "Con wish se usa «were» para todas las personas." },
+      { q: "«Ojalá hubiera estudiado» es…", options: ["I wish I studied", "I wish I had studied", "I hope I studied"], answer: 1, why: "Arrepentimiento del pasado: wish + had + participio." },
+      { q: "El desplazamiento de «wish» es el mismo que el de…", options: ["el present perfect", "los condicionales 2 y 3", "el futuro"], answer: 1, why: "Donde el español pone subjuntivo, el inglés pone pasado." },
+      { q: "«I wish you would listen» expresa…", options: ["un buen deseo", "molestia con alguien que no cambia", "una posibilidad"], answer: 1, why: "«Wish + would» se usa para lo que te fastidia de la conducta de otro." },
+      { q: "«I wish you luck» lleva…", options: ["desplazamiento de tiempo", "ningún desplazamiento: es un buen deseo", "subjuntivo"], answer: 1, why: "Ahí «wish» significa simplemente «desear»." },
+      { q: "«Espero que te mejores» es…", options: ["I wish you feel better", "I hope you feel better", "I wish you felt better"], answer: 1, why: "Mejorar todavía es posible: hope." },
+      { q: "«I wish I was rich» frente a «I wish I were rich»:", options: ["solo vale «was»", "«were» es la forma correcta, aunque se oiga «was»", "las dos son incorrectas"], answer: 1, why: "Es el mismo «were» de «If I were you»." },
+    ],
+  },
+
+
 ];
 
 export const getLesson = (id) => LESSONS.find((l) => l.id === id);

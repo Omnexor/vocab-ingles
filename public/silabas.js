@@ -138,6 +138,7 @@ const COMPUESTOS = {
   pásuerd: "pás-uerd",
   zruáut: "zru-áut",
   yéniuin: "yé-niu-in", // genuine: la u va con la i de delante (/ju/), no con la de detrás
+  símpli: "sím-pli", // simply viene de «simple»: la l es de la raíz, no del -ly
 };
 
 /**
@@ -168,12 +169,33 @@ const MORFEMAS_W = [
   /[aeiou](?=u[aá]n\b)/, // -one:   é-ni-uan
 ];
 
-/** Mete un guion delante de la u glide antes de silabear el resto. */
+/**
+ * El sufijo -ly, que también es una costura.
+ *
+ * «quickly» es quick + ly, así que la k se queda con «kuík». Pero kl es un
+ * grupo perfectamente válido en español (clase, clavo), así que la regla
+ * general lo mandaba entero a la sílaba siguiente y salía «kuí-kli», que se
+ * lee con el golpe en el sitio equivocado. Pasa con todo consonante + l:
+ * simply, deeply, softly, roughly.
+ *
+ * La B se queda FUERA a propósito: los adverbios en -bly vienen todos de un
+ * adjetivo en -ble (probable → probably, possible → possibly), así que ahí la l
+ * es de la raíz y «pró-ba-bli» está bien. Y con m, r, s o t la regla general ya
+ * acierta sola, porque «ml» o «tl» no son grupo válido en español.
+ */
+const SUFIJO_LY = /[kpgf](?=li$)/;
+
+/** Mete un guion en la costura del morfema antes de silabear el resto. */
 function partirGlide(limpia) {
   for (const re of MORFEMAS_W) {
     const m = re.exec(limpia);
     if (!m) continue;
     const i = m.index + m[0].length;
+    return [limpia.slice(0, i), limpia.slice(i)];
+  }
+  const ly = SUFIJO_LY.exec(limpia);
+  if (ly) {
+    const i = ly.index + 1; // la consonante se queda con la sílaba anterior
     return [limpia.slice(0, i), limpia.slice(i)];
   }
   return null;
