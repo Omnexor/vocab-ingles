@@ -567,6 +567,64 @@ export const LESSONS = [
         example: "She can speak three languages.",
       },
       {
+        t: "p",
+        text: "Antes que nada, la traducción literal de cada uno. Un modal NO se traduce por un verbo suelto: se traduce por una FORMA del verbo que va detrás. En «I would go», la palabra «would» no significa nada por sí sola — lo que hace es convertir «go» en «iría». Por eso conviene aprenderse el modal junto a lo que le hace al verbo español.",
+      },
+      {
+        t: "table",
+        head: ["Modal", "Traducción literal", "Ejemplo", "En español"],
+        rows: [
+          ["can", "puedo / sé", "I can swim.", "Sé nadar."],
+          ["could", "podría / podía", "I could help you.", "Podría ayudarte."],
+          ["must", "debo / tengo que", "I must go.", "Tengo que irme."],
+          ["have to", "tengo que", "I have to go.", "Tengo que irme."],
+          ["should", "debería", "I should go.", "Debería irme."],
+          ["may", "puede que / puedo", "It may rain.", "Puede que llueva."],
+          ["might", "puede que (más flojo)", "It might rain.", "Puede que llueva (menos probable)."],
+          ["will", "(futuro: -é, -á)", "I will go.", "Iré."],
+          ["would", "(condicional: -ía)", "I would go.", "Iría."],
+        ],
+      },
+      {
+        t: "p",
+        text: "Fíjate en los tres últimos de la tabla, porque ahí está el mecanismo que más se le escapa a un español: WOULD, COULD y SHOULD no se traducen por una palabra, sino por la TERMINACIÓN -ÍA del verbo español. Donde el inglés añade una palabra delante, el español cambia el final del verbo. Son exactamente la misma operación.",
+      },
+      {
+        t: "formula",
+        parts: ["would", "verbo base"],
+        example: "I would go = Ir-ÍA",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Español", "Qué pasó"],
+        rows: [
+          ["I would go", "Iría", "go → ir + ía"],
+          ["I would like to go to Paris", "Me gustaría ir a París", "like → gustar + ía"],
+          ["It would be better", "Sería mejor", "be → ser + ía"],
+          ["She would never say that", "Nunca diría eso", "say → decir + ía"],
+          ["I could help you", "Podría ayudarte", "could → poder + ía"],
+          ["You should call her", "Deberías llamarla", "should → deber + ía"],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Truco para no fallar nunca con «would»: si en español te sale un verbo acabado en -ía (haría, tendría, sería, gustaría, viviría), en inglés eso es WOULD + verbo base. Y al revés: si ves «would», busca el -ía. «I would travel» no es «yo viajar», es «viajaría». El error clásico del español es traducir would por «quisiera» o dejarlo sin traducir.",
+      },
+      {
+        t: "p",
+        text: "«May» y «might» funcionan distinto: se traducen con «puede que», y eso arrastra un subjuntivo en español. «It may rain» no es «puede llover», es «puede QUE LLUEVA». La diferencia entre los dos es solo de probabilidad: «may» es una posibilidad razonable, «might» es más remota. En español eso se nota poniendo «quizá» o «a lo mejor» delante.",
+      },
+      {
+        t: "table",
+        head: ["Modal", "Fuerza", "Ejemplo", "En español"],
+        rows: [
+          ["will", "seguro", "It will rain.", "Va a llover / lloverá."],
+          ["may", "posible, razonable", "It may rain.", "Puede que llueva."],
+          ["might", "posible, más remoto", "It might rain.", "A lo mejor llueve."],
+          ["can't", "imposible", "It can't be true.", "No puede ser verdad."],
+        ],
+      },
+      {
         t: "table",
         head: ["Modal", "Qué expresa exactamente", "Ejemplo"],
         rows: [
@@ -617,6 +675,10 @@ export const LESSONS = [
           { en: "She isn't answering. She must be busy.", pron: "shi í-sent án-se-ring. shi mast bi bí-si.", es: "No contesta. Debe de estar ocupada." },
           { en: "You must wear a seatbelt in this car.", pron: "yu mast uér a síit-belt in dis kar.", es: "Tienes que llevar el cinturón en este coche." },
           { en: "I might come to the party, I'm not sure yet.", pron: "ai máit kam tu de pár-ti, aim not shur yet.", es: "Puede que vaya a la fiesta, todavía no lo sé." },
+          { en: "I would like to go to Paris.", pron: "ai uúd láik tu góu tu pá-ris", es: "Me gustaría ir a París." },
+          { en: "It would be better to wait.", pron: "it uúd bi bé-rer tu uéit", es: "Sería mejor esperar." },
+          { en: "She would never say that.", pron: "shi uúd né-ver séi dat", es: "Nunca diría eso." },
+          { en: "May I ask a question?", pron: "méi ai ask a kués-chon", es: "¿Puedo hacer una pregunta?" },
         ],
       },
     ],
@@ -634,6 +696,14 @@ export const LESSONS = [
       { q: "¿Cuál suena MENOS seguro?", options: ["may", "might", "las dos igual"], answer: 1, why: "«Might» es un peldaño más flojo que «may»: la posibilidad es más remota." },
       { q: "«I would love to come» expresa…", options: ["una orden", "un ofrecimiento educado o un deseo", "una prohibición"], answer: 1, why: "«Would» aquí suaviza y muestra disposición, no manda nada." },
       { q: "«___ I come in?» (pidiendo permiso formal)", options: ["Must", "May", "Should"], answer: 1, why: "Para permiso formal, el modal es «may»." },
+      { q: "«Me gustaría ir a París» es…", options: ["I like to go to Paris", "I would like to go to Paris", "I will like to go to Paris"], answer: 1, why: "El -ía de «gustaría» es WOULD: would + like." },
+      { q: "«Iría, pero no tengo tiempo» empieza por…", options: ["I go", "I will go", "I would go"], answer: 2, why: "«Iría» lleva -ía, así que en inglés es would + verbo base." },
+      { q: "¿Qué le hace «would» al verbo español que va detrás?", options: ["Lo pone en pasado", "Le añade la terminación -ía", "Le añade -é (futuro)"], answer: 1, why: "would + base = verbo en condicional: would go = iría, would be = sería." },
+      { q: "«Sería mejor esperar» es…", options: ["It would be better to wait", "It will be better to wait", "It is better to wait"], answer: 0, why: "Sería = would be. El -ía delata al would." },
+      { q: "«It may rain» se traduce mejor como…", options: ["Puede llover", "Puede que llueva", "Podría haber llovido"], answer: 1, why: "May/might piden «puede que» + subjuntivo en español." },
+      { q: "¿Cuál expresa MÁS seguridad de que va a llover?", options: ["It might rain", "It may rain", "It will rain"], answer: 2, why: "Will es lo seguro; may es posible; might es lo más remoto." },
+      { q: "«Podría ayudarte» (ofrecimiento) es…", options: ["I can help you", "I could help you", "I must help you"], answer: 1, why: "Podr-ÍA lleva -ía: es «could», el condicional de can." },
+      { q: "«Deberías llamarla» es…", options: ["You must call her", "You should call her", "You would call her"], answer: 1, why: "Deber-ÍA es «should»: consejo con la terminación -ía." },
     ],
   },
 
@@ -2422,6 +2492,22 @@ export const LESSONS = [
       },
       {
         t: "table",
+        head: ["Inglés", "Traducción literal", "Ejemplo", "En español"],
+        rows: [
+          ["must", "debo / tengo que", "I must call my mother.", "Tengo que llamar a mi madre."],
+          ["have to", "tengo que", "I have to wear a uniform.", "Tengo que llevar uniforme."],
+          ["should", "debería", "You should rest.", "Deberías descansar."],
+          ["mustn't", "no debo / no puedo", "You mustn't smoke here.", "No puedes fumar aquí."],
+          ["don't have to", "no hace falta que", "You don't have to come.", "No hace falta que vengas."],
+          ["shouldn't", "no debería", "You shouldn't eat so late.", "No deberías cenar tan tarde."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Fíjate en que «should» y «shouldn't» se traducen con -ÍA (debería, no debería), igual que would y could. Es el mismo mecanismo: el inglés pone una palabra delante y el español cambia la terminación del verbo. Si en español te sale «debería», en inglés es «should» — nunca «must», que sería «debo».",
+      },
+      {
+        t: "table",
         head: ["Se usa", "Qué expresa", "Ejemplo"],
         rows: [
           ["must", "obligación que sientes tú, o norma fuerte", "I must call my mother."],
@@ -2490,6 +2576,9 @@ export const LESSONS = [
       { q: "«Next year I ___ pay for my own insurance.» (futuro)", options: ["will must", "will have to", "must"], answer: 1, why: "Must no tiene futuro propio: se usa will have to." },
       { q: "«You don't have to» significa…", options: ["Está prohibido", "No es necesario, pero puedes si quieres", "Es obligatorio"], answer: 1, why: "Libera de la obligación, no prohíbe nada." },
       { q: "El opuesto de MUSTN'T (prohibición) es…", options: ["don't have to", "can", "must"], answer: 0, why: "Mustn't prohíbe; don't have to libera. Es el matiz más caro de esta lección." },
+      { q: "«Debería descansar» (con -ía) es…", options: ["I must rest", "I should rest", "I have to rest"], answer: 1, why: "El -ía de «debería» delata a should. «Debo» sería must." },
+      { q: "«Debo llamarla» (sin -ía) es…", options: ["I should call her", "I must call her", "I would call her"], answer: 1, why: "Sin -ía es obligación directa: must." },
+      { q: "«No deberías cenar tan tarde» es…", options: ["You mustn't eat so late", "You shouldn't eat so late", "You don't have to eat so late"], answer: 1, why: "«No debería» lleva -ía: shouldn't. Mustn't sería prohibirlo." },
     ],
   },
 
@@ -2923,6 +3012,22 @@ export const LESSONS = [
         example: "You should have called me.",
       },
       {
+        t: "p",
+        text: "La traducción literal es más mecánica de lo que parece: «have + participio» equivale siempre al «haber + participio» del español. Lo único que cambia es el modal de delante, que se traduce igual que en presente pero arrastrando el -ía. Should have = deber-ÍA haber. Could have = podr-ÍA haber. Would have = habr-ÍA. Si te sabes el modal suelto, esta lección es solo añadirle «haber».",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Se traduce", "Ejemplo", "En español"],
+        rows: [
+          ["should have", "debería haber", "You should have called.", "Deberías haber llamado."],
+          ["could have", "podría haber", "You could have called.", "Podrías haber llamado."],
+          ["would have", "habría", "I would have called.", "Habría llamado."],
+          ["must have", "debe de haber", "She must have called.", "Debe de haber llamado."],
+          ["might have", "puede que haya", "She might have called.", "Puede que haya llamado."],
+          ["can't have", "no puede haber", "She can't have called.", "No puede haber llamado."],
+        ],
+      },
+      {
         t: "table",
         head: ["Fórmula", "Qué dice", "Español"],
         rows: [
@@ -2980,6 +3085,9 @@ export const LESSONS = [
       { q: "«Musta» al hablar es la forma corta de…", options: ["might have", "must have", "mustn't have"], answer: 1, why: "Must have se contrae y suena «musta»." },
       { q: "«They could have won, but they didn't try hard enough.» ¿Ganaron?", options: ["Sí, ganaron", "No, no ganaron", "No lo dice"], answer: 1, why: "«Could have» describe algo que era posible y NO llegó a pasar." },
       { q: "El opuesto de «must have» (deducción positiva) es…", options: ["mustn't have", "can't have", "shouldn't have"], answer: 1, why: "La deducción negativa segura es can't have, no mustn't have." },
+      { q: "«Habría llamado, pero no tenía tu número» empieza por…", options: ["I should have called", "I would have called", "I must have called"], answer: 1, why: "«Habría» es el condicional de haber: would have." },
+      { q: "En «should have», el «have» corresponde en español a…", options: ["tener", "haber", "no se traduce"], answer: 1, why: "have + participio = haber + participio: debería HABER llamado." },
+      { q: "«Podrías haber avisado» es…", options: ["You could have told me", "You should have told me", "You would have told me"], answer: 0, why: "Podr-ía haber = could have." },
     ],
   },
   {
@@ -2991,6 +3099,30 @@ export const LESSONS = [
       {
         t: "p",
         text: "«Can» solo existe en presente y pasado (could). No tiene infinitivo ni participio, así que para el futuro, el perfecto o después de otro verbo hay que cambiar a «be able to», que sí se conjuga entero.",
+      },
+      {
+        t: "p",
+        text: "Antes del cuándo, el QUÉ significa. «Can» tiene dos traducciones en español y elegir mal se nota: cuando hablas de algo que aprendiste (nadar, conducir, un idioma) el español dice SÉ, no «puedo». «I can swim» es «sé nadar»; «I can drive» es «sé conducir». «Puedo nadar» en español significa otra cosa: que ahora mismo tengo permiso o las condiciones para hacerlo. El inglés no distingue las dos, así que usa «can» para ambas y eres tú quien decide la traducción.",
+      },
+      {
+        t: "table",
+        head: ["Inglés", "Traducción literal", "Cuándo se usa esa"],
+        rows: [
+          ["I can swim.", "Sé nadar.", "Habilidad aprendida, la tienes siempre."],
+          ["I can swim today.", "Puedo nadar hoy.", "Circunstancia: hoy sí, las condiciones lo permiten."],
+          ["I can speak French.", "Sé hablar francés.", "Habilidad aprendida."],
+          ["Can I use your phone?", "¿Puedo usar tu teléfono?", "Permiso: aquí nunca es «sé»."],
+        ],
+      },
+      {
+        t: "tip",
+        text: "Regla rápida: si en español dirías «sé + verbo», en inglés es «can». El error del hispanohablante va al revés — traducir «sé nadar» como «I know to swim», que no existe. «Know» es saber INFORMACIÓN (I know the answer), no saber HACER algo. Para saber hacer algo siempre es «can».",
+      },
+      {
+        t: "error",
+        wrong: "I know to swim. / I know swim.",
+        right: "I can swim.",
+        why: "«Saber hacer algo» es «can», no «know». «Know» solo vale para saber datos: I know the answer, I know your name.",
       },
       {
         t: "table",
@@ -3054,6 +3186,10 @@ export const LESSONS = [
       { q: "«Podré nadar mejor cuando practique más» (futuro) es…", options: ["I'll can swim better", "I'll be able to swim better", "I can swim better then"], answer: 1, why: "Can no tiene futuro propio: se usa will be able to." },
       { q: "¿Cuál suena más neutro, sin remarcar el esfuerzo?", options: ["I managed to pass the exam", "I was able to pass the exam", "las dos remarcan el esfuerzo igual"], answer: 1, why: "«Was able to» informa sin dramatismo; «managed to» sugiere que costó." },
       { q: "¿Cuál de estas usa «can» para PERMISO, no para habilidad?", options: ["Can I use your phone?", "I can speak French", "She can run fast"], answer: 0, why: "Aquí «can» pide permiso; en las otras dos describe una capacidad." },
+      { q: "«Sé nadar» es…", options: ["I know to swim", "I can swim", "I know swim"], answer: 1, why: "Saber HACER algo es «can». «Know» es saber información, no habilidades." },
+      { q: "«I can speak French» se traduce mejor como…", options: ["Puedo hablar francés", "Sé hablar francés", "Hablaría francés"], answer: 1, why: "Es una habilidad aprendida: en español eso es «sé», no «puedo»." },
+      { q: "«I know the answer» usa «know» porque…", options: ["es una habilidad aprendida", "es información, un dato que conoces", "es lo mismo que can"], answer: 1, why: "Know sirve para datos; para saber hacer algo se usa can." },
+      { q: "«Could» se traduce con -ía porque…", options: ["es el condicional de can: podría", "es un pasado normal", "no tiene traducción"], answer: 0, why: "Could es a can lo que «podría» es a «puedo»: mismo mecanismo del -ía." },
     ],
   },
   {
