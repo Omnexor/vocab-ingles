@@ -103,6 +103,10 @@ export const LESSONS = [
         why: "La T solo se convierte en R cuando la sílaba de detrás es débil. En «return» la fuerza cae justo en «-turn», así que ahí la T suena T de verdad. Igual en hotel, attend o protect.",
       },
       {
+        t: "tip",
+        text: "La misma R aparece antes de L: little es «lí-rol» y bottle es «bó-rol», no «lítel» ni «bótel». En cambio detrás de otra R (thirty, forty, dirty) aquí se escribe con T aposta: «zér-ri» lo leerías con la rr de «perro», y eso suena peor que la t.",
+      },
+      {
         t: "p",
         text: "Un último aviso honesto: el inglés tiene DOS «a» y el español solo una, así que aquí las dos se escriben igual. La de «run» o «cut» es la a española de siempre. La de «ran» o «cat» se hace abriendo más la boca y adelantando la lengua, tirando a «e». Por eso drank y drunk salen los dos como «drank».",
       },

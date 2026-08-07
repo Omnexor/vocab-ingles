@@ -46,8 +46,11 @@ const SCHEMA = {
               "Ej: 'though' -> 'dóu', 'enough' -> 'i-náf', 'beautiful' -> 'biúu-ri-ful'. " +
               "OJO CON LAS SILABAS: pon solo las que suenan de verdad en ingles, no una por vocal escrita. " +
               "'family' es 'fám-li' (dos), no 'fa-mi-li'. Igual con different (dí-frent), chocolate (chó-klat) y every (év-ri). " +
-              "OJO CON LA T AMERICANA: entre vocales suena como la r espanola de 'pero', y se escribe con r: " +
-              "water -> 'uó-rer', city -> 'sí-ri', better -> 'bé-rer'. Pero si la silaba de detras es la fuerte, la t se queda: return -> 'ri-térn'.",
+              "OJO CON LA T AMERICANA: se escribe con r en TRES sitios. " +
+              "(1) entre vocales: water -> 'uó-rer', city -> 'sí-ri', better -> 'bé-rer'. " +
+              "(2) antes de l: little -> 'lí-rol', bottle -> 'bó-rol', metal -> 'mé-ral'. " +
+              "(3) detras de r: thirty -> 'zér-ri', forty -> 'fór-ri', party -> 'pár-ri'. " +
+              "Pero si la silaba de DETRAS es la fuerte, la t se queda: return -> 'ri-térn', hotel -> 'jou-tél', attend -> 'a-ténd'.",
           },
           example: { type: "string", description: "Frase de ejemplo corta en ingles usando la palabra" },
           exampleEs: { type: "string", description: "Traduccion al espanol de la frase de ejemplo" },
