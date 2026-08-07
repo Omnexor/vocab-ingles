@@ -2591,6 +2591,1591 @@ export const LESSONS = [
       { q: "«throughout» suena…", options: ["zró-aut", "zru-áut", "zrau-t"], answer: 1, why: "Es through + out pegados: zru-áut, con la fuerza en áut." },
     ],
   },
+  {
+    "id": "verbos-estado",
+    "title": "Verbos que nunca llevan -ing",
+    "tag": "Presente",
+    "goal": "Dejar de decir «I am knowing» y «I am wanting».",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "El presente continuo sirve para lo que está pasando ahora. Pero hay un grupo de verbos que no describen una acción, sino un estado: saber, querer, gustar, creer. Un estado no está «en curso», simplemente es. Por eso estos verbos casi nunca llevan -ing, aunque en español digamos «estoy queriendo» sin problema."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Grupo",
+          "Verbos",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "Cabeza",
+            "know, think (opinar), believe, remember, forget, understand, mean",
+            "I know the answer."
+          ],
+          [
+            "Gustos",
+            "like, love, hate, prefer, want, need",
+            "I want a coffee."
+          ],
+          [
+            "Sentidos",
+            "see, hear, smell, taste, seem, look (parecer)",
+            "It smells good."
+          ],
+          [
+            "Tener y ser",
+            "be, have (poseer), own, belong, cost",
+            "This costs ten dollars."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "I am knowing the answer.",
+        "right": "I know the answer.",
+        "why": "«Know» es un estado, no algo que estés haciendo. En español decimos «lo estoy sabiendo»… tampoco, y ahí se ve: es el mismo instinto."
+      },
+      {
+        "t": "tip",
+        "text": "Truco: si puedes preguntarte «¿y eso se hace?» y la respuesta es no, el verbo no lleva -ing. Saber no se hace. Correr sí."
+      },
+      {
+        "t": "p",
+        "text": "Ojo, algunos cambian de significado con -ing, y ahí sí valen. «I think it's fine» es opinar; «I'm thinking about it» es darle vueltas ahora. «I have a car» es poseer; «I'm having lunch» es comer."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "I don't understand this.",
+            "pron": "ai dount an-ders-tand dis",
+            "es": "No entiendo esto."
+          },
+          {
+            "en": "She has two brothers.",
+            "pron": "shi jas tu brá-ders",
+            "es": "Tiene dos hermanos."
+          },
+          {
+            "en": "I'm having dinner right now.",
+            "pron": "aim já-ving dí-ner ráit náu",
+            "es": "Estoy cenando ahora mismo."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Quiero un café» es…",
+        "options": [
+          "I am wanting a coffee",
+          "I want a coffee",
+          "I wanting a coffee"
+        ],
+        "answer": 1,
+        "why": "«Want» es un estado: nunca lleva -ing."
+      },
+      {
+        "q": "¿Cuál está bien?",
+        "options": [
+          "I am knowing him",
+          "I know him",
+          "I knowing him"
+        ],
+        "answer": 1,
+        "why": "Saber es un estado, no una acción en curso."
+      },
+      {
+        "q": "«I'm having lunch» significa…",
+        "options": [
+          "Tengo comida",
+          "Estoy comiendo",
+          "Es incorrecto"
+        ],
+        "answer": 1,
+        "why": "«Have» con -ing cambia de sentido: pasa de poseer a tomar."
+      },
+      {
+        "q": "¿Cuál SÍ admite -ing normalmente?",
+        "options": [
+          "belong",
+          "run",
+          "cost"
+        ],
+        "answer": 1,
+        "why": "Correr es una acción; pertenecer y costar son estados."
+      },
+      {
+        "q": "«Esto huele bien» es…",
+        "options": [
+          "This is smelling good",
+          "This smells good",
+          "This smell good"
+        ],
+        "answer": 1,
+        "why": "Los sentidos van en presente simple: smells."
+      }
+    ]
+  },
+  {
+    "id": "preguntas-indirectas",
+    "title": "Preguntas dentro de otra frase",
+    "tag": "Estructuras",
+    "goal": "Dejar de invertir el verbo cuando la pregunta va dentro de otra.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Una pregunta normal invierte el verbo: «Where IS the bank?». Pero cuando esa pregunta va metida dentro de otra frase, el orden vuelve a ser el de una frase normal: sujeto y luego verbo. Es lo contrario de lo que pide el instinto."
+      },
+      {
+        "t": "formula",
+        "text": "Do you know + where the bank IS  (no «where is the bank»)"
+      },
+      {
+        "t": "table",
+        "head": [
+          "Pregunta suelta",
+          "Dentro de otra frase"
+        ],
+        "rows": [
+          [
+            "Where is the station?",
+            "Do you know where the station is?"
+          ],
+          [
+            "What time does it open?",
+            "Can you tell me what time it opens?"
+          ],
+          [
+            "Why did she leave?",
+            "I don't know why she left."
+          ],
+          [
+            "Is he coming?",
+            "I wonder if he is coming."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "Do you know where is the bank?",
+        "right": "Do you know where the bank is?",
+        "why": "La inversión ya la ha hecho el «Do you know». Dentro, la pregunta se comporta como una frase normal: the bank is."
+      },
+      {
+        "t": "tip",
+        "text": "Y desaparecen el do/does/did: «What time does it open?» pero «Tell me what time it opens». Si ves un do dentro, sobra."
+      },
+      {
+        "t": "p",
+        "text": "Para preguntas de sí o no, dentro se usa «if» o «whether»: «Is it open?» pasa a «Do you know if it's open?»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "Could you tell me where the exit is?",
+            "pron": "kud yu tel mi uer di ék-sit is",
+            "es": "¿Me puede decir dónde está la salida?"
+          },
+          {
+            "en": "I don't know what he wants.",
+            "pron": "ai dount nóu uót ji uónts",
+            "es": "No sé qué quiere."
+          },
+          {
+            "en": "Do you know if the store is open?",
+            "pron": "du yu nóu if de stor is óu-pen",
+            "es": "¿Sabes si la tienda está abierta?"
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "¿Cuál está bien?",
+        "options": [
+          "Do you know where is it?",
+          "Do you know where it is?",
+          "Do you know where is?"
+        ],
+        "answer": 1,
+        "why": "Dentro de otra frase, sujeto antes que verbo: where it is."
+      },
+      {
+        "q": "«No sé qué hora es» es…",
+        "options": [
+          "I don't know what time is it",
+          "I don't know what time it is",
+          "I don't know what time is"
+        ],
+        "answer": 1,
+        "why": "Sin inversión: what time it is."
+      },
+      {
+        "q": "«Is it open?» dentro de otra frase pide…",
+        "options": [
+          "that",
+          "if",
+          "what"
+        ],
+        "answer": 1,
+        "why": "Las preguntas de sí o no llevan if (o whether)."
+      },
+      {
+        "q": "¿Qué le sobra a «Tell me where does he live»?",
+        "options": [
+          "el where",
+          "el does",
+          "el me"
+        ],
+        "answer": 1,
+        "why": "El auxiliar do/does/did desaparece dentro: where he lives."
+      },
+      {
+        "q": "«Can you tell me what time it ___?»",
+        "options": [
+          "opens",
+          "does open",
+          "is open"
+        ],
+        "answer": 0,
+        "why": "Frase normal: sujeto (it) y verbo conjugado (opens)."
+      }
+    ]
+  },
+  {
+    "id": "modales-pasado",
+    "title": "must have, should have, could have",
+    "tag": "Modales",
+    "goal": "Hablar de lo que pudo, debió o debería haber pasado.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Los modales no tienen pasado propio: para hablar del pasado se les añade «have + participio». La fórmula es siempre la misma y solo cambia el modal de delante, que es el que pone el significado."
+      },
+      {
+        "t": "formula",
+        "text": "modal + have + participio    (must have gone, should have called)"
+      },
+      {
+        "t": "table",
+        "head": [
+          "Fórmula",
+          "Qué dice",
+          "Español"
+        ],
+        "rows": [
+          [
+            "must have",
+            "deducción: estoy seguro de que pasó",
+            "debe de haber…"
+          ],
+          [
+            "can't have",
+            "deducción negativa: es imposible",
+            "no puede haber…"
+          ],
+          [
+            "might / may have",
+            "posibilidad: quizá pasó",
+            "puede que haya…"
+          ],
+          [
+            "should have",
+            "reproche: lo correcto era hacerlo y no se hizo",
+            "debería haber…"
+          ],
+          [
+            "could have",
+            "era posible y no pasó",
+            "podría haber…"
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "I should call you yesterday.",
+        "right": "I should have called you yesterday.",
+        "why": "Sin «have + participio» estás hablando del presente. El reproche por algo no hecho necesita la fórmula entera."
+      },
+      {
+        "t": "tip",
+        "text": "Al hablar se contraen y suenan casi igual: «should have» se dice «shoulda», «could have» «coulda», «must have» «musta». Por eso mucha gente lo escribe mal como «should of», que no existe."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "She must have forgotten.",
+            "pron": "shi mast jav for-gó-ten",
+            "es": "Se le debe de haber olvidado."
+          },
+          {
+            "en": "You should have told me.",
+            "pron": "yu shud jav tóuld mi",
+            "es": "Deberías habérmelo dicho."
+          },
+          {
+            "en": "He can't have finished already.",
+            "pron": "ji kant jav fí-nisht ol-ré-di",
+            "es": "No puede haber terminado ya."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Deberías haber venido» es…",
+        "options": [
+          "You should come",
+          "You should have come",
+          "You should came"
+        ],
+        "answer": 1,
+        "why": "Reproche por el pasado: should + have + participio."
+      },
+      {
+        "q": "«Se le debe de haber olvidado» es…",
+        "options": [
+          "She must forget",
+          "She must have forgotten",
+          "She must forgot"
+        ],
+        "answer": 1,
+        "why": "Deducción sobre el pasado: must have + participio."
+      },
+      {
+        "q": "«No puede haberlo hecho» es…",
+        "options": [
+          "He mustn't have done it",
+          "He can't have done it",
+          "He couldn't do it"
+        ],
+        "answer": 1,
+        "why": "La deducción negativa es can't have, no mustn't have."
+      },
+      {
+        "q": "Detrás del modal siempre va…",
+        "options": [
+          "had",
+          "have",
+          "has"
+        ],
+        "answer": 1,
+        "why": "Siempre «have», sin conjugar: he must have, no he must has."
+      },
+      {
+        "q": "«Should of» es…",
+        "options": [
+          "Correcto en informal",
+          "Un error de escritura de should have",
+          "Otro significado"
+        ],
+        "answer": 1,
+        "why": "No existe. Sale de que «should have» suena «shoulda»."
+      }
+    ]
+  },
+  {
+    "id": "can-be-able",
+    "title": "can, could y be able to",
+    "tag": "Modales",
+    "goal": "Decir «poder» en cualquier tiempo, no solo en presente.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "«Can» solo existe en presente y pasado (could). No tiene infinitivo ni participio, así que para el futuro, el perfecto o después de otro verbo hay que cambiar a «be able to», que sí se conjuga entero."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Cuándo",
+          "Se dice",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "Presente",
+            "can",
+            "I can swim."
+          ],
+          [
+            "Pasado (habilidad)",
+            "could",
+            "I could swim at five."
+          ],
+          [
+            "Pasado (una vez concreta)",
+            "was able to / managed to",
+            "I was able to fix it."
+          ],
+          [
+            "Futuro",
+            "will be able to",
+            "I'll be able to help tomorrow."
+          ],
+          [
+            "Perfecto",
+            "have been able to",
+            "I haven't been able to sleep."
+          ],
+          [
+            "Tras otro verbo",
+            "to be able to",
+            "I want to be able to travel."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "I will can help you.",
+        "right": "I will be able to help you.",
+        "why": "Dos modales seguidos no se pueden. Como «can» no tiene infinitivo, el futuro pide be able to."
+      },
+      {
+        "t": "tip",
+        "text": "Ojo con «could» en pasado: sirve para una habilidad general (I could run for hours) pero NO para un logro puntual. «Ayer conseguí abrirlo» es «I was able to open it», no «I could open it»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "I won't be able to come.",
+            "pron": "ai uóunt bi éi-bol tu kam",
+            "es": "No voy a poder venir."
+          },
+          {
+            "en": "She was able to finish on time.",
+            "pron": "shi uós éi-bol tu fí-nish on táim",
+            "es": "Consiguió terminar a tiempo."
+          },
+          {
+            "en": "I'd like to be able to read this.",
+            "pron": "aid láik tu bi éi-bol tu riid dis",
+            "es": "Me gustaría poder leer esto."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Podré ayudarte mañana» es…",
+        "options": [
+          "I will can help you",
+          "I will be able to help you",
+          "I can help you tomorrow"
+        ],
+        "answer": 1,
+        "why": "Dos modales seguidos no se pueden: el futuro de can es will be able to."
+      },
+      {
+        "q": "«Conseguí arreglarlo» (una vez) es…",
+        "options": [
+          "I could fix it",
+          "I was able to fix it",
+          "I can fix it"
+        ],
+        "answer": 1,
+        "why": "Could vale para habilidad general; un logro puntual pide was able to."
+      },
+      {
+        "q": "«Quiero poder viajar» es…",
+        "options": [
+          "I want to can travel",
+          "I want to be able to travel",
+          "I want can travel"
+        ],
+        "answer": 1,
+        "why": "Detrás de «to» hace falta un infinitivo, y can no lo tiene."
+      },
+      {
+        "q": "«No he podido dormir» es…",
+        "options": [
+          "I haven't could sleep",
+          "I haven't been able to sleep",
+          "I couldn't sleep"
+        ],
+        "answer": 1,
+        "why": "En perfecto, can pasa a been able to."
+      },
+      {
+        "q": "«De pequeño sabía nadar» es…",
+        "options": [
+          "I could swim",
+          "I was able to swim once",
+          "I can swim then"
+        ],
+        "answer": 0,
+        "why": "Habilidad general en el pasado: could."
+      }
+    ]
+  },
+  {
+    "id": "futuro-avanzado",
+    "title": "Futuro perfecto y futuro continuo",
+    "tag": "Futuro",
+    "goal": "Decir «lo habré terminado» y «estaré trabajando».",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Además del futuro normal hay dos más, y los dos se montan igual que en español: uno para lo que estará en marcha en un momento futuro, y otro para lo que ya estará terminado antes de ese momento."
+      },
+      {
+        "t": "formula",
+        "text": "will be + -ing        →  estaré haciendo\nwill have + participio →  habré hecho"
+      },
+      {
+        "t": "table",
+        "head": [
+          "Fórmula",
+          "Cuándo",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "will be + -ing",
+            "en marcha en ese momento",
+            "At 8 I'll be driving."
+          ],
+          [
+            "will have + participio",
+            "terminado antes de ese momento",
+            "By Friday I'll have finished."
+          ],
+          [
+            "will have been + -ing",
+            "duración hasta ese momento",
+            "By June I'll have been working here a year."
+          ]
+        ]
+      },
+      {
+        "t": "tip",
+        "text": "La palabra clave del futuro perfecto es «by»: by tomorrow, by Friday, by the time you arrive. Si ves «by» + momento futuro, casi seguro pide will have."
+      },
+      {
+        "t": "error",
+        "wrong": "By Friday I will finish it.",
+        "right": "By Friday I will have finished it.",
+        "why": "«By Friday» marca un límite: para entonces ya estará hecho. El futuro simple diría solo que lo harás el viernes."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "This time tomorrow I'll be flying.",
+            "pron": "dis táim tu-mó-rou ail bi fláiing",
+            "es": "Mañana a esta hora estaré volando."
+          },
+          {
+            "en": "By then we'll have moved.",
+            "pron": "bái den uil jav muuvd",
+            "es": "Para entonces ya nos habremos mudado."
+          },
+          {
+            "en": "Don't call at nine, I'll be sleeping.",
+            "pron": "dount kol at náin, ail bi slíi-ping",
+            "es": "No llames a las nueve, estaré durmiendo."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Para el viernes lo habré terminado» es…",
+        "options": [
+          "By Friday I'll finish it",
+          "By Friday I'll have finished it",
+          "By Friday I'm finishing it"
+        ],
+        "answer": 1,
+        "why": "«By» + futuro pide will have + participio."
+      },
+      {
+        "q": "«A las ocho estaré conduciendo» es…",
+        "options": [
+          "At 8 I'll drive",
+          "At 8 I'll be driving",
+          "At 8 I drive"
+        ],
+        "answer": 1,
+        "why": "En marcha en ese momento: will be + -ing."
+      },
+      {
+        "q": "Detrás de «will have» va…",
+        "options": [
+          "el infinitivo",
+          "el participio",
+          "-ing"
+        ],
+        "answer": 1,
+        "why": "will have + participio: will have finished."
+      },
+      {
+        "q": "La palabra que anuncia el futuro perfecto es…",
+        "options": [
+          "by",
+          "at",
+          "in"
+        ],
+        "answer": 0,
+        "why": "«By Friday», «by then»: marca el límite antes del cual estará hecho."
+      },
+      {
+        "q": "«Llevaré un año trabajando aquí» es…",
+        "options": [
+          "I'll work here a year",
+          "I'll have been working here a year",
+          "I'm working here a year"
+        ],
+        "answer": 1,
+        "why": "Duración hasta un punto futuro: will have been + -ing."
+      }
+    ]
+  },
+  {
+    "id": "pronombres-completo",
+    "title": "I, me, my, mine, myself",
+    "tag": "Palabras",
+    "goal": "Elegir la forma correcta del pronombre sin dudar.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "El español reparte esto entre yo, me, mi, mío y mí mismo, y el inglés hace lo mismo pero con reglas más rígidas: cada columna tiene su sitio en la frase y no se pueden mezclar."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Sujeto",
+          "Objeto",
+          "Posesivo",
+          "Solo",
+          "Reflexivo"
+        ],
+        "rows": [
+          [
+            "I",
+            "me",
+            "my",
+            "mine",
+            "myself"
+          ],
+          [
+            "you",
+            "you",
+            "your",
+            "yours",
+            "yourself"
+          ],
+          [
+            "he",
+            "him",
+            "his",
+            "his",
+            "himself"
+          ],
+          [
+            "she",
+            "her",
+            "her",
+            "hers",
+            "herself"
+          ],
+          [
+            "it",
+            "it",
+            "its",
+            "—",
+            "itself"
+          ],
+          [
+            "we",
+            "us",
+            "our",
+            "ours",
+            "ourselves"
+          ],
+          [
+            "they",
+            "them",
+            "their",
+            "theirs",
+            "themselves"
+          ]
+        ]
+      },
+      {
+        "t": "p",
+        "text": "El posesivo va SIEMPRE pegado a un sustantivo (my car). La forma «sola» va sin él (that car is mine). Y el reflexivo es cuando el sujeto y el objeto son la misma persona (I hurt myself)."
+      },
+      {
+        "t": "error",
+        "wrong": "This book is my.",
+        "right": "This book is mine.",
+        "why": "Sin sustantivo detrás hay que usar la forma sola: mine, yours, hers. «My» siempre necesita algo a lo que acompañar."
+      },
+      {
+        "t": "tip",
+        "text": "Ojo con its y it's: «its» es el posesivo (the dog and its bone) y «it's» es «it is». El apóstrofo aquí NO es de posesión."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "She told me it was hers.",
+            "pron": "shi tóuld mi it uós jers",
+            "es": "Me dijo que era suyo."
+          },
+          {
+            "en": "We did it ourselves.",
+            "pron": "ui did it au-ar-sélvs",
+            "es": "Lo hicimos nosotros mismos."
+          },
+          {
+            "en": "Their house is bigger than ours.",
+            "pron": "der jáus is bí-guer dan áu-ars",
+            "es": "Su casa es más grande que la nuestra."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Este libro es mío» es…",
+        "options": [
+          "This book is my",
+          "This book is mine",
+          "This book is me"
+        ],
+        "answer": 1,
+        "why": "Sin sustantivo detrás: mine."
+      },
+      {
+        "q": "«Me lo dio a mí» es…",
+        "options": [
+          "He gave it to I",
+          "He gave it to me",
+          "He gave it to my"
+        ],
+        "answer": 1,
+        "why": "Detrás de preposición va la forma de objeto: me."
+      },
+      {
+        "q": "«Su casa» (de ella) es…",
+        "options": [
+          "hers house",
+          "her house",
+          "she house"
+        ],
+        "answer": 1,
+        "why": "Delante de sustantivo va el posesivo: her."
+      },
+      {
+        "q": "«Me corté» es…",
+        "options": [
+          "I cut me",
+          "I cut myself",
+          "I cut mine"
+        ],
+        "answer": 1,
+        "why": "Sujeto y objeto son la misma persona: reflexivo."
+      },
+      {
+        "q": "«its» es…",
+        "options": [
+          "it is",
+          "el posesivo de it",
+          "un error"
+        ],
+        "answer": 1,
+        "why": "«it's» es it is; «its» sin apóstrofo es el posesivo."
+      }
+    ]
+  },
+  {
+    "id": "still-yet-already",
+    "title": "still, yet y already",
+    "tag": "Palabras",
+    "goal": "Los tres se traducen «ya» o «todavía» y no son intercambiables.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Los tres hablan de si algo ha pasado ya o sigue pasando, y los tres caen en «ya» o «todavía» en español. Lo que los separa es la actitud: si esperabas que hubiera terminado, si te sorprende que no, o si te sorprende que sí."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Palabra",
+          "Significa",
+          "Dónde va",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "still",
+            "todavía (sigue pasando)",
+            "antes del verbo",
+            "I still live here."
+          ],
+          [
+            "yet",
+            "todavía no / ya (en preguntas)",
+            "al final",
+            "Have you finished yet?"
+          ],
+          [
+            "already",
+            "ya (antes de lo esperado)",
+            "antes del verbo o al final",
+            "I've already eaten."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "I haven't finished already.",
+        "right": "I haven't finished yet.",
+        "why": "En negativa se usa «yet», al final. «Already» es para afirmar que algo pasó, y encima antes de lo previsto."
+      },
+      {
+        "t": "tip",
+        "text": "Regla rápida: yet va al final y solo en preguntas y negativas. Already y still van en medio y en frases afirmativas. Si dudas, mira si la frase lleva not o interrogación."
+      },
+      {
+        "t": "p",
+        "text": "«Still» en negativa expresa impaciencia: «He still hasn't called» suena a «sigue sin llamar, y ya vale». Con yet sería neutro: «He hasn't called yet»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "Are you still working here?",
+            "pron": "ar yu stil uér-king jí-er",
+            "es": "¿Sigues trabajando aquí?"
+          },
+          {
+            "en": "I haven't seen it yet.",
+            "pron": "ai já-vent siin it yet",
+            "es": "Todavía no lo he visto."
+          },
+          {
+            "en": "She has already left.",
+            "pron": "shi jas ol-ré-di left",
+            "es": "Ya se ha ido."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Todavía no he comido» es…",
+        "options": [
+          "I haven't eaten still",
+          "I haven't eaten yet",
+          "I haven't eaten already"
+        ],
+        "answer": 1,
+        "why": "Negativa: yet, y al final."
+      },
+      {
+        "q": "«Sigo viviendo aquí» es…",
+        "options": [
+          "I still live here",
+          "I yet live here",
+          "I already live here"
+        ],
+        "answer": 0,
+        "why": "Algo que continúa: still, antes del verbo."
+      },
+      {
+        "q": "«Ya he terminado» es…",
+        "options": [
+          "I've finished yet",
+          "I've already finished",
+          "I've still finished"
+        ],
+        "answer": 1,
+        "why": "Afirmar que ya pasó: already."
+      },
+      {
+        "q": "«Yet» va normalmente…",
+        "options": [
+          "al principio",
+          "al final",
+          "antes del verbo"
+        ],
+        "answer": 1,
+        "why": "Al final de la frase: Have you finished yet?"
+      },
+      {
+        "q": "«He still hasn't called» transmite…",
+        "options": [
+          "Neutralidad",
+          "Impaciencia",
+          "Alegría"
+        ],
+        "answer": 1,
+        "why": "Still en negativa añade el matiz de «y ya está tardando»."
+      }
+    ]
+  },
+  {
+    "id": "adverbios-frecuencia",
+    "title": "Dónde van always, never y usually",
+    "tag": "Palabras",
+    "goal": "Colocar los adverbios de frecuencia en su sitio exacto.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "En español el adverbio se mueve casi libre: «siempre llego tarde», «llego siempre tarde», «llego tarde siempre». En inglés tiene un sitio fijo, y ponerlo mal se nota mucho."
+      },
+      {
+        "t": "formula",
+        "text": "sujeto + ADVERBIO + verbo        →  I always arrive late\nsujeto + be + ADVERBIO          →  I am always late"
+      },
+      {
+        "t": "table",
+        "head": [
+          "Adverbio",
+          "Cuánto",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "always",
+            "100%",
+            "She always works late."
+          ],
+          [
+            "usually / normally",
+            "80%",
+            "I usually walk."
+          ],
+          [
+            "often",
+            "60%",
+            "We often meet here."
+          ],
+          [
+            "sometimes",
+            "40%",
+            "He sometimes calls."
+          ],
+          [
+            "rarely / seldom",
+            "10%",
+            "They rarely go out."
+          ],
+          [
+            "never",
+            "0%",
+            "I never smoke."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "I go always to the gym.",
+        "right": "I always go to the gym.",
+        "why": "Va DELANTE del verbo normal. Detrás suena a traducción del español."
+      },
+      {
+        "t": "tip",
+        "text": "La excepción es el verbo «be»: ahí el adverbio va DETRÁS. «I am always tired», no «I always am tired». Y con auxiliares, en medio: «I have never been there»."
+      },
+      {
+        "t": "p",
+        "text": "«Sometimes» y «usually» son los únicos que también pueden ir al principio de la frase para dar énfasis: «Sometimes I work from home». Con «always» y «never» eso no se hace."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "I never eat breakfast.",
+            "pron": "ai né-ver iit brék-fast",
+            "es": "Nunca desayuno."
+          },
+          {
+            "en": "He is always late.",
+            "pron": "ji is ól-uis léit",
+            "es": "Siempre llega tarde."
+          },
+          {
+            "en": "We have never been to Japan.",
+            "pron": "ui jav né-ver bin tu ya-pán",
+            "es": "Nunca hemos estado en Japón."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Siempre voy al gimnasio» es…",
+        "options": [
+          "I go always to the gym",
+          "I always go to the gym",
+          "Always I go to the gym"
+        ],
+        "answer": 1,
+        "why": "Delante del verbo normal."
+      },
+      {
+        "q": "Con el verbo «be», el adverbio va…",
+        "options": [
+          "delante",
+          "detrás",
+          "al final"
+        ],
+        "answer": 1,
+        "why": "I am always tired, no I always am tired."
+      },
+      {
+        "q": "«Nunca he estado allí» es…",
+        "options": [
+          "I never have been there",
+          "I have never been there",
+          "I have been never there"
+        ],
+        "answer": 1,
+        "why": "Con auxiliar, el adverbio va en medio: have never been."
+      },
+      {
+        "q": "¿Cuál puede ir al principio de la frase?",
+        "options": [
+          "always",
+          "never",
+          "sometimes"
+        ],
+        "answer": 2,
+        "why": "Sometimes y usually sí; always y never no."
+      },
+      {
+        "q": "«Rarely» significa…",
+        "options": [
+          "muy a menudo",
+          "casi nunca",
+          "raro"
+        ],
+        "answer": 1,
+        "why": "Es frecuencia baja, no rareza."
+      }
+    ]
+  },
+  {
+    "id": "so-such-too-enough",
+    "title": "so, such, too y enough",
+    "tag": "Estructuras",
+    "goal": "Decir «tan», «tanto», «demasiado» y «suficiente» sin liarlos.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Cuatro palabras para graduar. La confusión típica es entre «so» y «such» (los dos son «tan») y entre «too» y «very» (demasiado no es lo mismo que muy)."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Palabra",
+          "Va con",
+          "Ejemplo"
+        ],
+        "rows": [
+          [
+            "so",
+            "adjetivo o adverbio solo",
+            "It's so cold."
+          ],
+          [
+            "such",
+            "(a/an) + adjetivo + sustantivo",
+            "It's such a cold day."
+          ],
+          [
+            "too",
+            "adjetivo: más de lo aceptable",
+            "It's too cold to go out."
+          ],
+          [
+            "enough",
+            "DETRÁS del adjetivo",
+            "It's not warm enough."
+          ]
+        ]
+      },
+      {
+        "t": "error",
+        "wrong": "It's a so cold day.",
+        "right": "It's such a cold day.",
+        "why": "Si hay sustantivo detrás (day), toca «such». «So» solo acompaña al adjetivo cuando va suelto."
+      },
+      {
+        "t": "tip",
+        "text": "«Too» NO es «muy»: es «demasiado», y siempre es negativo. «This coffee is too hot» significa que no te lo puedes beber. Si solo quieres decir que está muy caliente, es «very hot»."
+      },
+      {
+        "t": "p",
+        "text": "«Enough» es el único que va detrás del adjetivo (old enough, good enough), pero delante del sustantivo (enough money). Es justo al revés que en español."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "It's too late to call her.",
+            "pron": "its tu léit tu kol jer",
+            "es": "Es demasiado tarde para llamarla."
+          },
+          {
+            "en": "He's not old enough to drive.",
+            "pron": "jis not óuld i-náf tu dráiv",
+            "es": "No tiene edad suficiente para conducir."
+          },
+          {
+            "en": "It was such a good movie.",
+            "pron": "it uós sach a gud múu-vi",
+            "es": "Fue una película tan buena."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Hace un día tan bonito» es…",
+        "options": [
+          "It's a so nice day",
+          "It's such a nice day",
+          "It's so a nice day"
+        ],
+        "answer": 1,
+        "why": "Con sustantivo detrás: such a + adjetivo + sustantivo."
+      },
+      {
+        "q": "«Este café está demasiado caliente» es…",
+        "options": [
+          "This coffee is very hot",
+          "This coffee is too hot",
+          "This coffee is so hot"
+        ],
+        "answer": 1,
+        "why": "Too = más de lo aceptable, no te lo puedes beber."
+      },
+      {
+        "q": "«Enough» con un adjetivo va…",
+        "options": [
+          "delante",
+          "detrás",
+          "da igual"
+        ],
+        "answer": 1,
+        "why": "old enough, good enough: siempre detrás del adjetivo."
+      },
+      {
+        "q": "«No tengo suficiente dinero» es…",
+        "options": [
+          "I don't have money enough",
+          "I don't have enough money",
+          "I don't have too money"
+        ],
+        "answer": 1,
+        "why": "Con sustantivo, enough va delante."
+      },
+      {
+        "q": "«Too» y «very» son…",
+        "options": [
+          "Lo mismo",
+          "Distintos: too es negativo",
+          "Too es más formal"
+        ],
+        "answer": 1,
+        "why": "Very solo intensifica; too dice que se pasa de la raya."
+      }
+    ]
+  },
+  {
+    "id": "doble-negacion",
+    "title": "En inglés no hay doble negación",
+    "tag": "Estructuras",
+    "goal": "Dejar de decir «I don't know nothing».",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "En español la doble negación es obligatoria: «no sé nada», «no he visto a nadie». En inglés es al revés: una sola negación por frase. Si el verbo ya va en negativo, lo de detrás tiene que ser positivo."
+      },
+      {
+        "t": "formula",
+        "text": "don't + anything / anyone / anywhere   ✓\ndon't + nothing / no one / nowhere    ✗"
+      },
+      {
+        "t": "table",
+        "head": [
+          "Español",
+          "Inglés correcto",
+          "El calco típico"
+        ],
+        "rows": [
+          [
+            "No sé nada",
+            "I don't know anything",
+            "I don't know nothing"
+          ],
+          [
+            "No he visto a nadie",
+            "I haven't seen anyone",
+            "I haven't seen nobody"
+          ],
+          [
+            "No fui a ninguna parte",
+            "I didn't go anywhere",
+            "I didn't go nowhere"
+          ],
+          [
+            "Tampoco tengo",
+            "I don't have any either",
+            "I don't have neither"
+          ]
+        ]
+      },
+      {
+        "t": "tip",
+        "text": "La otra opción es dejar el verbo en positivo y negar con la palabra: «I know nothing» es correcto y suena más literario. Lo que no vale es negar dos veces: «I don't know nothing»."
+      },
+      {
+        "t": "error",
+        "wrong": "I don't want nothing.",
+        "right": "I don't want anything.",
+        "why": "El «don't» ya niega. Detrás va anything, no nothing. También valdría «I want nothing»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "I didn't see anyone there.",
+            "pron": "ai dí-dent sii é-niuan der",
+            "es": "No vi a nadie allí."
+          },
+          {
+            "en": "There isn't anything left.",
+            "pron": "der í-sent é-ni-zing left",
+            "es": "No queda nada."
+          },
+          {
+            "en": "She never says anything.",
+            "pron": "shi né-ver ses é-ni-zing",
+            "es": "Nunca dice nada."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«No sé nada» es…",
+        "options": [
+          "I don't know nothing",
+          "I don't know anything",
+          "I know not nothing"
+        ],
+        "answer": 1,
+        "why": "Una sola negación: el don't ya niega."
+      },
+      {
+        "q": "«No vi a nadie» es…",
+        "options": [
+          "I didn't see nobody",
+          "I didn't see anyone",
+          "I saw nobody not"
+        ],
+        "answer": 1,
+        "why": "Con verbo negativo, detrás va anyone."
+      },
+      {
+        "q": "«I know nothing» es…",
+        "options": [
+          "Incorrecto",
+          "Correcto, con el verbo en positivo",
+          "Lo mismo que I don't know nothing"
+        ],
+        "answer": 1,
+        "why": "Negar con la palabra y dejar el verbo positivo también vale."
+      },
+      {
+        "q": "«Nunca dice nada» es…",
+        "options": [
+          "She never says nothing",
+          "She never says anything",
+          "She doesn't never say"
+        ],
+        "answer": 1,
+        "why": "«Never» ya es la negación, así que detrás anything."
+      },
+      {
+        "q": "¿Cuántas negaciones caben en una frase inglesa?",
+        "options": [
+          "Una",
+          "Dos",
+          "Las que hagan falta"
+        ],
+        "answer": 0,
+        "why": "Una. Dos se anulan y suena a inglés mal aprendido."
+      }
+    ]
+  },
+  {
+    "id": "this-that-these-those",
+    "title": "this, that, these y those",
+    "tag": "Palabras",
+    "goal": "Señalar bien: cerca o lejos, uno o varios.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Solo hay cuatro, y se eligen con dos preguntas: ¿está cerca o lejos? y ¿es uno o son varios? El español tiene tres distancias (este, ese, aquel) y el inglés solo dos, así que «ese» y «aquel» caen los dos en «that»."
+      },
+      {
+        "t": "table",
+        "head": [
+          "",
+          "Cerca",
+          "Lejos"
+        ],
+        "rows": [
+          [
+            "Uno",
+            "this (este)",
+            "that (ese, aquel)"
+          ],
+          [
+            "Varios",
+            "these (estos)",
+            "those (esos, aquellos)"
+          ]
+        ]
+      },
+      {
+        "t": "tip",
+        "text": "Truco de sonido: las de cerca llevan «i» corta y las de lejos suenan más abiertas. Y las de plural acaban en -se: these, those."
+      },
+      {
+        "t": "error",
+        "wrong": "I like this shoes.",
+        "right": "I like these shoes.",
+        "why": "«Shoes» es plural, así que el demostrativo también: these. Es el fallo más repetido, porque en español «este» y «estos» se parecen poco pero this y these mucho."
+      },
+      {
+        "t": "p",
+        "text": "Al teléfono el inglés usa «this»: «Hi, this is Ana» para presentarte, y «Who's this?» para preguntar quién llama. En español diríamos «soy Ana»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "These are my keys.",
+            "pron": "diis ar mái kiis",
+            "es": "Estas son mis llaves."
+          },
+          {
+            "en": "Look at those birds.",
+            "pron": "luk at dóus berds",
+            "es": "Mira esos pájaros."
+          },
+          {
+            "en": "Hi, this is Ana.",
+            "pron": "jái, dis is á-na",
+            "es": "Hola, soy Ana."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«Estos zapatos» es…",
+        "options": [
+          "this shoes",
+          "these shoes",
+          "those shoes"
+        ],
+        "answer": 1,
+        "why": "Plural y cerca: these."
+      },
+      {
+        "q": "«Aquellas casas» es…",
+        "options": [
+          "these houses",
+          "those houses",
+          "that houses"
+        ],
+        "answer": 1,
+        "why": "Plural y lejos: those."
+      },
+      {
+        "q": "El inglés distingue…",
+        "options": [
+          "tres distancias",
+          "dos distancias",
+          "cuatro distancias"
+        ],
+        "answer": 1,
+        "why": "Solo cerca y lejos: «ese» y «aquel» son los dos that."
+      },
+      {
+        "q": "Al teléfono, «soy Ana» es…",
+        "options": [
+          "I am Ana",
+          "This is Ana",
+          "That is Ana"
+        ],
+        "answer": 1,
+        "why": "Fórmula fija del inglés: this is + nombre."
+      },
+      {
+        "q": "«That» puede ser…",
+        "options": [
+          "solo singular",
+          "singular y plural",
+          "solo plural"
+        ],
+        "answer": 0,
+        "why": "El plural de that es those."
+      }
+    ]
+  },
+  {
+    "id": "palabras-enlazadas",
+    "title": "Por qué no entiendes lo que oyes",
+    "tag": "Pronunciación",
+    "goal": "Reconocer cómo se pegan las palabras al hablar rápido.",
+    "blocks": [
+      {
+        "t": "p",
+        "text": "Sabes las palabras, las lees sin problema, y luego un nativo habla y no entiendes nada. No es tu oído: es que el inglés hablado pega las palabras unas con otras, y lo que oyes no se parece a lo que verías escrito."
+      },
+      {
+        "t": "table",
+        "head": [
+          "Se escribe",
+          "Se dice",
+          "Qué ha pasado"
+        ],
+        "rows": [
+          [
+            "an apple",
+            "a-nápol",
+            "la consonante salta a la vocal siguiente"
+          ],
+          [
+            "want to",
+            "uóna",
+            "want to se funde en wanna"
+          ],
+          [
+            "going to",
+            "góna",
+            "going to se funde en gonna"
+          ],
+          [
+            "got to",
+            "góra",
+            "got to se funde en gotta"
+          ],
+          [
+            "what do you",
+            "uó-ra-yu",
+            "se come casi todo"
+          ],
+          [
+            "did you",
+            "dí-yu",
+            "la d y la y se juntan en una sola"
+          ]
+        ]
+      },
+      {
+        "t": "p",
+        "text": "La regla principal es esa primera: si una palabra acaba en consonante y la siguiente empieza por vocal, la consonante se va con la vocal. «Turn it off» no suena «turn it off», suena «ter-ni-tof». Por eso te parece que hablan rapidísimo: no hay huecos donde tú los esperas."
+      },
+      {
+        "t": "tip",
+        "text": "Practicarlo al revés funciona muy bien: intenta TÚ pegar las palabras al hablar. Di «ter-ni-tof» en vez de «turn it off» y de repente empiezas a reconocerlo cuando lo oyes."
+      },
+      {
+        "t": "error",
+        "wrong": "Esperar oír cada palabra separada",
+        "right": "Esperar bloques pegados",
+        "why": "Si escuchas buscando palabras sueltas, no las vas a encontrar nunca. Lo que hay que reconocer son grupos: «an apple» es un solo bloque, «a-nápol»."
+      },
+      {
+        "t": "examples",
+        "items": [
+          {
+            "en": "Turn it off.",
+            "pron": "ter-ni-tof",
+            "es": "Apágalo."
+          },
+          {
+            "en": "What are you doing?",
+            "pron": "uó-ra-yu dú-ing",
+            "es": "¿Qué estás haciendo?"
+          },
+          {
+            "en": "I'm going to call him.",
+            "pron": "aim gó-na kol im",
+            "es": "Voy a llamarle."
+          }
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "«an apple» suena…",
+        "options": [
+          "an-apol",
+          "a-nápol",
+          "an-ápol"
+        ],
+        "answer": 1,
+        "why": "La n salta a la vocal siguiente: es un solo bloque."
+      },
+      {
+        "q": "«going to» hablado suena…",
+        "options": [
+          "góing tu",
+          "góna",
+          "gou-tu"
+        ],
+        "answer": 1,
+        "why": "Se funde en «gonna», y es lo normal al hablar."
+      },
+      {
+        "q": "La regla principal del enlace es…",
+        "options": [
+          "Consonante + vocal se pegan",
+          "Se comen las vocales",
+          "Se acelera el final"
+        ],
+        "answer": 0,
+        "why": "Si acaba en consonante y sigue vocal, la consonante se va con la vocal."
+      },
+      {
+        "q": "«Turn it off» suena…",
+        "options": [
+          "turn it of",
+          "ter-ni-tof",
+          "turni-tof"
+        ],
+        "answer": 1,
+        "why": "Tres palabras que se reparten en tres sílabas nuevas."
+      },
+      {
+        "q": "Lo mejor para entrenar el oído es…",
+        "options": [
+          "Escuchar más despacio",
+          "Practicar tú a pegar las palabras",
+          "Leer más"
+        ],
+        "answer": 1,
+        "why": "Producirlo tú es lo que te enseña a reconocerlo."
+      }
+    ]
+  },
 ];
 
 export const getLesson = (id) => LESSONS.find((l) => l.id === id);

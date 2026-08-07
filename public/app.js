@@ -1540,11 +1540,39 @@ function mismoEs(a, b) {
  * puede no tener respuesta única: "though", "although" y "even though" son las
  * tres "aunque", así que salían dos opciones idénticas y una contaba como fallo.
  */
+/**
+ * Palabras que suenan igual: see y sea, right y write, their y there.
+ *
+ * El inglés tiene un montón, y en cualquier juego de OÍDO son un problema
+ * serio: si oyes «sii» y entre las opciones están «mar» y «ver», la pregunta
+ * no tiene respuesta posible. Se compara por la propia pronunciación figurada,
+ * que es justo lo que el altavoz va a decir.
+ */
+const clavePron = (w) => String(w?.pron || "").replace(/-/g, "").toLowerCase();
+const suenanIgual = (a, b) => {
+  const x = clavePron(a);
+  return Boolean(x) && x === clavePron(b) && a.en !== b.en;
+};
+
+/** Todas las palabras del banco que suenan igual que esta. */
+function homofonasDe(en) {
+  const w = [...listaLocal(), ...store.words].find((x) => x.en === en);
+  if (!w) return [];
+  const clave = clavePron(w);
+  if (!clave) return [];
+  return [...listaLocal(), ...store.words]
+    .filter((x) => x.en !== en && clavePron(x) === clave)
+    .map((x) => x.en);
+}
+
 function distractores(pool, correcta, n) {
   const elegidas = [];
   for (const w of mezclar(pool)) {
     if (w.en === correcta.en || mismoEs(w, correcta)) continue;
-    if (elegidas.some((x) => x.en === w.en || mismoEs(x, w))) continue;
+    // Ni la correcta ni las ya elegidas pueden tener una homófona al lado: la
+    // pregunta dejaría de tener una sola respuesta buena.
+    if (suenanIgual(w, correcta)) continue;
+    if (elegidas.some((x) => x.en === w.en || mismoEs(x, w) || suenanIgual(x, w))) continue;
     elegidas.push(w);
     if (elegidas.length === n) break;
   }
@@ -1567,16 +1595,6 @@ function opcionesFijas(construir) {
   return juego.opciones;
 }
 
-/** Elige n palabras con significados distintos entre sí. */
-function sinSinonimos(pool, n) {
-  const elegidas = [];
-  for (const w of mezclar(pool)) {
-    if (elegidas.some((x) => x.en === w.en || mismoEs(x, w))) continue;
-    elegidas.push(w);
-    if (elegidas.length === n) break;
-  }
-  return elegidas;
-}
 
 function renderChipsJuegos() {
   const cont = $("#chips-juegos");
@@ -2177,10 +2195,39 @@ function renderEscribe() {
 
 /* ---------- 🔗 Emparejar ---------- */
 
+/**
+ * Palabras válidas para Emparejar: las doce fichas tienen que ser distintas.
+ *
+ * Aquí se enseñan las dos caras a la vez, así que no basta con evitar
+ * sinónimos. Hay 16 palabras cuya traducción es idéntica al inglés (hotel →
+ * hotel, idea → idea, chocolate → chocolate): sacan dos fichas iguales y la
+ * pareja se resuelve sola. Y hay algo peor: «eleven» se traduce «once», que
+ * ADEMÁS es una palabra inglesa («una vez»). Si salían las dos, emparejabas lo
+ * lógico y el juego te lo daba por fallo.
+ */
+function sinFichasIguales(pool, n) {
+  const norma = (s) => norm(String(s || ""));
+  const elegidas = [];
+  const usados = new Set();
+  for (const w of mezclar(pool)) {
+    const en = norma(w.en);
+    const es = norma(w.es);
+    if (en === es) continue; // hotel / hotel: dos fichas idénticas
+    if (usados.has(en) || usados.has(es)) continue; // choca con otra ficha ya puesta
+    if (elegidas.some((x) => mismoEs(x, w))) continue; // big / large: dos «grande»
+    elegidas.push(w);
+    usados.add(en);
+    usados.add(es);
+    if (elegidas.length === n) break;
+  }
+  return elegidas;
+}
+
 function iniciarParejas(pool) {
-  // Sin sinónimos: si salen "big" y "large" (ambas "grande"), hay dos fichas
-  // españolas iguales y emparejar bien pasa a ser cuestión de suerte.
-  const elegidas = sinSinonimos(pool, 6);
+  // Sin sinónimos y sin fichas repetidas: si salen "big" y "large" (ambas
+  // "grande"), o "hotel" (que se traduce igual), emparejar bien pasa a ser
+  // cuestión de suerte.
+  const elegidas = sinFichasIguales(pool, 6);
   if (elegidas.length < 6) {
     $("#game-box").innerHTML = `<div class="empty">Necesitas más palabras con significados distintos para este juego.</div>`;
     return;
@@ -2649,9 +2696,13 @@ function renderHablar() {
     const res = await escucharUnaVez();
     if (!juego) return; // te has salido del juego mientras escuchaba
 
-    const objetivo = norm(w.en);
+    // El reconocedor devuelve texto, y ante dos palabras que suenan igual
+    // elige una cualquiera: si dices «write» perfectamente puede escribir
+    // «right». Marcarlo como fallo sería injusto, porque lo has pronunciado
+    // bien: es lo único que este juego mide.
+    const validas = [norm(w.en), ...homofonasDe(w.en).map(norm)];
     const dichas = (res.alternativas || []).map(norm);
-    const acertada = dichas.includes(objetivo);
+    const acertada = dichas.some((d) => validas.includes(d));
 
     juego.estado = "resuelto";
     juego.acertada = acertada;
@@ -2716,9 +2767,14 @@ function renderDictado() {
   const r = juego.resultado;
 
   // Palabra a palabra: así ves cuál se te escapó, que suele ser la átona.
+  // El verde y el rojo tienen que decir lo mismo que el marcador: si «there»
+  // vale por «their», aquí también sale en verde.
   const marcado = r
     ? palabrasDe(w.example)
-        .map((p, n) => `<span class="${r.tuyas[n] === p ? "dic-ok" : "dic-ko"}">${esc(p)}</span>`)
+        .map((p, n) => {
+          const bien = r.tuyas[n] === p || homofonasDe(p).map(norm).includes(r.tuyas[n]);
+          return `<span class="${bien ? "dic-ok" : "dic-ko"}">${esc(p)}</span>`;
+        })
         .join(" ")
     : "";
 
@@ -2769,7 +2825,12 @@ function renderDictado() {
     const comprobar = (rendida = false) => {
       const objetivo = palabrasDe(w.example);
       const tuyas = palabrasDe(input.value);
-      const aciertos = rendida ? 0 : objetivo.filter((p, n) => tuyas[n] === p).length;
+      // Un dictado se juzga por lo que has OÍDO. Si la frase lleva «their» y
+      // escribes «there», has oído bien: suenan exactamente igual y solo el
+      // sentido las separa, que es otro ejercicio. Vale la homófona.
+      const vale = (n, escrita) =>
+        escrita === objetivo[n] || homofonasDe(objetivo[n]).map(norm).includes(escrita);
+      const aciertos = rendida ? 0 : objetivo.filter((p, n) => vale(n, tuyas[n])).length;
       const bien = !rendida && aciertos === objetivo.length && tuyas.length === objetivo.length;
       if (bien) acertar();
       else {
