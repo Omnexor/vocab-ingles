@@ -311,8 +311,12 @@ async function cargarBanco() {
       BANCO = datos.words;
       console.info(`[vocab] banco cargado: ${BANCO.length} palabras`);
     }
-  } catch {
-    // Sin banco: seguimos con SEED_WORDS.
+  } catch (err) {
+    // Sin banco se sigue con SEED_WORDS, que son 56 en vez de 1282. La app
+    // funciona, pero degradada: los juegos tienen mucho menos material y
+    // Explorar se queda casi vacío. Callárselo hacía que ese estado fuera
+    // indistinguible del normal, así que al menos queda dicho.
+    console.warn("[vocab] no se pudo cargar el banco, sigo con la lista corta:", err.message);
   }
   refrescarPronunciaciones();
 }
@@ -3716,10 +3720,27 @@ async function aiQuiz(lesson) {
       throw new Error(body.error || `Error ${res.status}`);
     }
     const { exercises } = await res.json();
-    if (!exercises?.length) throw new Error("No llegó ningún ejercicio");
-    startQuiz(lesson, exercises, { ia: true });
+    // Se comprueba la forma de cada ejercicio, no solo que la lista traiga algo.
+    //
+    // renderQuiz hace items[i].options.map(...), así que uno sin opciones
+    // reventaba ahí — y como el mensaje del error acababa en el toast, el
+    // usuario leía «Cannot read properties of undefined (reading 'map')».
+    // También se exige que las tres opciones sean distintas: con dos iguales
+    // puedes marcar la buena y que te la den por mala.
+    const utiles = (exercises ?? []).filter((e) => {
+      if (!e || typeof e.q !== "string" || !e.q.trim()) return false;
+      if (!Array.isArray(e.options) || e.options.length < 2) return false;
+      if (e.options.some((o) => typeof o !== "string" || !o.trim())) return false;
+      if (new Set(e.options.map((o) => o.trim().toLowerCase())).size !== e.options.length) return false;
+      return Number.isInteger(e.answer) && e.answer >= 0 && e.answer < e.options.length;
+    });
+    if (!utiles.length) throw new Error("No llegó ningún ejercicio");
+    startQuiz(lesson, utiles, { ia: true });
   } catch (err) {
-    toast(err.message);
+    // Los mensajes propios están en español y explican qué pasó; los del
+    // navegador («Failed to fetch») no le dicen nada a nadie.
+    const nuestro = /ejercicio|peticion|petición|límite|limite|clave|rechaz/i.test(err.message);
+    toast(nuestro ? err.message : "No se pudieron generar los ejercicios. Inténtalo otra vez.");
   } finally {
     btn.disabled = false;
     btn.textContent = "Ejercicios nuevos";
