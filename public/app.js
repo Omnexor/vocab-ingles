@@ -115,8 +115,37 @@ function load() {
   }
 }
 
+/**
+ * Guarda el estado, y avisa si el navegador se niega.
+ *
+ * setItem lanza QuotaExceededError cuando se agota el sitio del origen, y esa
+ * excepción subía sin capturar por donde hubieran llamado a save(): grade(),
+ * addWord(), borrarPalabra()… Lo peor no era el error, era el silencio.
+ * Añadías una palabra, la veías aparecer en pantalla porque el estado en
+ * memoria sí cambia, y al recargar no estaba. Trabajo perdido sin una pista.
+ *
+ * Ahora se avisa una sola vez —repetirlo en cada respuesta del repaso sería
+ * insoportable— y con algo que se pueda hacer: exportar la copia y hacer
+ * hueco. El aviso vuelve a armarse en cuanto un guardado sale bien.
+ */
+let sinSitio = false;
 function save() {
-  localStorage.setItem(KEY, JSON.stringify(store));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(store));
+    sinSitio = false;
+  } catch (err) {
+    console.error("[vocab] no se pudo guardar:", err);
+    if (sinSitio) return;
+    sinSitio = true;
+    // Se aplaza a propósito. Quien llama a save() suele enseñar su propio
+    // mensaje justo después («añadida a tus palabras»), y ese pisaba a este:
+    // el usuario se quedaba leyendo que todo había ido bien. Saliendo al final
+    // gana el aviso que de verdad importa.
+    setTimeout(
+      () => toast("No se ha podido guardar: no queda sitio. Exporta una copia en Ajustes y borra palabras que ya domines."),
+      0,
+    );
+  }
 }
 
 /* ------------------------------------------------------------------ *
