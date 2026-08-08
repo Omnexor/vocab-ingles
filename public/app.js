@@ -4681,18 +4681,48 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   });
 }
 
-function avisarVersionNueva() {
-  if ($("#aviso-version")) return;
+/**
+ * La barra de «esto ya no está al día, ¿recargas?».
+ *
+ * La usan dos avisos distintos: que hay una versión nueva de la app, y que has
+ * tocado algo en otra pestaña. Los dos se resuelven igual —recargando— y los
+ * dos se pueden cerrar, porque si estás a mitad de un ejercicio recargar te lo
+ * corta.
+ */
+function avisarRecarga(id, mensaje) {
+  if ($(`#${id}`)) return;
   const barra = document.createElement("div");
-  barra.id = "aviso-version";
+  barra.id = id;
   barra.className = "aviso-version";
   barra.setAttribute("role", "status");
-  // Se puede cerrar: si estás a mitad de un ejercicio, recargar te lo corta.
   barra.innerHTML = `
-    <span>Versión nueva disponible</span>
-    <button class="btn" id="recargar-version">Recargar</button>
-    <button class="aviso-cerrar" id="cerrar-version" aria-label="Ahora no">✕</button>`;
+    <span>${esc(mensaje)}</span>
+    <button class="btn" data-recargar>Recargar</button>
+    <button class="aviso-cerrar" data-cerrar aria-label="Ahora no">✕</button>`;
   document.body.appendChild(barra);
-  $("#recargar-version").onclick = () => location.reload();
-  $("#cerrar-version").onclick = () => barra.remove();
+  $("[data-recargar]", barra).onclick = () => location.reload();
+  $("[data-cerrar]", barra).onclick = () => barra.remove();
 }
+
+const avisarVersionNueva = () => avisarRecarga("aviso-version", "Versión nueva disponible");
+
+/**
+ * Otra pestaña ha cambiado tus datos.
+ *
+ * save() escribe el estado ENTERO que esta pestaña tiene en memoria, así que con
+ * dos abiertas la segunda en guardar pisa el trabajo de la primera. Comprobado:
+ * añades una palabra en cada una y solo sobrevive la de la última.
+ *
+ * No se intenta fusionar los dos estados. Decidir qué caja gana, qué racha vale
+ * y qué hacer con una palabra que una pestaña borró y la otra todavía tiene
+ * tiene más formas de salir mal que bien, y resucitar algo que acabas de borrar
+ * es peor que perder una palabra recién añadida. Lo que sí se arregla es que
+ * pasara EN SILENCIO: ahora se avisa y decides tú.
+ *
+ * El evento storage solo llega a las OTRAS pestañas, nunca a la que escribió,
+ * así que esto no se dispara por lo que haces aquí.
+ */
+window.addEventListener("storage", (e) => {
+  if (e.key !== KEY || !e.newValue) return;
+  avisarRecarga("aviso-otra-pestana", "Has cambiado algo en otra pestaña");
+});
