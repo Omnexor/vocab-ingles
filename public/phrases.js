@@ -347,7 +347,7 @@ export const FRASES = [
     cat: "situaciones",
     contexto: "Presentarse",
     en: "How's it going?",
-    pron: "jáus it góuing",
+    pron: "jáus it góu-ing",
     es: "¿Qué tal? / ¿Cómo va?",
     porque:
       "No es una pregunta de verdad, es un saludo. Por eso la respuesta esperada es corta y buena, aunque el día sea horrible.",
@@ -660,7 +660,7 @@ export const FRASES = [
     id: "looking-forward",
     cat: "moldes",
     en: "I'm looking forward to seeing you.",
-    pron: "áim lú-king fór-uard tu síing iu",
+    pron: "áim lú-king fór-uard tu sí-ing iu",
     es: "Tengo ganas de verte.",
     porque:
       "Aquí «to» es preposición, no parte de un infinitivo. Por eso detrás va -ing y no el verbo pelado: to seeing, no to see.",

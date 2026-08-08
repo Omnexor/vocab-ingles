@@ -177,7 +177,7 @@ export const FALSOS_AMIGOS = [
     example: "What's the actual cost?", exampleEs: "¿Cuál es el coste real?" },
 
   { en: "terrific", pron: "te-rí-fik", es: "estupendo",
-    trampa: "terrorífico", real: "terrifying", realPron: "té-ri-faiing",
+    trampa: "terrorífico", real: "terrifying", realPron: "té-ri-fai-ing",
     example: "You did a terrific job.", exampleEs: "Has hecho un trabajo estupendo." },
 
   { en: "balloon", pron: "ba-lúun", es: "globo",

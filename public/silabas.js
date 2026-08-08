@@ -139,6 +139,7 @@ const COMPUESTOS = {
   zruáut: "zru-áut",
   yéniuin: "yé-niu-in", // genuine: la u va con la i de delante (/ju/), no con la de detrás
   símpli: "sím-pli", // simply viene de «simple»: la l es de la raíz, no del -ly
+  bázruum: "báz-ruum", // bathroom es bath+room: la costura va antes de la r
 };
 
 /**
@@ -185,6 +186,24 @@ const MORFEMAS_W = [
  */
 const SUFIJO_LY = /[kpgf](?=li$)/;
 
+/**
+ * El sufijo -ing detrás de vocal, que es la otra costura del mismo tipo.
+ *
+ * «flying» es fly + ing y son dos sílabas, pero escrito «fláiing» la regla de
+ * la vocal larga se comía la frontera («ii» = una sola vocal) y salía «fláiing»
+ * de una pieza. Igual con going, doing, being y seeing.
+ *
+ * Solo actúa tras VOCAL: en «cooking» o «laughing» la consonante ya manda y la
+ * regla general acierta sola (kú-king, lá-fing), que además es como está escrito
+ * todo el banco.
+ *
+ * Con la u átona hay que mirar qué lleva DELANTE, porque hace dos papeles. Si
+ * viene detrás de consonante es la W inglesa y no parte nada: «suing» es swing,
+ * una sola sílaba. Si viene detrás de vocal es la segunda mitad de un diptongo
+ * y sí parte: «góu-ing» (going) son dos.
+ */
+const SUFIJO_ING = /(?:[aeioáéíóú]|(?<=[aeiouáéíóú])u)(?=ing$)/;
+
 /** Mete un guion en la costura del morfema antes de silabear el resto. */
 function partirGlide(limpia) {
   for (const re of MORFEMAS_W) {
@@ -193,9 +212,10 @@ function partirGlide(limpia) {
     const i = m.index + m[0].length;
     return [limpia.slice(0, i), limpia.slice(i)];
   }
-  const ly = SUFIJO_LY.exec(limpia);
-  if (ly) {
-    const i = ly.index + 1; // la consonante se queda con la sílaba anterior
+  for (const re of [SUFIJO_LY, SUFIJO_ING]) {
+    const m = re.exec(limpia);
+    if (!m) continue;
+    const i = m.index + 1; // la letra casada se queda con la sílaba anterior
     return [limpia.slice(0, i), limpia.slice(i)];
   }
   return null;
