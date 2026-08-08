@@ -1423,7 +1423,97 @@ export const LESSONS = [
         items: [
           { en: "That's impossible to fix.", pron: "dats im-pó-si-bol tu fiks", es: "Eso es imposible de arreglar." },
           { en: "He was very careless.", pron: "ji uós vé-ri kér-les", es: "Fue muy descuidado." },
-          { en: "Happiness is a choice.", pron: "já-pi-nes is a chóis", es: "La felicidad es una elección." }
+          { en: "Happiness is a choice.", pron: "já-pi-nes is a chóis", es: "La felicidad es una elección." },
+          { en: "The medicine weakened him.", pron: "de mé-di-sin uíi-kend jim", es: "La medicina lo debilitó." },
+          { en: "They want to widen the road.", pron: "déi uónt tu uái-den de róud", es: "Quieren ensanchar la carretera." },
+          { en: "Exercise strengthens your heart.", pron: "ék-ser-sais stréng-zens yur jart", es: "El ejercicio fortalece el corazón." },
+          { en: "Happiness is a choice.", pron: "já-pi-nes is a chóis", es: "La felicidad es una elección." },
+          { en: "He's been homeless for a year.", pron: "jis bin jóum-les for a yier", es: "Lleva un año sin techo." },
+          { en: "Thank you for your kindness.", pron: "zank yu for yur káind-nes", es: "Gracias por tu amabilidad." }
+        ],
+      },
+      {
+        t: "p",
+        text: "La forma más útil de ver los sufijos es preguntarse qué CLASE de palabra entra y qué clase sale. Un sufijo casi nunca cambia el significado — cambia el papel que la palabra puede hacer en la frase. «Happy» es un adjetivo y describe; «happiness» es un sustantivo y ya se puede usar como sujeto o como objeto.",
+      },
+      {
+        t: "table",
+        head: ["Sufijo","Entra","Sale","Ejemplo","En español"],
+        rows: [
+          ["-ness","adjetivo","sustantivo","sad → sadness","triste → tristeza"],
+          ["-ly","adjetivo","adverbio","happy → happily","feliz → felizmente"],
+          ["-ful","sustantivo","adjetivo (con)","help → helpful","ayuda → servicial"],
+          ["-less","sustantivo","adjetivo (sin)","home → homeless","casa → sin techo"],
+          ["-en","adjetivo","VERBO","weak → weaken","débil → debilitar"],
+          ["-er","verbo","sustantivo (quien)","teach → teacher","enseñar → profesor"],
+          ["-ment","verbo","sustantivo (acción)","improve → improvement","mejorar → mejora"]
+        ],
+      },
+      {
+        t: "p",
+        text: "De todos ellos, el que más sorprende a un hispanohablante es -EN, porque convierte un adjetivo en un VERBO y el español no tiene nada tan corto para eso: nosotros necesitamos una perífrasis («hacer más ancho») o un verbo distinto («ensanchar»). El inglés lo resuelve pegando dos letras.",
+      },
+      {
+        t: "table",
+        head: ["Adjetivo","Verbo con -en","En español"],
+        rows: [
+          ["weak (débil)","weaken","debilitar / debilitarse"],
+          ["dark (oscuro)","darken","oscurecer"],
+          ["wide (ancho)","widen","ensanchar"],
+          ["short (corto)","shorten","acortar"],
+          ["deep (profundo)","deepen","profundizar"],
+          ["soft (blando)","soften","ablandar"],
+          ["tight (apretado)","tighten","apretar"],
+          ["strong (fuerte)","strengthen","fortalecer"]
+        ],
+      },
+      {
+        t: "tip",
+        text: "Ojo con dos de la lista. «Strong» no hace «strongen» sino STRENGTHEN, porque parte del sustantivo «strength» (fuerza), no del adjetivo. Y en «soften» la T NO se pronuncia: se dice «só-fen», igual que en listen o castle.",
+      },
+      {
+        t: "p",
+        text: "El otro sufijo que conviene tener claro es -NESS, porque es la manera estándar de fabricar sustantivos abstractos a partir de adjetivos: es nuestro «-dad», «-eza» o «-ura». Y tiene una regla de ortografía que se falla: si el adjetivo acaba en consonante + y, la y pasa a i. Happy → happiness, no «happyness».",
+      },
+      {
+        t: "table",
+        head: ["Adjetivo","Sustantivo","Regla","En español"],
+        rows: [
+          ["sad","sadness","se pega tal cual","tristeza"],
+          ["dark","darkness","se pega tal cual","oscuridad"],
+          ["kind","kindness","se pega tal cual","amabilidad"],
+          ["happy","happiness","la y pasa a i","felicidad"],
+          ["lonely","loneliness","la y pasa a i","soledad"],
+          ["ill","illness","se pega tal cual","enfermedad"]
+        ],
+      },
+      {
+        t: "p",
+        text: "Y con -FUL y -LESS pasa algo que conviene mirar con lupa: son opuestos y solo se distinguen por el final. «Careful» es con cuidado y «careless» es sin cuidado; «useful» es útil y «useless» es inútil. Cambiar una por otra le da la vuelta entera a la frase, y es un despiste fácil al leer rápido.",
+      },
+      {
+        t: "table",
+        head: ["Base","-ful (con)","-less (sin)"],
+        rows: [
+          ["care (cuidado)","careful — cuidadoso","careless — descuidado"],
+          ["use (uso)","useful — útil","useless — inútil"],
+          ["help (ayuda)","helpful — servicial","helpless — indefenso"],
+          ["hope (esperanza)","hopeful — esperanzado","hopeless — desesperado"],
+          ["home (casa)","— (no existe)","homeless — sin techo"]
+        ],
+      },
+      {
+        t: "p",
+        text: "Puestas todas juntas, de UNA palabra salen cinco o seis. Esta es la tabla que de verdad rinde: si te aprendes «happy», ya tienes gratis otras cuatro palabras que no has estudiado nunca.",
+      },
+      {
+        t: "table",
+        head: ["Palabra","Adjetivo","Adverbio","Sustantivo","Negativo"],
+        rows: [
+          ["happy","happy (feliz)","happily (felizmente)","happiness (felicidad)","unhappy (infeliz)"],
+          ["care","careful (cuidadoso)","carefully (con cuidado)","care (cuidado)","careless (descuidado)"],
+          ["use","useful (útil)","usefully","use (uso)","useless (inútil)"],
+          ["kind","kind (amable)","kindly (amablemente)","kindness (amabilidad)","unkind (poco amable)"]
         ],
       },
       {
@@ -1440,7 +1530,18 @@ export const LESSONS = [
       { q: "«Unhappy» significa…", options: ["muy feliz","no feliz","antes feliz"], answer: 1, why: "El prefijo «un-» niega: happy → unhappy." },
       { q: "Para decir «volver a hacer algo» el prefijo es…", options: ["un-","re-","mis-"], answer: 1, why: "«Re-» es «otra vez»: redo, rewrite, reread." },
       { q: "«Careless» significa…", options: ["con cuidado","sin cuidado","más cuidado"], answer: 1, why: "«-less» es «sin»: careless, useless, homeless." },
-      { q: "Si te sabes las piezas, ¿qué ganas?", options: ["Pronunciar mejor","Entender palabras que nunca has estudiado","Escribir más rápido"], answer: 1, why: "Reconocer prefijos y sufijos multiplica lo que entiendes sin memorizar." }
+      { q: "Si te sabes las piezas, ¿qué ganas?", options: ["Pronunciar mejor","Entender palabras que nunca has estudiado","Escribir más rápido"], answer: 1, why: "Reconocer prefijos y sufijos multiplica lo que entiendes sin memorizar." },
+      { q: "El sufijo -en convierte un adjetivo en…", options: ["un adverbio","un verbo","un sustantivo"], answer: 1, why: "weak → weaken (debilitar), wide → widen (ensanchar)." },
+      { q: "«Ensanchar» (hacer más ancho) es…", options: ["wideness","widely","widen"], answer: 2, why: "-en fabrica el verbo a partir del adjetivo «wide»." },
+      { q: "El verbo de «strong» es…", options: ["strongen","strengthen","strongly"], answer: 1, why: "Sale del sustantivo «strength», no del adjetivo: strengthen." },
+      { q: "En «soften», ¿qué letra no se pronuncia?", options: ["la f","la t","la e"], answer: 1, why: "Se dice «só-fen», igual que listen o castle." },
+      { q: "El sufijo -ness convierte un adjetivo en…", options: ["un verbo","un sustantivo abstracto","un adverbio"], answer: 1, why: "sad → sadness, dark → darkness: es nuestro -eza, -dad o -ura." },
+      { q: "Sustantivo de «happy»:", options: ["happyness","happiness","happily"], answer: 1, why: "Consonante + y: la y pasa a i antes de -ness." },
+      { q: "«Sadness» significa…", options: ["triste","tristeza","tristemente"], answer: 1, why: "-ness fabrica el sustantivo abstracto." },
+      { q: "«Homeless» significa…", options: ["hogareño","sin techo","casero"], answer: 1, why: "-less es «sin»: home + less." },
+      { q: "«Helpful» y «helpless» son…", options: ["sinónimos","opuestos: servicial e indefenso","el mismo con distinta ortografía"], answer: 1, why: "-ful es «con» y -less es «sin»: cambian el sentido entero." },
+      { q: "Si conoces «kind», ¿cuántas palabras tienes casi gratis?", options: ["Ninguna más","Varias: kindly, kindness, unkind","Solo el plural"], answer: 1, why: "De una base salen el adverbio, el sustantivo y el negativo." },
+      { q: "«Oscurecer» es…", options: ["darkness","darkly","darken"], answer: 2, why: "Adjetivo dark + -en = el verbo." }
     ],
   },
 
