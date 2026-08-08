@@ -3,7 +3,7 @@ import { FALSOS_AMIGOS } from "./false-friends.js";
 import { LECTURAS } from "./readings.js";
 import { CUENTOS } from "./stories.js";
 import { IRREGULARES, FORMA_A_BASE, CONTRACCIONES } from "./irregulars.js";
-import { conjugar, verbosConjugables } from "./conjugar.js";
+import { conjugar, verbosConjugables, tercera, gerundio, pasado, participio } from "./conjugar.js";
 import { EJERCICIOS_MODALES } from "./modals.js";
 import { FRASES, CATEGORIAS_FRASES, contextosDe } from "./phrases.js";
 import { conGuiones } from "./silabas.js";
@@ -2020,9 +2020,49 @@ function siguienteRapida(mantenerPista = false) {
 const regexPalabra = (palabra) => new RegExp(`\\b${escRegex(palabra)}\\b`, "ig");
 const contienePalabra = (frase, palabra) => regexPalabra(palabra).test(frase);
 
+/**
+ * Las formas con las que una palabra puede salir en su frase de ejemplo.
+ *
+ * Las frases están escritas en inglés natural, así que la palabra casi nunca
+ * aparece en su forma de diccionario: «accept» sale como «They ACCEPTED our
+ * offer» y «animal» como «Wild ANIMALS live here». Buscando solo la forma
+ * exacta se quedaban fuera 160 de las 1282 —el 12 %— y ninguna podía salir
+ * nunca en este juego.
+ *
+ * No hace falta inventar nada: el conjugador y el mapa de irregulares ya están
+ * en la app. La base va la PRIMERA para que, si la frase trae las dos, el hueco
+ * se abra sobre ella.
+ */
+function formasDe(en) {
+  const partes = String(en).trim().split(/\s+/);
+  const base = partes[0];
+  const resto = partes.slice(1).join(" ");
+  const formas = new Set([base]);
+  try {
+    for (const f of [tercera(base), gerundio(base), pasado(base), participio(base)]) {
+      if (f) String(f).split("/").forEach((x) => formas.add(x.trim()));
+    }
+  } catch {
+    /* si el conjugador no sabe con esta, nos quedamos con la base */
+  }
+  // Plural de los sustantivos, que el conjugador no cubre
+  formas.add(/[^aeiou]y$/i.test(base) ? base.slice(0, -1) + "ies" : base + "s");
+  formas.add(base + "es");
+  return [...formas].filter(Boolean).map((f) => (resto ? `${f} ${resto}` : f));
+}
+
+/** El regex de la forma que DE VERDAD aparece en la frase, o null si ninguna. */
+function regexEnFrase(frase, en) {
+  for (const forma of formasDe(en)) {
+    if (contienePalabra(frase, forma)) return regexPalabra(forma);
+  }
+  return null;
+}
+
 function iniciarHueco(pool) {
-  // Solo sirven las palabras cuya frase de ejemplo las contiene ENTERAS.
-  const validas = pool.filter((w) => w.example && contienePalabra(w.example, w.en));
+  // Solo sirven las palabras cuya frase de ejemplo las contiene, en la forma
+  // que sea.
+  const validas = pool.filter((w) => w.example && regexEnFrase(w.example, w.en));
   if (validas.length < 4) {
     $("#game-box").innerHTML = `<div class="empty">Aún no hay frases suficientes. Añade más palabras.</div>`;
     return;
@@ -2049,7 +2089,12 @@ function renderHueco() {
   }
 
   const w = items[i];
-  const hueco = w.example.replace(regexPalabra(w.en), "______");
+  // El hueco se abre sobre la forma que sale en la frase, pero las opciones
+  // siguen siendo formas de diccionario: si la correcta apareciera conjugada y
+  // las demás no, cantaría cuál es. Al responder se enseña la frase entera con
+  // su forma real, que es donde se ve el plural o el pasado.
+  const enFrase = regexEnFrase(w.example, w.en);
+  const hueco = enFrase ? w.example.replace(enFrase, "______") : w.example;
   const opciones = opcionesFijas(() => mezclar([w, ...distractores(juego.pool, w, 2)]));
   const respondida = juego.elegida !== null;
   const noLaSabia = juego.elegida === NO_LO_SE;
