@@ -79,6 +79,16 @@ function load() {
       ...saved,
       settings: { ...base.settings, ...saved.settings },
       stats: { ...base.stats, ...saved.stats },
+      // Se limpia la lista al cargarla, no en cada sitio que la recorre.
+      //
+      // Media docena de funciones hacen `for (const w of store.words)` y leen
+      // w.en directamente. Con una entrada rota —una copia de seguridad a
+      // medias, una escritura interrumpida— reventaba refrescarPronunciaciones,
+      // que corre al arrancar: la app entera se caía antes de pintar nada.
+      // Sanearlo aquí las cubre todas, incluidas las que se escriban mañana.
+      words: Array.isArray(saved.words)
+        ? saved.words.filter((w) => w && typeof w === "object" && typeof w.en === "string" && w.en.trim())
+        : [],
     };
   } catch {
     return defaults();
@@ -177,6 +187,10 @@ function huecoParaNuevas() {
 const learnedWords = () => store.words.filter((w) => w.box >= 4);
 
 function addWord(raw) {
+  // Se llama desde varios sitios (la API, las lecturas, Explorar), así que la
+  // guarda va aquí y no solo en quien llama: un null llegando hasta el
+  // String(raw.en) tumbaba el render entero.
+  if (!raw || typeof raw !== "object") return null;
   const en = String(raw.en || "").trim().toLowerCase();
   if (!en) return null;
   if (store.words.some((w) => w.en === en)) return null;
@@ -247,8 +261,20 @@ async function fetchNewWords(count) {
     throw new Error(body.error || `Error ${res.status}`);
   }
   const data = await res.json();
-  if (!Array.isArray(data.words) || data.words.length === 0) throw new Error("Respuesta vacía");
-  return data.words;
+  if (!Array.isArray(data.words)) throw new Error("Respuesta vacía");
+
+  // Se descarta lo que venga mal formado ANTES de tocar nada.
+  //
+  // El endpoint ya filtra, pero comprobarlo aquí también no es paranoia: basta
+  // con que algo por el camino devuelva un 200 con basura para que un null
+  // llegue a addWord y reviente. Y como esa excepción se escapaba del try de
+  // obtenerPalabras, no saltaba la lista local de reserva: la pantalla se
+  // quedaba con el «Preparando tus palabras…» girando para siempre.
+  const utiles = data.words.filter(
+    (x) => x && typeof x === "object" && ["en", "es", "pron"].every((k) => typeof x[k] === "string" && x[k].trim()),
+  );
+  if (!utiles.length) throw new Error("Respuesta vacía");
+  return utiles;
 }
 
 /**
