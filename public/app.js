@@ -68,6 +68,30 @@ const defaults = () => ({
 
 let store = load();
 
+/**
+ * Deja la lista de palabras en un estado con el que se pueda trabajar.
+ *
+ * Media docena de funciones hacen `for (const w of store.words)` y leen w.en
+ * directamente. Con una entrada rota —una copia de seguridad a medias, una
+ * escritura interrumpida— reventaba refrescarPronunciaciones, que corre AL
+ * ARRANCAR: la app se caía antes de pintar nada.
+ *
+ * Se aplica en los DOS sitios por los que entra una lista de fuera: al leer el
+ * localStorage y al restaurar una copia.
+ *
+ * Va como `function` y no como `const` a propósito. Con const, esto queda por
+ * debajo del `let store = load()` de arriba y en su zona muerta: llamarla desde
+ * load() lanzaba un ReferenceError que el catch se tragaba, y la app arrancaba
+ * con los valores por defecto. Es decir, BORRABA las palabras y la racha del
+ * usuario, en silencio y en cada carga. Las declaraciones de función se elevan
+ * y no tienen ese problema.
+ */
+function sanearPalabras(lista) {
+  return Array.isArray(lista)
+    ? lista.filter((w) => w && typeof w === "object" && typeof w.en === "string" && w.en.trim())
+    : [];
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -79,18 +103,14 @@ function load() {
       ...saved,
       settings: { ...base.settings, ...saved.settings },
       stats: { ...base.stats, ...saved.stats },
-      // Se limpia la lista al cargarla, no en cada sitio que la recorre.
-      //
-      // Media docena de funciones hacen `for (const w of store.words)` y leen
-      // w.en directamente. Con una entrada rota —una copia de seguridad a
-      // medias, una escritura interrumpida— reventaba refrescarPronunciaciones,
-      // que corre al arrancar: la app entera se caía antes de pintar nada.
-      // Sanearlo aquí las cubre todas, incluidas las que se escriban mañana.
-      words: Array.isArray(saved.words)
-        ? saved.words.filter((w) => w && typeof w === "object" && typeof w.en === "string" && w.en.trim())
-        : [],
+      words: sanearPalabras(saved.words),
     };
-  } catch {
+  } catch (err) {
+    // Empezar de cero es lo único que se puede hacer si el estado no se puede
+    // leer, pero CALLARSE no. Este catch sin traza escondió justamente lo de
+    // arriba: un bug de orden de declaración se veía como «se me han borrado
+    // las palabras», sin nada en consola que apuntara al motivo.
+    console.error("[vocab] no se pudo leer el estado guardado, empiezo de cero:", err);
     return defaults();
   }
 }
@@ -4503,8 +4523,14 @@ $("#file-import").addEventListener("change", async (e) => {
   try {
     const datos = JSON.parse(await file.text());
     if (!Array.isArray(datos.words)) throw new Error("El archivo no parece una copia de Vocab");
-    if (!confirm(`La copia tiene ${datos.words.length} palabras. Se sustituirá lo que tengas ahora. ¿Seguir?`)) return;
-    store = { ...defaults(), ...datos, settings: { ...defaults().settings, ...datos.settings } };
+    // Se sanea ANTES de contar, para que el número del aviso sea el de las
+    // palabras que de verdad se van a restaurar y no incluya las rotas.
+    const palabras = sanearPalabras(datos.words);
+    if (!palabras.length) throw new Error("La copia no tiene ninguna palabra utilizable");
+    const rotas = datos.words.length - palabras.length;
+    const aviso = `La copia tiene ${palabras.length} palabras${rotas ? ` (${rotas} rotas, se descartan)` : ""}. Se sustituirá lo que tengas ahora. ¿Seguir?`;
+    if (!confirm(aviso)) return;
+    store = { ...defaults(), ...datos, settings: { ...defaults().settings, ...datos.settings }, words: palabras };
     save();
     toast("Copia restaurada");
     showView("hoy");
