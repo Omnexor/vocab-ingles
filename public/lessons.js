@@ -1176,7 +1176,6 @@ export const LESSONS = [
         items: [
           { en: "Today is hotter than yesterday.", pron: "tu-déi is jó-ter dan yés-ter-dei", es: "Hoy hace más calor que ayer." },
           { en: "It's the most expensive one.", pron: "its de móust iks-pén-siv uán", es: "Es el más caro." },
-          { en: "She's as tall as her brother.", pron: "shis as tol as jer brá-der", es: "Es tan alta como su hermano." },
           { en: "This one is cheaper.", pron: "dis uán is chíi-per", es: "Este es más barato." },
           { en: "It's the best restaurant here.", pron: "its de best rés-to-rant jier", es: "Es el mejor restaurante de aquí." },
           { en: "She's as tall as her brother.", pron: "shis as tol as jer brá-der", es: "Es tan alta como su hermano." }
@@ -1326,8 +1325,7 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "I'm interested in this job.", pron: "aim ín-tres-tid in dis yob", es: "Me interesa este trabajo." },
-          { en: "The trip was tiring.", pron: "de trip uós tái-ring", es: "El viaje fue agotador." }
+          { en: "I'm interested in this job.", pron: "aim ín-tres-tid in dis yob", es: "Me interesa este trabajo." }
         ],
       },
       {
@@ -1423,7 +1421,6 @@ export const LESSONS = [
         items: [
           { en: "That's impossible to fix.", pron: "dats im-pó-si-bol tu fiks", es: "Eso es imposible de arreglar." },
           { en: "He was very careless.", pron: "ji uós vé-ri kér-les", es: "Fue muy descuidado." },
-          { en: "Happiness is a choice.", pron: "já-pi-nes is a chóis", es: "La felicidad es una elección." },
           { en: "The medicine weakened him.", pron: "de mé-di-sin uíi-kend jim", es: "La medicina lo debilitó." },
           { en: "They want to widen the road.", pron: "déi uónt tu uái-den de róud", es: "Quieren ensanchar la carretera." },
           { en: "Exercise strengthens your heart.", pron: "ék-ser-sais stréng-zens yur jart", es: "El ejercicio fortalece el corazón." },
@@ -2727,7 +2724,6 @@ export const LESSONS = [
         t: "examples",
         items: [
           { en: "I made a mistake in the email.", pron: "ai méid a mis-téik in di íi-meil", es: "Cometí un error en el correo." },
-          { en: "Can you do me a favor?", pron: "kan yu du mi a féi-vor", es: "¿Me haces un favor?" },
           { en: "We need to make a decision today.", pron: "ui niid tu méik a di-sí-shon tu-déi", es: "Tenemos que tomar una decisión hoy." },
           { en: "I made a mistake.", pron: "ai méid a mis-téik", es: "Cometí un error." },
           { en: "Can you do me a favor?", pron: "kan yu du mi a féi-vor", es: "¿Me haces un favor?" },
@@ -3066,8 +3062,6 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "Can you turn it off?", pron: "kan yu tern it of", es: "¿Puedes apagarlo?" },
-          { en: "I'll pick you up at eight.", pron: "áil pik yu ap at éit", es: "Te recojo a las ocho." },
           { en: "I can't put up with the noise.", pron: "ai kant put ap uid de nóis", es: "No aguanto el ruido." },
           { en: "Can you turn it off?", pron: "kan yu tern it of", es: "¿Puedes apagarlo?" },
           { en: "I'll pick you up at eight.", pron: "ail pik yu ap at éit", es: "Te recojo a las ocho." },
@@ -3188,7 +3182,6 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "I need more information.", pron: "ai niid mor in-for-méi-shon", es: "Necesito más información." },
           { en: "Let me present the report.", pron: "let mi pri-sént de ri-pórt", es: "Déjame presentar el informe." },
           { en: "The airport is closed.", pron: "di ér-port is klóusd", es: "El aeropuerto está cerrado." },
           { en: "Where's the airport?", pron: "uérs de ér-port", es: "¿Dónde está el aeropuerto?" },
@@ -3354,7 +3347,6 @@ export const LESSONS = [
         items: [
           { en: "There are two options.", pron: "der ar tuu óp-shons", es: "Hay dos opciones." },
           { en: "Their car is new.", pron: "der kar is niú", es: "Su coche es nuevo." },
-          { en: "They're waiting outside.", pron: "der uéi-ting aut-sáid", es: "Están esperando fuera." },
           { en: "Their kids are over there.", pron: "der kids ar óu-ver der", es: "Sus hijos están allí." },
           { en: "Their house is over there.", pron: "der jáus is óu-ver der", es: "Su casa está allí." },
           { en: "They're waiting outside.", pron: "der uéi-ting aut-sáid", es: "Están esperando fuera." },
@@ -3886,7 +3878,6 @@ export const LESSONS = [
       {
         t: "examples",
         items: [
-          { en: "This time tomorrow I'll be flying.", pron: "dis táim tu-mó-rou ail bi flái-ing", es: "Mañana a esta hora estaré volando." },
           { en: "By then we'll have moved.", pron: "bái den uil jav muuvd", es: "Para entonces ya nos habremos mudado." },
           { en: "Don't call at nine, I'll be sleeping.", pron: "dount kol at náin, ail bi slíi-ping", es: "No llames a las nueve, estaré durmiendo." },
           { en: "By Friday I'll have finished.", pron: "bai frái-dei ail jav fí-nisht", es: "Para el viernes habré terminado." },
@@ -4308,12 +4299,12 @@ export const LESSONS = [
     quiz: [
       { q: "«Estos zapatos» es…", options: ["this shoes","these shoes","those shoes"], answer: 1, why: "Plural y cerca: these." },
       { q: "«Aquellas casas» es…", options: ["these houses","those houses","that houses"], answer: 1, why: "Plural y lejos: those." },
+      { q: "Si «aquel» y «ese» son los dos «that», ¿cómo marcas que algo está MUY lejos?", options: ["Con una palabra distinta", "Añadiéndolo aparte: «that one over there»", "No se puede"], answer: 1, why: "El inglés solo tiene dos distancias: la tercera se dice con palabras, no con el demostrativo." },
       { q: "El inglés distingue…", options: ["tres distancias","dos distancias","cuatro distancias"], answer: 1, why: "Solo cerca y lejos: «ese» y «aquel» son los dos that." },
       { q: "Al teléfono, «soy Ana» es…", options: ["I am Ana","This is Ana","That is Ana"], answer: 1, why: "Fórmula fija del inglés: this is + nombre." },
       { q: "«That» puede ser…", options: ["solo singular","singular y plural","solo plural"], answer: 0, why: "El plural de that es those." },
       { q: "El español tiene tres distancias (este, ese, aquel). ¿Cuántas tiene el inglés?", options: ["Tres también","Dos: cerca y lejos","Una sola"], answer: 1, why: "This/these (cerca) y that/those (lejos). «Ese» y «aquel» caen los dos en «that»." },
       { q: "«Estos libros» es…", options: ["this books","these books","those books"], answer: 1, why: "Cerca y plural: these." },
-      { q: "«Aquellas casas» es…", options: ["these houses","those houses","that houses"], answer: 1, why: "Lejos y plural: those. «Ese» y «aquel» comparten palabra en inglés." },
       { q: "«This» y «these» se diferencian en…", options: ["la distancia","el número (uno o varios)","el género"], answer: 1, why: "Los dos son «cerca»; this es singular y these plural." }
     ],
   },
@@ -4358,8 +4349,6 @@ export const LESSONS = [
         t: "examples",
         items: [
           { en: "Turn it off.", pron: "ter-ni-tof", es: "Apágalo." },
-          { en: "What are you doing?", pron: "uó-ra-yu dú-ing", es: "¿Qué estás haciendo?" },
-          { en: "I'm going to call him.", pron: "aim gó-na kol im", es: "Voy a llamarle." },
           { en: "What are you doing?", pron: "uó-ra-yu dú-ing", es: "¿Qué estás haciendo?" },
           { en: "I'm going to call him.", pron: "aim gá-na kol im", es: "Voy a llamarlo." },
           { en: "Do you want to come?", pron: "du yu uá-na kam", es: "¿Quieres venir?" }
