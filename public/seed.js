@@ -70,7 +70,7 @@ export const SEED_WORDS = [
   { en: "in case", cat: "conectores", es: "en caso de que", pron: "in kéis", example: "Take an umbrella in case it rains.", exampleEs: "Lleva paraguas en caso de que llueva." },
   { en: "provided that", cat: "conectores", es: "siempre que / con tal de que", pron: "pro-vái-ded dat", example: "I'll sign, provided that we agree on the price.", exampleEs: "Firmaré, siempre que acordemos el precio." },
   { en: "since", cat: "conectores", es: "ya que", pron: "sins", example: "Since you're here, let's start.", exampleEs: "Ya que estás aquí, empecemos." },
-  { en: "because of", cat: "conectores", es: "debido a", pron: "bi-kás ov", example: "We're late because of the traffic.", exampleEs: "Llegamos tarde debido al tráfico." },
+  { en: "because of", cat: "conectores", es: "debido a", pron: "bi-kós ov", example: "We're late because of the traffic.", exampleEs: "Llegamos tarde debido al tráfico." },
   { en: "due to", cat: "conectores", es: "debido a", pron: "diu tu", example: "The flight was canceled due to the storm.", exampleEs: "El vuelo se canceló debido a la tormenta." },
   { en: "so that", cat: "conectores", es: "para que", pron: "sóu dat", example: "Speak slowly so that everyone understands.", exampleEs: "Habla despacio para que todos entiendan." },
   { en: "in order to", cat: "conectores", es: "para / con el fin de", pron: "in ór-der tu", example: "He moved in order to find a better job.", exampleEs: "Se mudó para encontrar un trabajo mejor." },

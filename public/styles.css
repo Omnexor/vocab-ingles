@@ -1260,6 +1260,12 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
   border-radius: var(--radius);
   overflow-x: auto;
   box-shadow: var(--shadow-sm);
+  /* Sin esto, lo que vaya en position:absolute dentro de la tabla se escapa del
+     scroll y estira la PÁGINA entera. Pasaba con el «.sr-only» de la columna de
+     acciones: un span de 1 px que en una pantalla de 320 dejaba la app
+     desplazándose 24 px de lado. Con position:relative el contenedor pasa a ser
+     su bloque contenedor y el overflow-x se lo queda dentro. */
+  position: relative;
 }
 
 .word-table {
@@ -1290,6 +1296,19 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 .cell-audio { width: 1%; padding-left: 0; }
 
 .speak-sm { width: 34px; height: 34px; font-size: 15px; border-radius: 9px; }
+
+/* El área que se puede tocar es más ancha que el botón que se ve.
+   En la lista de palabras los dos botones (🔊 y ✕) miden 34 px y agrandarlos
+   de verdad ensancharía la tabla, que en una pantalla de 320 ya va justa. Pero
+   van APILADOS en una celda de 66 px, así que sobran 32 a los lados.
+   Solo en horizontal: en vertical están pegados el uno al otro —el de abajo
+   borra— y estirarlos ahí haría que se pisaran 12 px. */
+.word-table .speak-sm { position: relative; }
+.word-table .speak-sm::after {
+  content: "";
+  position: absolute;
+  inset: 0 -6px;
+}
 
 .dot {
   display: inline-block;

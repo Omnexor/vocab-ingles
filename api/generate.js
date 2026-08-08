@@ -46,11 +46,13 @@ const SCHEMA = {
               "Ej: 'though' -> 'dóu', 'enough' -> 'i-náf', 'beautiful' -> 'biúu-ri-ful'. " +
               "OJO CON LAS SILABAS: pon solo las que suenan de verdad en ingles, no una por vocal escrita. " +
               "'family' es 'fám-li' (dos), no 'fa-mi-li'. Igual con different (dí-frent), chocolate (chó-klat) y every (év-ri). " +
-              "OJO CON LA T AMERICANA: se escribe con r en TRES sitios. " +
+              "OJO CON LA T AMERICANA: se escribe con r en DOS sitios. " +
               "(1) entre vocales: water -> 'uó-rer', city -> 'sí-ri', better -> 'bé-rer'. " +
               "(2) antes de l: little -> 'lí-rol', bottle -> 'bó-rol', metal -> 'mé-ral'. " +
-              "(3) detras de r: thirty -> 'zér-ri', forty -> 'fór-ri', party -> 'pár-ri'. " +
-              "Pero si la silaba de DETRAS es la fuerte, la t se queda: return -> 'ri-térn', hotel -> 'jou-tél', attend -> 'a-ténd'.",
+              "Pero si la silaba de DETRAS es la fuerte, la t se queda: return -> 'ri-térn', hotel -> 'jou-tél', attend -> 'a-ténd'. " +
+              "Y DETRAS DE R la t se queda SIEMPRE, aunque en ingles suene flap: forty -> 'fór-ti', thirty -> 'zér-ti', " +
+              "dirty -> 'dér-ti', party -> 'pár-ti'. Nunca 'fór-ri' ni 'zér-ri': un espanol leeria esa rr como la de 'perro', " +
+              "que suena mucho peor que dejar la t.",
           },
           example: { type: "string", description: "Frase de ejemplo corta en ingles usando la palabra" },
           exampleEs: { type: "string", description: "Traduccion al espanol de la frase de ejemplo" },
@@ -77,27 +79,33 @@ pronunciacion de forma que, leida en voz alta con las reglas del espanol de
 Espana, suene lo mas parecido posible al ingles. Nunca uses simbolos del AFI.
 Marca siempre la silaba tonica con tilde.
 
+TODOS los ejemplos de aqui abajo van con el guion de silaba puesto, porque asi
+es como tiene que salir el campo "pron". Copia ese formato.
+
 Tabla de equivalencias (usala estrictamente):
   th sorda de "think"   -> z      (en Espana la z suena /θ/): think = "zink", worth = "uérz"
   th sonora de "this"   -> d      (nunca z): this = "dis", that = "dat", the = "de",
-                                   mother = "máder", although = "oldóu", therefore = "dérfor"
+                                   mother = "má-der", although = "ol-dóu", therefore = "dér-for"
   h aspirada de "have"  -> j      (la h espanola es MUDA, jamas la uses): have = "jav",
-                                   here = "jíer", behavior = "bijéivior"
+                                   here = "jier", behavior = "bi-jéi-vior"
   w de "we"             -> u      : we = "ui", what = "uót", work = "uérk"
   v de "very"           -> v      (labiodental, no la conviertas en b)
-  sh de "she"           -> sh     : she = "shi", issue = "íshu"
-  j de "job"            -> y      : job = "yob", schedule = "skédyul"
+  sh de "she"           -> sh     : she = "shi", issue = "í-shu"
+  j de "job"            -> y      : job = "yob", schedule = "skéd-yul"
   ng de "sing"          -> ng     : sing = "sing"
-  sonido /k/ ante e,i   -> k      : keep = "kiip"  (nunca "que/qui")
-  sonido /g/ ante e,i   -> gu     : get = "guet", again = "aguén"
+  sonido /k/ SIEMPRE    -> k      : keep = "kiip", cat = "kat", cup = "kap"  (nunca c, nunca "que/qui")
+  sonido /g/ ante e,i   -> gu     : get = "guet", again = "a-guén"
   sonido /s/ ante e,i   -> s      (nunca c, que en Espana suena /θ/): since = "sins"
 
 Vocales inglesas mas traicioneras:
-  /ʌ/ de "cup, but, result, because" -> a : cup = "cap", result = "risált", because = "bikás"
-  /iː/ larga de "see, meet"          -> ii: see = "sii", meeting = "míiting"
-  /uː/ larga de "food"               -> uu: food = "fuud", improve = "imprúuv"
+  /ʌ/ de "cup, but, result, love"    -> a : cup = "kap", result = "ri-sált", love = "lav"
+  /iː/ larga de "see, meet"          -> ii: see = "sii", meeting = "míi-ring"
+  /uː/ larga de "food"               -> uu: food = "fuud", improve = "im-prúuv"
   /ɜː/ de "bird, work"               -> er: bird = "berd", worth = "uérz"
-  /æ/ de "cat"                       -> a : cat = "cat"
+  /æ/ de "cat"                       -> a : cat = "kat"
+
+NO pongas tilde en una vocal debil (i, u) si con eso rompes un diptongo: "here"
+es "jier", no "jíer" — un espanol leeria "jí-er", en dos silabas, y son una.
 
 Comprobacion obligatoria antes de responder: relee cada "pron" y preguntate
 "si un espanol lee esto en voz alta, suena al ingles real?". Vigila sobre todo
@@ -163,8 +171,27 @@ export default async function handler(req, res) {
     const text = response.content.find((b) => b.type === "text")?.text ?? "{}";
     const data = JSON.parse(text);
 
+    // Filtro antes de mandarlas al navegador.
+    //
+    // Lo que entra aqui se guarda en el banco del alumno y se queda. Una ficha
+    // sin traduccion sale en blanco en la pantalla, y una pronunciacion con h
+    // rompe la regla base de toda la notacion: la h espanola es muda, asi que
+    // "have" escrito "hav" se lee "av". Mejor una palabra menos que una mal.
+    const texto = (v) => typeof v === "string" && v.trim().length > 0;
+    const words = (data.words ?? []).filter((w) => {
+      if (!w || !["en", "es", "pron", "example", "exampleEs"].every((k) => texto(w[k]))) return false;
+      const pron = w.pron.toLowerCase();
+      // ch y sh son digrafos validos; cualquier otra h esta mal
+      if (/h/.test(pron.replace(/ch|sh/g, ""))) return false;
+      // Solo letras espanolas, guion de silaba y espacio entre palabras
+      if (/[^a-záéíóúñ\- ]/.test(pron)) return false;
+      // "que/qui" y "ce/ci" se leen mal en Espana: /ke/ y /θe/
+      if (/\bqu[ei]|c[ei]/.test(pron)) return false;
+      return true;
+    });
+
     res.setHeader("Cache-Control", "no-store");
-    res.status(200).json({ words: data.words ?? [] });
+    res.status(200).json({ words });
   } catch (err) {
     if (err instanceof Anthropic.RateLimitError) {
       res.status(429).json({ error: "Limite de peticiones alcanzado, prueba en un minuto" });

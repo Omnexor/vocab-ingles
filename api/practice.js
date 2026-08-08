@@ -105,16 +105,21 @@ export default async function handler(req, res) {
     const data = JSON.parse(text);
 
     // Descartamos lo que venga mal formado antes de mandarlo al navegador.
-    const exercises = (data.exercises ?? []).filter(
-      (e) =>
-        e &&
-        typeof e.q === "string" &&
-        Array.isArray(e.options) &&
-        e.options.length === 3 &&
-        Number.isInteger(e.answer) &&
-        e.answer >= 0 &&
-        e.answer <= 2,
-    );
+    //
+    // Lo de las opciones repetidas no es teórico: si un ejercicio trae dos
+    // iguales, el alumno puede marcar la buena y que se la den por mala, que es
+    // exactamente el fallo que hubo que arreglar en los juegos. Y sin `why` la
+    // pantalla de respuesta se queda sin explicar nada, que es la mitad del
+    // valor del ejercicio.
+    const exercises = (data.exercises ?? []).filter((e) => {
+      if (!e || typeof e.q !== "string" || !e.q.trim()) return false;
+      if (!Array.isArray(e.options) || e.options.length !== 3) return false;
+      if (e.options.some((o) => typeof o !== "string" || !o.trim())) return false;
+      const limpias = e.options.map((o) => o.trim().toLowerCase());
+      if (new Set(limpias).size !== 3) return false;
+      if (!Number.isInteger(e.answer) || e.answer < 0 || e.answer > 2) return false;
+      return typeof e.why === "string" && Boolean(e.why.trim());
+    });
 
     res.setHeader("Cache-Control", "no-store");
     res.status(200).json({ exercises });
