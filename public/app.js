@@ -1820,6 +1820,7 @@ function renderJuegosIndex() {
   pararJuego();
   $("#juego-activo").hidden = true;
   $("#juegos-index").hidden = false;
+  document.title = "Juegos · Vocab";
   irAlInicio($("#juegos-index"));
 
   renderChipsJuegos();
@@ -1879,6 +1880,7 @@ function abrirJuego(id) {
   $("#juegos-index").hidden = true;
   const box = $("#juego-activo");
   box.hidden = false;
+  document.title = `${def.nombre} · Vocab`;
   box.innerHTML = `
     <button class="btn-back" id="back-juegos">← Juegos</button>
     <div class="view-head">
@@ -3640,6 +3642,7 @@ async function renderLeccionesIndex() {
   $("#leccion-detalle").hidden = true;
   $("#lectura-detalle").hidden = true;
   $("#lecciones-index").hidden = false;
+  document.title = "Aprender · Vocab";
   irAlInicio($("#lecciones-index"));
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
@@ -3742,6 +3745,7 @@ async function openLeccion(id) {
   $("#lecciones-index").hidden = true;
   const box = $("#leccion-detalle");
   box.hidden = false;
+  document.title = `${lesson.title} · Vocab`;
 
   box.innerHTML = `
     <button class="btn-back" id="back-lecciones">← Lecciones</button>
@@ -4173,6 +4177,7 @@ function abrirLectura(id) {
   $("#leccion-detalle").hidden = true;
   const box = $("#lectura-detalle");
   box.hidden = false;
+  document.title = `${l.titulo} · Vocab`;
 
   box.innerHTML = `
     <button class="btn-back" id="back-lecturas">← Lecturas</button>
@@ -4353,6 +4358,15 @@ async function renderAjustes() {
  * pero repintar su índice borraría la partida que se acaba de montar.
  */
 function activarVista(name) {
+  const nombres = {
+    hoy: "Vocab — inglés cada día",
+    repaso: "Repaso · Vocab",
+    juegos: "Juegos · Vocab",
+    lecciones: "Aprender · Vocab",
+    lista: "Palabras · Vocab",
+    ajustes: "Ajustes · Vocab",
+  };
+  document.title = nombres[name] || "Vocab — inglés cada día";
   $$(".tab").forEach((t) => {
     const active = t.dataset.view === name;
     t.classList.toggle("is-active", active);
@@ -4449,6 +4463,13 @@ function updateChrome() {
   $("#daybar-go").innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg>`;
   $("#daybar-btn").dataset.vista = paso.vista;
   $("#daybar-btn").setAttribute("aria-label", $("#daybar-text").textContent.trim());
+
+  const pasos = ["hoy", "repaso", "juegos"];
+  const pasoActual = Math.max(0, pasos.indexOf(paso.vista));
+  $$(".session-step").forEach((el, indice) => {
+    el.classList.toggle("is-done", indice < pasoActual);
+    el.classList.toggle("is-current", indice === pasoActual);
+  });
 }
 
 /* ------------------------------------------------------------------ *

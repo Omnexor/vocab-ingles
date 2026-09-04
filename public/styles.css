@@ -2883,3 +2883,81 @@ main { max-width: 1120px; padding-inline: 20px; }
   .skeleton-line::after, .skeleton-circle::after, .skeleton-example::after { animation: none; }
   .cards > .card:not(.skeleton-card), .game-card, .lesson-card, .reading-card, .stat { animation: none; }
 }
+
+/* ---------- Ruta de la sesión ---------- */
+.session-path {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 13px;
+}
+.session-step {
+  position: relative;
+  display: grid;
+  grid-template-rows: 16px auto;
+  justify-items: start;
+  gap: 4px;
+  min-width: 0;
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
+  font-size: 10px;
+  font-weight: 720;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+.session-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 8px;
+  left: 8px;
+  width: 100%;
+  height: 1px;
+  background: var(--line-strong);
+}
+.session-step i {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--card);
+}
+.session-step.is-done { color: var(--muted); }
+.session-step.is-done i { border-color: var(--ok); background: var(--ok); }
+.session-step.is-done i::after {
+  content: "";
+  width: 6px;
+  height: 3px;
+  translate: 0 -1px;
+  rotate: -45deg;
+  border: solid #073a2d;
+  border-width: 0 0 2px 2px;
+}
+.session-step.is-done::after { background: var(--ok); }
+.session-step.is-current { color: var(--text); }
+.session-step.is-current i {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.session-step.is-current i::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+@media (max-width: 719px) {
+  .session-path { margin-top: 11px; }
+  .session-step { grid-template-rows: 14px auto; gap: 3px; font-size: 9px; }
+  .session-step i { width: 14px; height: 14px; flex-basis: 14px; }
+  .session-step:not(:last-child)::after { top: 7px; left: 7px; }
+}
+
+@media (max-width: 350px) {
+  .session-step { letter-spacing: 0; }
+}
