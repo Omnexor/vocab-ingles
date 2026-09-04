@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#090d19" />
+    <meta name="theme-color" content="#0b1020" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Vocab" />
@@ -24,6 +24,7 @@
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#app">Saltar al contenido</a>
     <header class="topbar">
       <div class="brand">
         <span class="logo" aria-hidden="true">V</span>
@@ -35,12 +36,17 @@
       </div>
       <div class="topbar-acciones">
         <div class="streak" id="streak-badge" title="Días seguidos estudiando">
-          <span class="flame" aria-hidden="true">🔥</span>
+          <span class="flame" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M13.7 2.3c.4 3.1-1.8 4.4-3 6.3-.7 1.1-.8 2.3-.1 3.2.4-1.4 1.3-2.3 2.5-3.3.1 2.3 2.4 3.4 2.4 6.4 0 2.1-1.5 4-3.5 4.5-2.2-.4-3.9-2.4-3.9-4.8 0-1.3.5-2.7 1.5-4.1-3 .9-4.9 3.5-4.9 6.6 0 3.8 3.1 6.9 7 6.9s7.1-3.1 7.1-6.9c0-5.7-4-8.5-5.1-14.8Z"/></svg>
+          </span>
           <span class="streak-copy"><b id="streak-count">0</b><small>racha</small></span>
         </div>
         <!-- Ajustes sale de la barra de abajo: se toca una vez al mes y allí
              ocupaba sitio fijo. Aquí está igual de a mano y no roba espacio. -->
-        <button class="icon-btn" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
+        <button class="icon-btn" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.55v-.1A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.1 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2.3V9.55h.1A1.7 1.7 0 0 0 4.1 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.56 3.7l.06.06A1.7 1.7 0 0 0 8.5 4.1a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1v-.1h4.05v.1A1.7 1.7 0 0 0 15 4.1a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 8.5c.2.43.55.78 1 1 .34.16.72.23 1.1.2h.1v4.05h-.1A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+          <span class="icon-btn-label">Ajustes</span>
+        </button>
       </div>
     </header>
 
@@ -53,7 +59,9 @@
           <span class="daybar-label">Tu sesión de hoy</span>
           <span class="daybar-text" id="daybar-text" aria-live="polite"></span>
         </span>
-        <span class="daybar-go" id="daybar-go" aria-hidden="true">▶</span>
+        <span class="daybar-go" id="daybar-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h13M13 7l5 5-5 5"/></svg>
+        </span>
       </button>
       <div class="daybar-track" id="daybar-track" role="progressbar" aria-label="Progreso de la sesión" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <span id="daybar-fill"></span>
@@ -197,8 +205,8 @@
         <!-- Mis palabras: las que ya sigues en tu repaso -->
         <div id="panel-mis-palabras">
           <div class="filtros">
-            <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" />
-            <select id="filtro-lista" class="input">
+            <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" aria-label="Buscar en mis palabras" />
+            <select id="filtro-lista" class="input" aria-label="Filtrar mis palabras">
               <option value="todas">Todas</option>
               <option value="hoy">Toca repasarlas</option>
               <option value="dificiles">Se me resisten</option>
@@ -364,20 +372,20 @@
     <!-- Navegación: abajo en el móvil (al alcance del pulgar), arriba en escritorio -->
     <nav class="tabs" id="tabs" aria-label="Secciones">
       <button class="tab is-active" data-view="hoy" aria-current="page">
-        <span class="tab-ico" aria-hidden="true">☀️</span><span class="tab-txt">Hoy</span>
+        <span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.64 5.64l1.77 1.77M16.59 16.59l1.77 1.77M18.36 5.64l-1.77 1.77M7.41 16.59l-1.77 1.77"/><circle cx="12" cy="12" r="4.5"/></svg></span><span class="tab-txt">Hoy</span>
       </button>
       <button class="tab" data-view="repaso">
-        <span class="tab-ico" aria-hidden="true">🔁</span><span class="tab-txt">Repaso</span>
+        <span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg></span><span class="tab-txt">Repaso</span>
         <span class="badge" id="due-badge" hidden>0</span>
       </button>
       <button class="tab" data-view="juegos">
-        <span class="tab-ico" aria-hidden="true">🎮</span><span class="tab-txt">Juegos</span>
+        <span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 6h7a5.5 5.5 0 0 1 5.3 4l1.1 4.2a3 3 0 0 1-5.3 2.6l-1.1-1.5h-7l-1.1 1.5a3 3 0 0 1-5.3-2.6L3.2 10a5.5 5.5 0 0 1 5.3-4Z"/><path d="M7 9v4M5 11h4M16.5 10.5h.01M19 12.5h.01"/></svg></span><span class="tab-txt">Juegos</span>
       </button>
       <button class="tab" data-view="lecciones">
-        <span class="tab-ico" aria-hidden="true">📖</span><span class="tab-txt">Aprender</span>
+        <span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4.5h5.5A2.5 2.5 0 0 1 12 7v13a3 3 0 0 0-3-3H4V4.5ZM20 4.5h-5.5A2.5 2.5 0 0 0 12 7v13a3 3 0 0 1 3-3h5V4.5Z"/></svg></span><span class="tab-txt">Aprender</span>
       </button>
       <button class="tab" data-view="lista">
-        <span class="tab-ico" aria-hidden="true">📋</span><span class="tab-txt">Palabras</span>
+        <span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01"/></svg></span><span class="tab-txt">Palabras</span>
       </button>
     </nav>
 

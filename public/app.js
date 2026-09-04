@@ -539,13 +539,32 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+/**
+ * Lleva una pantalla o detalle al inicio respetando la preferencia de
+ * movimiento, y coloca el foco en su título para navegación accesible.
+ */
+function irAlInicio(contenedor = null) {
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reducido ? "auto" : "smooth" });
+  if (!contenedor) return;
+  requestAnimationFrame(() => {
+    const titulo = $(".view-head h2", contenedor);
+    if (!titulo) return;
+    titulo.tabIndex = -1;
+    titulo.focus({ preventScroll: true });
+  });
+}
+
 let toastTimer;
 function toast(msg) {
   const el = $("#toast");
   el.textContent = msg;
   el.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (el.hidden = true), 2600);
+  // Los mensajes largos necesitan algo más de tiempo para poder leerse sin
+  // prisa; los cortos siguen desapareciendo rápido.
+  const duracion = Math.min(6000, Math.max(2600, String(msg).length * 45));
+  toastTimer = setTimeout(() => (el.hidden = true), duracion);
 }
 
 function wordCard(w, { blurred = false } = {}) {
@@ -651,10 +670,12 @@ async function renderHoy() {
   const actions = $("#hoy-actions");
 
   cards.innerHTML = `<div class="spinner"></div>`;
+  cards.setAttribute("aria-busy", "true");
   actions.innerHTML = "";
   sub.textContent = "Preparando tus palabras…";
 
   const { words, source } = await ensureDailyBatch();
+  cards.setAttribute("aria-busy", "false");
 
   if (!words.length) {
     // Dos motivos muy distintos para no tener palabras nuevas hoy, y hay que
@@ -1781,7 +1802,7 @@ function renderJuegosIndex() {
   pararJuego();
   $("#juego-activo").hidden = true;
   $("#juegos-index").hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio($("#juegos-index"));
 
   renderChipsJuegos();
   renderJuegoSugerido();
@@ -1864,7 +1885,7 @@ function abrirJuego(id) {
   if (id === "falsos") iniciarFalsos(pool);
   if (id === "confusas") iniciarConfusas(pool);
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio(box);
 }
 
 /** Desglose honesto: aciertos, fallos, pistas y las que reconociste no saber. */
@@ -3601,7 +3622,7 @@ async function renderLeccionesIndex() {
   $("#leccion-detalle").hidden = true;
   $("#lectura-detalle").hidden = true;
   $("#lecciones-index").hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio($("#lecciones-index"));
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
   $("#lecciones-sub").textContent =
@@ -3725,7 +3746,7 @@ async function openLeccion(id) {
   $("#start-quiz").onclick = () => startQuiz(lesson, lesson.quiz);
   $("#ai-quiz").onclick = () => aiQuiz(lesson);
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio(box);
 }
 
 /** Pide ejercicios nuevos a Claude sobre esta lección. */
@@ -4203,7 +4224,7 @@ function abrirLectura(id) {
     }
   };
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio(box);
 }
 
 function cerrarPop() {
@@ -4273,7 +4294,7 @@ function aplicarTema() {
   const oscuro =
     modo === "oscuro" ||
     (modo === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
-  $('meta[name="theme-color"]')?.setAttribute("content", oscuro ? "#0b1020" : "#f3f5fa");
+  $('meta[name="theme-color"]')?.setAttribute("content", oscuro ? "#0b1020" : "#f6f5f0");
 
   $$("#seg-tema .seg-btn").forEach((b) => {
     const activo = b.dataset.tema === modo;
@@ -4322,7 +4343,11 @@ function activarVista(name) {
   // Ajustes ya no es una pestaña: su estado activo lo marca el engranaje.
   $("#btn-ajustes").classList.toggle("is-active", name === "ajustes");
   $("#btn-ajustes").setAttribute("aria-current", name === "ajustes" ? "page" : "false");
-  $$(".view").forEach((v) => v.classList.toggle("is-active", v.dataset.view === name));
+  $$(".view").forEach((v) => {
+    const activa = v.dataset.view === name;
+    v.classList.toggle("is-active", activa);
+    v.setAttribute("aria-hidden", String(!activa));
+  });
 }
 
 function showView(name) {
@@ -4337,7 +4362,7 @@ function showView(name) {
     if (listaModo === "explorar") renderExplorarCard();
   }
   if (name === "ajustes") renderAjustes();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  irAlInicio($(`.view[data-view="${name}"]`));
 }
 
 /**
@@ -4403,8 +4428,9 @@ function updateChrome() {
 
   const paso = siguientePaso();
   $("#daybar-text").innerHTML = `${paso.texto}${hechas ? ` · ${hechas} ${hechas === 1 ? "hecha" : "hechas"} hoy` : ""}`;
-  $("#daybar-go").textContent = paso.cta;
+  $("#daybar-go").innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg>`;
   $("#daybar-btn").dataset.vista = paso.vista;
+  $("#daybar-btn").setAttribute("aria-label", $("#daybar-text").textContent.trim());
 }
 
 /* ------------------------------------------------------------------ *
@@ -4684,6 +4710,7 @@ document.addEventListener("keydown", (e) => {
 
 aplicarTema();
 await cargarBanco();
+activarVista("hoy");
 updateChrome();
 renderHoy();
 
