@@ -3750,22 +3750,26 @@ async function renderLeccionesIndex() {
   irAlInicio($("#lecciones-index"));
 
   const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
-  $("#lecciones-sub").textContent =
-    `${hechas} de ${LESSONS.length} lecciones superadas · ${FRASES.length} frases hechas · ${CUENTOS.length + LECTURAS.length} textos`;
+  const textosLeidos = TEXTOS.filter((texto) => store.lecturas?.[texto.id]).length;
+  $("#lecciones-sub").textContent = hechas || textosLeidos
+    ? `${hechas} ${hechas === 1 ? "lección superada" : "lecciones superadas"} · ${textosLeidos} ${textosLeidos === 1 ? "lectura terminada" : "lecturas terminadas"}`
+    : "Elige una ruta y avanza a tu ritmo.";
+  $("#count-gramatica").textContent = `${hechas}/${LESSONS.length}`;
+  $("#count-frases").textContent = FRASES.length;
+  $("#count-lecturas").textContent = `${textosLeidos}/${TEXTOS.length}`;
   renderLecturasIndex();
 
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
     const p = lessonProgress(l.id);
-    const estado = p.done
-      ? `<span class="lesson-score is-done">✓ ${p.best}%</span>`
-      : p.best
-        ? `<span class="lesson-score">${p.best}%</span>`
-        : "";
-    return `<button class="lesson-card" data-lesson="${l.id}">
+    const estado = p.done ? `Superada · ${p.best}%` : p.best ? `Mejor intento · ${p.best}%` : "Sin empezar";
+    return `<button class="lesson-card" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(estado)}">
       <span class="lesson-tag">${esc(l.tag)}</span>
       <span class="lesson-title">${esc(l.title)}</span>
       <span class="lesson-goal">${esc(l.goal)}</span>
-      ${estado}
+      <span class="lesson-meta">
+        <span class="lesson-state${p.done ? " is-done" : ""}">${esc(estado)}</span>
+        <span class="lesson-open">Abrir <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
+      </span>
     </button>`;
   }).join("");
 }
@@ -3970,11 +3974,20 @@ function renderQuiz() {
   const respondida = elegida !== null;
   const acertada = respondida && elegida === item.answer;
   const noLaSabia = elegida === NO_LO_SE;
+  const porcentaje = Math.round((i / items.length) * 100);
+  const pendientes = Math.max(items.length - i - 1, 0);
 
   box.innerHTML = `
     <div class="card quiz-ex">
-      <div class="quiz-progress"><span style="width:${(i / items.length) * 100}%"></span></div>
-      <p class="quiz-count">${i + 1} de ${items.length}${quiz.ia ? " · generados ahora" : ""}</p>
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-meta">
+          <span>Ejercicio <b>${i + 1}</b> de ${items.length}</span>
+          <span>${quiz.ia ? "Generado ahora" : pendientes ? `${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : "Último"}</span>
+        </div>
+        <div class="quiz-progress" role="progressbar" aria-label="Progreso de los ejercicios" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${porcentaje}">
+          <span style="width:${porcentaje}%"></span>
+        </div>
+      </div>
       <p class="quiz-q">${esc(item.q)}</p>
       <div class="options">
         ${item.options
@@ -3982,15 +3995,15 @@ function renderQuiz() {
             let cls = "option";
             if (respondida && idx === item.answer) cls += " is-right";
             else if (respondida && idx === elegida) cls += " is-wrong";
-            return `<button class="${cls}" data-opt="${idx}" ${respondida ? "disabled" : ""}>${esc(opt)}</button>`;
+            return `<button class="${cls}" data-opt="${idx}" ${respondida ? "disabled" : ""}><span class="option-key" aria-hidden="true">${idx + 1}</span><span>${esc(opt)}</span></button>`;
           })
           .join("")}
       </div>
-      ${respondida ? "" : `<button class="btn btn-nose" id="nose">🤷 No lo sé</button>`}
+      ${respondida ? "" : `<button class="btn btn-nose" id="nose"><span class="nose-icon" aria-hidden="true">?</span>No lo sé</button>`}
       ${
         respondida
           ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
-               <b>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(item.options[item.answer])}` : "No exactamente"}</b>
+               <b class="feedback-title"><span class="feedback-icon" aria-hidden="true">${acertada ? "✓" : noLaSabia ? "?" : "!"}</span>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(item.options[item.answer])}` : "No exactamente"}</b>
                <p>${esc(item.why || "")}</p>
              </div>
              <button class="btn" id="next-q">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
@@ -4161,11 +4174,15 @@ const GRUPOS_TEXTO = [
 function tarjetaTexto(l) {
   const leida = store.lecturas?.[l.id];
   const frases = l.frases.length;
-  return `<button class="reading-card" data-lectura="${l.id}">
-    <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)} · ${frases} frases</span>
+  const estado = leida ? "Leída" : "Pendiente";
+  return `<button class="reading-card" data-lectura="${l.id}" aria-label="${esc(l.titulo)}. ${esc(l.resumen)}. ${estado}">
+    <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
     <span class="lesson-title">${esc(l.titulo)}</span>
     <span class="lesson-goal">${esc(l.resumen)}</span>
-    ${leida ? `<span class="lesson-score is-done">✓ leída</span>` : ""}
+    <span class="lesson-meta">
+      <span class="lesson-state${leida ? " is-done" : ""}">${estado} · ${frases} frases</span>
+      <span class="lesson-open">Leer <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
+    </span>
   </button>`;
 }
 
@@ -4174,7 +4191,7 @@ function renderLecturasIndex() {
     const suyos = TEXTOS.filter((t) => t.tipo === g.tipo);
     if (!suyos.length) return "";
     return `<section class="text-group">
-      <h3 class="text-group-title">${esc(g.nombre)} <small>${esc(g.pista)}</small></h3>
+      <h3 class="text-group-title"><span><b>${esc(g.nombre)}</b><small>${esc(g.pista)}</small></span><em>${suyos.length}</em></h3>
       <div class="lesson-grid">${suyos.map(tarjetaTexto).join("")}</div>
     </section>`;
   }).join("");

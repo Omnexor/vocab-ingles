@@ -3443,3 +3443,123 @@ main { max-width: 1120px; padding-inline: 20px; }
 @media (max-width: 350px) {
   .game-requirement { display: none; }
 }
+
+/* ---------- Aprender: progreso y continuidad ---------- */
+.learning-tabs .seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.learning-tabs .seg-btn small {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding-inline: 6px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--line) 48%, transparent);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.learning-tabs .seg-btn.is-active small { color: var(--accent); background: var(--accent-soft); }
+
+.lesson-card,
+.reading-card {
+  gap: 4px;
+  padding: 20px;
+}
+.lesson-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 11px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+.lesson-state { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lesson-state.is-done { color: var(--ok); }
+.lesson-open {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 760;
+}
+.lesson-open svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: translate .16s ease;
+}
+.lesson-card:hover .lesson-open svg,
+.reading-card:hover .lesson-open svg { translate: 3px 0; }
+
+.text-group-title {
+  justify-content: space-between;
+  gap: 16px;
+}
+.text-group-title > span { display: grid; gap: 2px; }
+.text-group-title b { color: var(--text); font-size: 13px; font-weight: 770; }
+.text-group-title small { display: block; }
+.text-group-title em {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 719px) {
+  .view[data-view="lecciones"] #lecciones-index > .view-head { margin-bottom: 16px; }
+  .view[data-view="lecciones"] #lecciones-index > .view-head h2 { font-size: 30px; letter-spacing: -.045em; }
+  .learning-tabs {
+    position: sticky;
+    top: calc(56px + env(safe-area-inset-top));
+    z-index: 6;
+    width: calc(100% + 8px);
+    margin: 0 -4px 16px;
+    padding: 5px;
+    border-color: color-mix(in srgb, var(--line) 72%, transparent);
+    background: color-mix(in srgb, var(--bg) 91%, transparent);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(18px);
+  }
+  .learning-tabs .seg-btn {
+    display: grid;
+    justify-items: center;
+    gap: 1px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 4px;
+    line-height: 1.2;
+  }
+  .learning-tabs .seg-btn small { min-width: 0; height: auto; padding: 0; background: transparent; font-size: 9px; }
+  .learning-tabs .seg-btn.is-active small { background: transparent; }
+  .lesson-card,
+  .reading-card { min-height: 0; gap: 3px; padding: 17px; }
+  .lesson-goal {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.45;
+  }
+  .lesson-meta { margin-top: 8px; padding-top: 9px; }
+  .text-group-title { align-items: end; flex-direction: row; margin-bottom: 10px; }
+  .text-group-title small { font-size: 11px; line-height: 1.35; }
+}
