@@ -544,6 +544,7 @@ const TODAY_TOOL_ICONS = {
   add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   hide: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 5.2A10.6 10.6 0 0 1 12 5c5.5 0 9 7 9 7a17 17 0 0 1-2.1 3M6.6 6.6C4.3 8.2 3 12 3 12s3.5 7 9 7c1.1 0 2.1-.3 3-.7"/></svg>',
   show: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  delete: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>',
 };
 
 /** Herramientas de Hoy con jerarquía constante: icono, acción y contexto. */
@@ -1110,13 +1111,15 @@ function renderRepaso(restart = true) {
  * ------------------------------------------------------------------ */
 
 const esDificil = (w) => w.lapses >= 2;
+let listaFiltro = "todas";
 
 function renderLista() {
-  const q = $("#buscador").value.trim().toLowerCase();
-  const filtro = $("#filtro-lista").value;
+  const query = $("#buscador").value.trim();
+  const q = query.toLowerCase();
+  const filtro = listaFiltro;
 
   const items = store.words
-    .filter((w) => !q || w.en.includes(q) || w.es.toLowerCase().includes(q))
+    .filter((w) => !q || w.en.toLowerCase().includes(q) || w.es.toLowerCase().includes(q))
     .filter((w) => {
       if (filtro === "dificiles") return esDificil(w);
       if (filtro === "hoy") return w.due <= todayStr();
@@ -1130,6 +1133,26 @@ function renderLista() {
     `${store.words.length} palabras · ${learnedWords().length} dominadas` +
     (dificiles ? ` · ${dificiles} que se te resisten` : "");
 
+  const filterCounts = {
+    todas: store.words.length,
+    hoy: store.words.filter((w) => w.due <= todayStr()).length,
+    dificiles,
+    dominadas: store.words.filter((w) => w.box >= 4).length,
+  };
+  $$("[data-list-filter]", $("#filtros-lista")).forEach((button) => {
+    const active = button.dataset.listFilter === filtro;
+    const count = filterCounts[button.dataset.listFilter] || 0;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+    $(".filter-count", button).textContent = count;
+    button.setAttribute("aria-label", `${button.dataset.listLabel}: ${count}`);
+  });
+  $("#limpiar-busqueda").hidden = !q;
+  const filtrando = q || filtro !== "todas";
+  $("#lista-cuenta").textContent = filtrando
+    ? `${items.length} ${items.length === 1 ? "resultado" : "resultados"}`
+    : `${items.length} ${items.length === 1 ? "palabra guardada" : "palabras guardadas"}`;
+
   $("#lista").innerHTML = items.length
     ? items
         .map((w) => {
@@ -1137,18 +1160,18 @@ function renderLista() {
           const titulo =
             estado === "learned" ? "Ya dominada" : estado === "due" ? "Toca repasarla" : "En repaso";
           const marca = esDificil(w) ? ` <span class="dificil" title="La has fallado ${w.lapses} veces">difícil</span>` : "";
-          return `<tr>
+          return `<tr data-word-state="${estado || "learning"}">
             <td class="cell-en"><span class="dot ${estado}" title="${titulo}"></span>${esc(w.en)}${marca}</td>
             <td class="cell-pron">(${esc(w.pron || "—")})</td>
-            <td class="cell-es">${esc(w.es)}</td>
+            <td class="cell-es"><span>${esc(w.es)}</span><span class="word-status ${estado || "learning"}">${titulo}</span></td>
             <td class="cell-audio">
-              <button class="speak speak-sm" data-speak="${esc(w.en)}" aria-label="Escuchar ${esc(w.en)}">🔊</button>
-              <button class="speak speak-sm speak-del" data-borrar="${w.id}" aria-label="Borrar ${esc(w.en)}" title="Borrar">✕</button>
+              <button class="speak speak-sm" data-speak="${esc(w.en)}" aria-label="Escuchar ${esc(w.en)}">${TODAY_TOOL_ICONS.listen}</button>
+              <button class="speak speak-sm speak-del" data-borrar="${w.id}" aria-label="Borrar ${esc(w.en)}" title="Borrar">${TODAY_TOOL_ICONS.delete}</button>
             </td>
           </tr>`;
         })
         .join("")
-    : `<tr><td colspan="4"><div class="empty">Sin resultados.</div></td></tr>`;
+    : `<tr><td colspan="4"><div class="empty"><span class="big">⌕</span>${q ? `No hay coincidencias para «${esc(query)}».` : "No hay palabras en este filtro."}</div></td></tr>`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -1262,6 +1285,7 @@ function cambiarModoLista(modo) {
   $("#panel-explorar").hidden = modo !== "explorar";
   $("#panel-verbos").hidden = modo !== "verbos";
 
+  if (modo === "mis") renderLista();
   if (modo === "explorar") {
     if (!explorar.pool.length) iniciarExplorar();
     else renderExplorarCard(); // por si has añadido/borrado palabras mientras tanto
@@ -4593,7 +4617,17 @@ function borrarPalabra(id) {
 }
 
 $("#buscador").addEventListener("input", renderLista);
-$("#filtro-lista").addEventListener("change", renderLista);
+$("#limpiar-busqueda").addEventListener("click", () => {
+  $("#buscador").value = "";
+  renderLista();
+  $("#buscador").focus();
+});
+$("#filtros-lista").addEventListener("click", (e) => {
+  const button = e.target.closest("[data-list-filter]");
+  if (!button || button.dataset.listFilter === listaFiltro) return;
+  listaFiltro = button.dataset.listFilter;
+  renderLista();
+});
 $("#modo-mis-palabras").addEventListener("click", () => cambiarModoLista("mis"));
 $("#modo-explorar").addEventListener("click", () => cambiarModoLista("explorar"));
 $("#modo-verbos").addEventListener("click", () => cambiarModoLista("verbos"));

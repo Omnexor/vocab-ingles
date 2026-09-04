@@ -209,14 +209,20 @@
 
         <!-- Mis palabras: las que ya sigues en tu repaso -->
         <div id="panel-mis-palabras">
-          <div class="filtros">
-            <input id="buscador" class="input" type="search" placeholder="Buscar palabra…" autocomplete="off" aria-label="Buscar en mis palabras" />
-            <select id="filtro-lista" class="input" aria-label="Filtrar mis palabras">
-              <option value="todas">Todas</option>
-              <option value="hoy">Toca repasarlas</option>
-              <option value="dificiles">Se me resisten</option>
-              <option value="dominadas">Ya dominadas</option>
-            </select>
+          <div class="library-controls">
+            <div class="library-search">
+              <label class="sr-only" for="buscador">Buscar en mis palabras</label>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+              <input id="buscador" class="input" type="search" placeholder="Buscar en inglés o español…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-controls="lista" />
+              <button type="button" class="search-clear" id="limpiar-busqueda" aria-label="Limpiar búsqueda" hidden>×</button>
+            </div>
+            <div class="chips library-filter-chips" id="filtros-lista" role="group" aria-label="Filtrar mis palabras">
+              <button class="chip is-active" data-list-filter="todas" data-list-label="Todas" aria-pressed="true">Todas <span class="filter-count" aria-hidden="true">0</span></button>
+              <button class="chip" data-list-filter="hoy" data-list-label="Por repasar" aria-pressed="false">Por repasar <span class="filter-count" aria-hidden="true">0</span></button>
+              <button class="chip" data-list-filter="dificiles" data-list-label="Difíciles" aria-pressed="false">Difíciles <span class="filter-count" aria-hidden="true">0</span></button>
+              <button class="chip" data-list-filter="dominadas" data-list-label="Dominadas" aria-pressed="false">Dominadas <span class="filter-count" aria-hidden="true">0</span></button>
+            </div>
+            <p class="library-results" id="lista-cuenta" aria-live="polite"></p>
           </div>
           <div class="table-wrap">
             <table class="word-table">
