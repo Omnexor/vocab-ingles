@@ -539,6 +539,19 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+const TODAY_TOOL_ICONS = {
+  listen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 7 8H4v8h3l4 3V5Z"/><path d="M15 9a4 4 0 0 1 0 6M17.7 6.4a8 8 0 0 1 0 11.2"/></svg>',
+  add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  hide: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 5.2A10.6 10.6 0 0 1 12 5c5.5 0 9 7 9 7a17 17 0 0 1-2.1 3M6.6 6.6C4.3 8.2 3 12 3 12s3.5 7 9 7c1.1 0 2.1-.3 3-.7"/></svg>',
+  show: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>',
+};
+
+/** Herramientas de Hoy con jerarquía constante: icono, acción y contexto. */
+function todayTool(icon, title, detail) {
+  return `<span class="today-tool-icon" aria-hidden="true">${TODAY_TOOL_ICONS[icon]}</span>
+    <span class="today-tool-copy"><b>${title}</b><small>${detail}</small></span>`;
+}
+
 /**
  * Lleva una pantalla o detalle al inicio respetando la preferencia de
  * movimiento, y coloca el foco en su título para navegación accesible.
@@ -567,10 +580,15 @@ function toast(msg) {
   toastTimer = setTimeout(() => (el.hidden = true), duracion);
 }
 
-function wordCard(w, { blurred = false } = {}) {
+function wordCard(w, { blurred = false, position = null, total = null } = {}) {
   const hide = blurred ? " hidden-until-reveal" : "";
+  const hasPosition = Number.isInteger(position) && Number.isInteger(total);
+  const positionMarkup = hasPosition
+    ? `<span class="card-position" aria-hidden="true"><b>${position}</b><span>/${total}</span></span>`
+    : "";
+  const cardLabel = hasPosition ? ` aria-label="Palabra ${position} de ${total}: ${esc(w.en)}"` : "";
   return `
-    <article class="card${blurred ? " is-tapada" : ""}" data-id="${w.id}">
+    <article class="card${blurred ? " is-tapada" : ""}" data-id="${w.id}"${cardLabel}>
       <div class="card-top">
         <div>
           <p class="word" lang="en">${esc(w.en)}</p>
@@ -579,7 +597,10 @@ function wordCard(w, { blurred = false } = {}) {
             ${w.cat && w.cat !== "mixto" ? `<span class="cat-chip">${esc(nombreCategoria(w.cat))}</span>` : ""}
           </div>
         </div>
-        <button class="speak" data-speak="${esc(w.en)}" title="Escuchar" aria-label="Escuchar">🔊</button>
+        <div class="card-tools">
+          ${positionMarkup}
+          <button class="speak" data-speak="${esc(w.en)}" title="Escuchar" aria-label="Escuchar ${esc(w.en)}">${TODAY_TOOL_ICONS.listen}</button>
+        </div>
       </div>
       ${blurred ? `<p class="tap-hint">Toca para ver la traducción</p>` : ""}
       <p class="translation${hide}">${esc(w.es)}</p>
@@ -589,6 +610,19 @@ function wordCard(w, { blurred = false } = {}) {
           : ""
       }
     </article>`;
+}
+
+/** Mantiene correctos los contadores si se añaden palabras sin repintar todo. */
+function updateTodayCardPositions() {
+  const cards = $$(".card[data-id]", $("#hoy-cards"));
+  cards.forEach((card, indice) => {
+    const current = $(".card-position b", card);
+    const total = $(".card-position span", card);
+    const word = $(".word", card)?.textContent || "";
+    if (current) current.textContent = indice + 1;
+    if (total) total.textContent = `/${cards.length}`;
+    card.setAttribute("aria-label", `Palabra ${indice + 1} de ${cards.length}: ${word}`);
+  });
 }
 
 /** Estado de carga con la misma geometría que las tarjetas reales. Evita que
@@ -658,7 +692,7 @@ function updateMoreButtonLabel() {
   if (!btn) return;
   const hoy = store.daily.date === todayStr() ? store.daily.ids.map(byId).filter(Boolean).length : 0;
   const faltan = Math.max(store.settings.daily - hoy, 0);
-  btn.textContent = `+ ${faltan ? `Completar objetivo · ${faltan}` : "Más palabras"}`;
+  btn.innerHTML = todayTool("add", faltan ? "Completar" : "Añadir", faltan ? `${faltan} para el objetivo` : "más palabras");
 }
 
 function renderChipsCategoria() {
@@ -731,7 +765,11 @@ async function renderHoy() {
          </div>`
       : "";
 
-  cards.innerHTML = aviso + words.map((w) => wordCard(w, { blurred: store.settings.tapar })).join("");
+  cards.innerHTML = aviso + words.map((w, indice) => wordCard(w, {
+    blurred: store.settings.tapar,
+    position: indice + 1,
+    total: words.length,
+  })).join("");
 
   const faltanObjetivo = Math.max(store.settings.daily - words.length, 0);
   // Aquí solo van las tres herramientas que actúan sobre las tarjetas, y por
@@ -740,22 +778,22 @@ async function renderHoy() {
   // así que era el mismo botón dos veces y empujaba las palabras fuera de la
   // pantalla.
   actions.innerHTML = `
-    <button class="btn btn-ghost" id="listen-all"><span aria-hidden="true">🔊</span> Escuchar</button>
-    <button class="btn btn-ghost" id="more-words">+ ${faltanObjetivo ? `Completar objetivo · ${faltanObjetivo}` : "Más palabras"}</button>
-    <button class="btn btn-quiet" id="toggle-tapar">${store.settings.tapar ? "👁 Mostrar" : "🙈 Ocultar"}</button>`;
+    <button class="btn btn-ghost" id="listen-all">${todayTool("listen", "Escuchar", `${words.length} ${words.length === 1 ? "palabra" : "palabras"}`)}</button>
+    <button class="btn btn-ghost" id="more-words">${todayTool("add", faltanObjetivo ? "Completar" : "Añadir", faltanObjetivo ? `${faltanObjetivo} para el objetivo` : "más palabras")}</button>
+    <button class="btn btn-quiet" id="toggle-tapar">${todayTool(store.settings.tapar ? "show" : "hide", store.settings.tapar ? "Mostrar" : "Ocultar", "respuestas")}</button>`;
 
   $("#listen-all").onclick = async () => {
     const btn = $("#listen-all");
     const run = ++speechRun;
     btn.disabled = true;
-    btn.innerHTML = `<span aria-hidden="true">🔊</span> Escuchando…`;
+    btn.innerHTML = todayTool("listen", "Escuchando…", "una por una");
     speechSynthesis.cancel();
     for (const w of words) {
       if (run !== speechRun) break;
       await speak(w.en, { cancel: false });
     }
     btn.disabled = false;
-    btn.innerHTML = `<span aria-hidden="true">🔊</span> Escuchar`;
+    btn.innerHTML = todayTool("listen", "Escuchar", `${words.length} ${words.length === 1 ? "palabra" : "palabras"}`);
   };
   $("#more-words").onclick = () => addMoreWords();
   $("#toggle-tapar").onclick = () => {
@@ -772,7 +810,7 @@ async function renderHoy() {
 async function addMoreWords() {
   const btn = $("#more-words");
   btn.disabled = true;
-  btn.textContent = "Generando…";
+  btn.innerHTML = todayTool("add", "Generando…", "un momento");
   try {
     const hoy = store.daily.date === todayStr() ? store.daily.ids.map(byId).filter(Boolean).length : 0;
     const faltanObjetivo = Math.max(store.settings.daily - hoy, 0);
@@ -787,10 +825,18 @@ async function addMoreWords() {
 
     store.daily.ids.push(...added.map((w) => w.id));
     save();
-    $("#hoy-cards").insertAdjacentHTML(
+    const cards = $("#hoy-cards");
+    const anteriores = $$(".card[data-id]", cards).length;
+    const total = anteriores + added.length;
+    cards.insertAdjacentHTML(
       "beforeend",
-      added.map((w) => wordCard(w, { blurred: store.settings.tapar })).join(""),
+      added.map((w, indice) => wordCard(w, {
+        blurred: store.settings.tapar,
+        position: anteriores + indice + 1,
+        total,
+      })).join(""),
     );
+    updateTodayCardPositions();
     $("#hoy-sub").textContent = `${store.daily.ids.length} palabras hoy · ${nombreCategoria(store.settings.category).toLowerCase()}`;
     toast(`+${added.length} ${source === "seed" ? "de la lista local" : "palabras nuevas"}`);
   } finally {
