@@ -997,18 +997,29 @@ function renderRepaso(restart = true) {
   // Escribir siempre va del español al inglés: producir la palabra es lo que cuesta.
   const alReves = repaso.escribir || dir === "es-en";
   sub.textContent =
-    `${hechas + 1} de ${queueTotal}` +
+    `${queueTotal} ${queueTotal === 1 ? "palabra" : "palabras"} en esta sesión` +
     (repasoExtra ? " · vuelta extra, no cuenta para las fechas" : "") +
     (aplazadas ? ` · ${aplazadas} ${aplazadas === 1 ? "queda" : "quedan"} para mañana` : "");
 
-  const progreso = `<div class="quiz-progress"><span style="width:${(hechas / queueTotal) * 100}%"></span></div>`;
+  const porcentaje = Math.round((hechas / queueTotal) * 100);
+  const despues = Math.max(queue.length - 1, 0);
+  const progreso = `
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-meta">
+        <span>Pregunta <b>${hechas + 1}</b> de ${queueTotal}</span>
+        <span>${despues ? `${despues} ${despues === 1 ? "pendiente" : "pendientes"}` : "Última"}</span>
+      </div>
+      <div class="quiz-progress" role="progressbar" aria-label="Progreso del repaso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${porcentaje}">
+        <span style="width:${porcentaje}%"></span>
+      </div>
+    </div>`;
 
   // Cara vista mientras respondes
   const pregunta = alReves
     ? `<p class="quiz-dir">español → inglés</p>
        <p class="word">${esc(w.es)}</p>`
     : `<p class="word" lang="en">${esc(w.en)}</p>
-       <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>`;
+       <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar ${esc(w.en)}">${TODAY_TOOL_ICONS.listen}</button>`;
 
   // Ficha completa, ya resuelta
   const ficha = `
@@ -1016,7 +1027,7 @@ function renderRepaso(restart = true) {
     <span class="pron">${esc(w.pron || "—")}</span>
     <p class="translation">${esc(w.es)}</p>
     ${w.example ? `<p class="example" lang="en">${esc(w.example)}<em lang="es">${esc(w.exampleEs)}</em></p>` : ""}
-    <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar">🔊</button>`;
+    <button class="speak" data-speak="${esc(w.en)}" aria-label="Escuchar ${esc(w.en)}">${TODAY_TOOL_ICONS.listen}</button>`;
 
   if (!repaso.resuelto) {
     box.innerHTML = `
@@ -1027,18 +1038,19 @@ function renderRepaso(restart = true) {
       </article>
       ${
         repaso.escribir
-          ? `<input id="resp-repaso" class="input input-big" type="text" placeholder="Escribe aquí…"
-                    autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+          ? `<label class="sr-only" for="resp-repaso">Tu respuesta en inglés</label>
+             <input id="resp-repaso" class="input input-big" type="text" placeholder="Escribe la palabra en inglés…"
+                    autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" />
              <div class="row-actions">
                <button class="btn" id="comprobar-repaso">Comprobar</button>
-               <button class="btn btn-nose" id="nose">🤷 No la sé</button>
+               <button class="btn btn-nose" id="nose"><span class="nose-icon" aria-hidden="true">?</span>No la sé</button>
              </div>`
           : `<div class="options" id="op-repaso">
                ${repaso.opciones
-                 .map((o) => `<button class="option" data-en="${esc(o.en)}">${esc(alReves ? o.en : o.es)}</button>`)
+                 .map((o, indice) => `<button class="option" data-en="${esc(o.en)}"><span class="option-key" aria-hidden="true">${indice + 1}</span><span>${esc(alReves ? o.en : o.es)}</span></button>`)
                  .join("")}
              </div>
-             <button class="btn btn-nose" id="nose">🤷 No lo sé</button>`
+             <button class="btn btn-nose" id="nose"><span class="nose-icon" aria-hidden="true">?</span>No lo sé</button>`
       }`;
 
     if (repaso.escribir) {
@@ -1084,15 +1096,15 @@ function renderRepaso(restart = true) {
     ${progreso}
     <article class="card quiz-card" data-id="${w.id}">${ficha}</article>
     <div class="explain ${tono}" aria-live="polite">
-      <b>${titulo}</b>
+      <b class="feedback-title"><span class="feedback-icon" aria-hidden="true">${repaso.acertada ? "✓" : repaso.rendida ? "?" : "!"}</span>${titulo}</b>
       ${repaso.sinonimo ? `<p>También vale <b lang="en">${esc(repaso.sinonimo)}</b>.</p>` : ""}
       ${!repaso.acertada && repaso.texto ? `<p>Escribiste «${esc(repaso.texto)}».</p>` : ""}
     </div>
     <div class="row-actions">
       ${
         repaso.acertada
-          ? `<button class="btn btn-good" data-grade="1">Bien</button>
-             <button class="btn btn-easy" data-grade="2">Fácil</button>`
+          ? `<button class="btn btn-good" data-grade="1"><span class="btn-key" aria-hidden="true">1</span>Bien</button>
+             <button class="btn btn-easy" data-grade="2"><span class="btn-key" aria-hidden="true">2</span>Fácil</button>`
           : `<button class="btn" id="next-repaso">Siguiente</button>`
       }
     </div>`;
