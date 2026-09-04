@@ -1663,6 +1663,18 @@ const mezclar = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const escRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const record = (id) => store.games?.[id] ?? 0;
 
+function estadoJuego(g) {
+  if (g.id === "hablar" && !hayMicrofono) return { texto: "No disponible aquí", warning: true };
+  const mejor = record(g.id);
+  if (mejor) {
+    return {
+      texto: g.record === "tiempo" ? `Mejor ${(mejor / 1000).toFixed(1)} s` : `Récord ${mejor}`,
+      warning: false,
+    };
+  }
+  return { texto: store.gamesLast?.[g.id] ? "Sin marca todavía" : "Nuevo", warning: false };
+}
+
 function guardarRecord(id, valor, menorEsMejor = false) {
   store.games = store.games || {};
   const actual = store.games[id];
@@ -1888,11 +1900,16 @@ function renderJuegoSugerido() {
     caja.innerHTML = "";
     return;
   }
+  const estado = estadoJuego(s.def);
   caja.innerHTML = `
     <button class="sugerido" data-juego="${esc(s.id)}">
       <span class="sugerido-eyebrow">Hoy te toca</span>
       <span class="sugerido-nombre">${s.def.emoji} ${esc(s.def.nombre)}</span>
       <span class="sugerido-motivo">${esc(s.motivo)}</span>
+      <span class="sugerido-footer">
+        <span>${esc(estado.texto)}</span>
+        <span class="sugerido-cta">Jugar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
+      </span>
     </button>`;
   // Lo abre el listener global de [data-juego]: poner aquí otro onclick
   // lanzaría la partida dos veces.
@@ -1916,17 +1933,19 @@ function renderJuegosIndex() {
     (lios ? ` · ${lios} ${lios === 1 ? "pareja que mezclas" : "parejas que mezclas"}` : "");
 
   const tarjeta = (g) => {
-    const r = record(g.id);
-    const marca = !r
-      ? ""
-      : g.record === "tiempo"
-        ? `<span class="game-record">⏱ ${(r / 1000).toFixed(1)}s</span>`
-        : `<span class="game-record">★ ${r}</span>`;
-    return `<button class="game-card" data-juego="${g.id}">
+    const estado = estadoJuego(g);
+    const requisito = g.minimo ? `${g.minimo}+ palabras` : "Siempre disponible";
+    return `<button class="game-card${estado.warning ? " has-warning" : ""}" data-juego="${g.id}" aria-label="${esc(g.nombre)}. ${esc(g.desc)}. ${esc(estado.texto)}">
       <span class="game-emoji">${g.emoji}</span>
-      <span class="game-name">${esc(g.nombre)}</span>
-      <span class="game-desc">${esc(g.desc)}</span>
-      ${marca}
+      <span class="game-copy">
+        <span class="game-name">${esc(g.nombre)}</span>
+        <span class="game-desc">${esc(g.desc)}</span>
+      </span>
+      <span class="game-meta">
+        <span class="game-state${estado.warning ? " is-warning" : ""}">${esc(estado.texto)}</span>
+        <span class="game-requirement">${esc(requisito)}</span>
+        <span class="game-play">${estado.warning ? "Ver motivo" : "Jugar"} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
+      </span>
     </button>`;
   };
 
@@ -1936,7 +1955,10 @@ function renderJuegosIndex() {
     const suyos = JUEGOS.filter((g) => grupo.juegos.includes(g.id));
     if (!suyos.length) return "";
     return `<section class="game-group">
-      <h3 class="game-group-title">${esc(grupo.nombre)} <small>${esc(grupo.pista)}</small></h3>
+      <h3 class="game-group-title">
+        <span><b>${esc(grupo.nombre)}</b><small>${esc(grupo.pista)}</small></span>
+        <em>${suyos.length} ${suyos.length === 1 ? "juego" : "juegos"}</em>
+      </h3>
       <div class="game-grid">${suyos.map(tarjeta).join("")}</div>
     </section>`;
   }).join("");
