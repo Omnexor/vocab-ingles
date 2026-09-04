@@ -591,6 +591,24 @@ function wordCard(w, { blurred = false } = {}) {
     </article>`;
 }
 
+/** Estado de carga con la misma geometría que las tarjetas reales. Evita que
+ * el contenido salte cuando llegan las palabras y hace visible el progreso. */
+function wordSkeletons() {
+  return Array.from({ length: 2 }, () => `
+    <article class="card skeleton-card" aria-hidden="true">
+      <div class="skeleton-row">
+        <span class="skeleton-line skeleton-word"></span>
+        <span class="skeleton-circle"></span>
+      </div>
+      <span class="skeleton-line skeleton-pron"></span>
+      <span class="skeleton-line skeleton-translation"></span>
+      <div class="skeleton-example">
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line skeleton-short"></span>
+      </div>
+    </article>`).join("");
+}
+
 /* ------------------------------------------------------------------ *
  * Vista: Hoy
  * ------------------------------------------------------------------ */
@@ -669,7 +687,7 @@ async function renderHoy() {
   const sub = $("#hoy-sub");
   const actions = $("#hoy-actions");
 
-  cards.innerHTML = `<div class="spinner"></div>`;
+  cards.innerHTML = wordSkeletons();
   cards.setAttribute("aria-busy", "true");
   actions.innerHTML = "";
   sub.textContent = "Preparando tus palabras…";
