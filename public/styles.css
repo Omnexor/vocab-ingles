@@ -3631,6 +3631,13 @@ main { max-width: 1120px; padding-inline: 20px; }
 .lesson-overview { display: grid; gap: 12px; margin-bottom: 24px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
 .lesson-overview p { margin: 0; font-size: 14px; }
 .lesson-overview > span { color: var(--muted); font-size: 14px; }
+.lesson-resume { display: grid; gap: 12px; padding-bottom: 20px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.lesson-resume .eyebrow { margin: 0; }
+.lesson-resume h3 { font-size: 22px; line-height: 1.3; }
+.lesson-resume p { color: var(--muted); }
+.lesson-overview .btn-ghost { box-shadow: none; }
+.lesson-pending { justify-self: start; color: var(--accent); font-size: 12px; font-weight: 650; }
+.quiz-save-note { margin: -4px 0 16px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .lesson-overview[hidden], .lesson-extra-actions[hidden], .lesson-theory-toggle[hidden] { display: none; }
 #leccion-detalle .quiz-ex { margin-top: 0; box-shadow: none; }
 #leccion-detalle .quiz-q { font-size: 22px; line-height: 1.4; }

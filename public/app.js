@@ -60,6 +60,8 @@ const defaults = () => ({
   daily: { date: null, ids: [], done: 0 },
   words: [],
   lessons: {}, // id -> { best: 0-100, done: bool, last: "YYYY-MM-DD" }
+  lessonSessions: {}, // prácticas en curso, guardadas en este navegador
+  lessonMistakes: {}, // ejercicios pendientes del último intento
   lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
   gamesLast: {}, // id -> fecha de la última partida, para saber qué tienes olvidado
@@ -3777,6 +3779,41 @@ function lessonProgress(id) {
   return store.lessons[id] || { best: 0, done: false, last: null };
 }
 
+function validQuizItems(items) {
+  return Array.isArray(items) && items.length > 0 && items.length <= 200 && items.every(item =>
+    item && typeof item.q === "string" && item.q.trim() && Array.isArray(item.options)
+    && item.options.length >= 2 && item.options.every(option => typeof option === "string" && option.trim())
+    && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length
+    && (item.why == null || typeof item.why === "string"));
+}
+
+// Los contadores se reconstruyen desde las respuestas, nunca desde una nota guardada.
+function lessonSession(id) {
+  const draft = store.lessonSessions?.[id];
+  if (!draft || draft.version !== 1 || !validQuizItems(draft.items)
+    || !Number.isInteger(draft.i) || draft.i < 0 || draft.i >= draft.items.length
+    || !Array.isArray(draft.answers) || ![draft.i, draft.i + 1].includes(draft.answers.length)
+    || typeof draft.ia !== "boolean" || typeof draft.review !== "boolean" || !Number.isFinite(draft.updatedAt)
+    || !draft.answers.every((answer, index) => answer === NO_LO_SE
+      || (Number.isInteger(answer) && answer >= 0 && answer < draft.items[index].options.length))) return null;
+  if (!draft.ia && !draft.review && JSON.stringify(draft.items) !== JSON.stringify(getLesson(id)?.quiz)) return null;
+  return draft;
+}
+
+function lessonMistakes(id) {
+  const mistakes = store.lessonMistakes?.[id];
+  return mistakes && typeof mistakes.ia === "boolean" && validQuizItems(mistakes.items) ? mistakes : null;
+}
+
+function saveLessonSession() {
+  if (!store.lessonSessions || typeof store.lessonSessions !== "object" || Array.isArray(store.lessonSessions)) store.lessonSessions = {};
+  store.lessonSessions[quiz.lesson.id] = {
+    version: 1, items: quiz.items, answers: [...quiz.answers], i: quiz.i,
+    ia: quiz.ia, review: quiz.review, updatedAt: Date.now(),
+  };
+  save();
+}
+
 async function renderLeccionesIndex() {
   await cargarLecciones();
   quiz = null;
@@ -3796,23 +3833,31 @@ async function renderLeccionesIndex() {
   $("#count-lecturas").textContent = `${textosLeidos}/${TEXTOS.length}`;
   renderLecturasIndex();
 
-  const siguiente = LESSONS.find(l => !lessonProgress(l.id).done && lessonProgress(l.id).last)
+  const paused = LESSONS.filter(l => lessonSession(l.id))
+    .sort((a, b) => lessonSession(b.id).updatedAt - lessonSession(a.id).updatedAt)[0];
+  const siguiente = paused || LESSONS.find(l => !lessonProgress(l.id).done && lessonProgress(l.id).last)
+    || LESSONS.find(l => lessonMistakes(l.id))
     || LESSONS.find(l => !lessonProgress(l.id).done);
+  const draft = siguiente && lessonSession(siguiente.id);
+  const mistakes = siguiente && lessonMistakes(siguiente.id);
   $("#learning-next").innerHTML = siguiente ? `
     <div class="learning-next-card">
-      <span class="eyebrow">Tu siguiente paso</span>
+      <span class="eyebrow">${draft ? "Donde lo dejaste" : "Tu siguiente paso"}</span>
       <h3>${esc(siguiente.title)}</h3>
-      <p>${lessonProgress(siguiente.id).last ? "Vuelve a practicar esta lección. Al terminar podrás repasar solo lo que te cueste." : esc(siguiente.goal)}</p>
-      <button class="btn" data-lesson="${siguiente.id}">${lessonProgress(siguiente.id).last ? "Retomar lección" : "Empezar lección"}</button>
+      <p>${draft ? `Ejercicio ${draft.i + 1} de ${draft.items.length}. ${sinSitio ? "No se ha podido guardar el avance. Mantén la app abierta." : "Tu avance está guardado en este navegador."}` : mistakes ? `${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"} para reforzar. Puedes repasarlos sin repetir toda la prueba.` : lessonProgress(siguiente.id).last ? "Vuelve a practicar esta lección y comprueba lo aprendido." : esc(siguiente.goal)}</p>
+      <button class="btn" data-lesson="${siguiente.id}">${draft ? "Retomar práctica" : lessonProgress(siguiente.id).last ? "Retomar lección" : "Empezar lección"}</button>
     </div>` : `<div class="learning-next-card"><h3>Has superado todas las lecciones</h3><p>Elige una para volver a practicar o aplica lo aprendido en Lecturas.</p></div>`;
 
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
     const p = lessonProgress(l.id);
-    const estado = p.done ? `Superada · ${p.best}%` : p.last ? `Mejor intento · ${p.best}%` : "Sin empezar";
+    const session = lessonSession(l.id);
+    const pending = lessonMistakes(l.id);
+    const estado = session ? `En curso · ejercicio ${session.i + 1}/${session.items.length}` : p.done ? `Superada · ${p.best}%` : p.last ? `Mejor intento · ${p.best}%` : "Sin empezar";
     return `<button class="lesson-card" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(estado)}">
       <span class="lesson-tag">${esc(l.tag)}</span>
       <span class="lesson-title">${esc(l.title)}</span>
       <span class="lesson-goal">${esc(l.goal)}</span>
+      ${pending ? `<span class="lesson-pending">${pending.items.length} para reforzar</span>` : ""}
       <span class="lesson-meta">
         <span class="lesson-state${p.done ? " is-done" : ""}">${esc(estado)}</span>
         <span class="lesson-open">Abrir <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
@@ -3897,6 +3942,8 @@ async function openLeccion(id) {
   if (!lesson) return;
 
   const p = lessonProgress(id);
+  const draft = lessonSession(id);
+  const mistakes = lessonMistakes(id);
   $("#lecciones-index").hidden = true;
   const box = $("#leccion-detalle");
   box.hidden = false;
@@ -3915,9 +3962,17 @@ async function openLeccion(id) {
       <p class="muted">${esc(lesson.goal)}</p>
     </div>
     <div class="lesson-overview" id="lesson-overview">
+      ${draft ? `<div class="lesson-resume">
+        <span class="eyebrow">${draft.review ? "Repaso guardado" : "Práctica guardada"}</span>
+        <h3>Continúa en el ejercicio ${draft.i + 1} de ${draft.items.length}</h3>
+        <p>${draft.answers.length > draft.i ? "Tu última respuesta está guardada. Verás la explicación antes de seguir." : "Puedes seguir desde aquí, aunque hayas cerrado la app."}</p>
+        <button class="btn" id="resume-quiz">Continuar práctica</button>
+      </div>` : ""}
       <p><b>${lesson.quiz.length} ejercicios</b> · Acierta al menos el 80% para superar la lección.</p>
       <span>Lee la explicación o comprueba lo que ya sabes. Podrás consultar la teoría y repasar tus errores.</span>
-      <button class="btn" id="start-quiz">${p.done ? "Practicar otra vez" : "Empezar práctica"}</button>
+      ${store.lessonSessions?.[id] && !draft ? `<p class="muted">La práctica guardada no es compatible con esta lección. Puedes empezar una nueva; tu mejor nota se conserva.</p>` : ""}
+      <button class="btn ${draft || mistakes ? "btn-ghost" : ""}" id="start-quiz">${draft ? "Empezar de nuevo" : p.done ? "Practicar otra vez" : "Empezar práctica"}</button>
+      ${mistakes ? `<button class="btn ${draft ? "btn-ghost" : ""}" id="saved-mistakes">Reforzar ${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
     </div>
     <div id="lesson-theory">
       <article class="lesson-body">${lesson.blocks.map(blockHtml).join("")}</article>
@@ -3930,6 +3985,8 @@ async function openLeccion(id) {
     renderLeccionesIndex();
   };
   $("#start-quiz").onclick = () => startQuiz(lesson, lesson.quiz);
+  if ($("#resume-quiz")) $("#resume-quiz").onclick = () => startQuiz(lesson, draft.items, { ia: draft.ia, review: draft.review, resume: draft });
+  if ($("#saved-mistakes")) $("#saved-mistakes").onclick = () => startQuiz(lesson, mistakes.items, { ia: mistakes.ia, review: true });
   $("#start-quiz-bottom").onclick = () => startQuiz(lesson, lesson.quiz);
   $("#ai-quiz").onclick = () => aiQuiz(lesson);
   $("#lesson-theory-toggle").onclick = () => {
@@ -3994,9 +4051,17 @@ async function aiQuiz(lesson) {
   }
 }
 
-function startQuiz(lesson, items, { ia = false, review = false } = {}) {
+function startQuiz(lesson, items, { ia = false, review = false, resume = null } = {}) {
   if (!items.length) return;
-  quiz = { lesson, items, i: 0, aciertos: 0, nose: 0, elegida: null, ia, review, missed: [] };
+  if (!resume && lessonSession(lesson.id) && !confirm("Tienes una práctica guardada de esta lección. ¿Sustituirla por una nueva? Tu mejor nota se conserva.")) return;
+  const answers = resume ? [...resume.answers] : [];
+  const i = resume?.i || 0;
+  quiz = {
+    lesson, items, i, answers, ia, review, elegida: answers[i] ?? null,
+    aciertos: answers.filter((answer, index) => answer === items[index].answer).length,
+    nose: answers.filter(answer => answer === NO_LO_SE).length,
+    missed: items.filter((item, index) => index < answers.length && answers[index] !== item.answer),
+  };
   $("#lesson-overview").hidden = true;
   $("#lesson-theory").hidden = true;
   $("#quiz-box").hidden = false;
@@ -4032,6 +4097,10 @@ function renderQuiz() {
       done: prev.done || pct >= 80,
       last: todayStr(),
     };
+    if (store.lessonSessions) delete store.lessonSessions[quiz.lesson.id];
+    if (!store.lessonMistakes || typeof store.lessonMistakes !== "object" || Array.isArray(store.lessonMistakes)) store.lessonMistakes = {};
+    if (quiz.missed.length) store.lessonMistakes[quiz.lesson.id] = { items: quiz.missed, ia: quiz.ia };
+    else delete store.lessonMistakes[quiz.lesson.id];
     registerStudyDay();
     save();
 
@@ -4062,6 +4131,7 @@ function renderQuiz() {
     return;
   }
 
+  saveLessonSession();
   const item = items[i];
   const respondida = elegida !== null;
   const acertada = respondida && elegida === item.answer;
@@ -4080,6 +4150,7 @@ function renderQuiz() {
           <span style="width:${porcentaje}%"></span>
         </div>
       </div>
+      <p class="quiz-save-note">${sinSitio ? "No se ha podido guardar. Revisa el espacio del navegador." : "Avance guardado en este navegador"}</p>
       <h3 class="quiz-q" tabindex="-1">${esc(item.q)}</h3>
       <div class="options">
         ${item.options
@@ -4108,6 +4179,7 @@ function renderQuiz() {
     $$("[data-opt]", box).forEach((b) => {
       b.onclick = () => {
         quiz.elegida = Number(b.dataset.opt);
+        quiz.answers[quiz.i] = quiz.elegida;
         if (quiz.elegida === item.answer) quiz.aciertos += 1;
         else quiz.missed.push(item);
         renderQuiz();
@@ -4115,6 +4187,7 @@ function renderQuiz() {
     });
     $("#nose").onclick = () => {
       quiz.elegida = NO_LO_SE;
+      quiz.answers[quiz.i] = NO_LO_SE;
       quiz.nose += 1;
       quiz.missed.push(item);
       renderQuiz();
