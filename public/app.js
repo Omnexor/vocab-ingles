@@ -4301,26 +4301,40 @@ function abrirLectura(id) {
   document.title = `${l.titulo} · Vocab`;
 
   box.innerHTML = `
-    <button class="btn-back" id="back-lecturas">← Lecturas</button>
-    <div class="view-head">
-      <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
-      <h2>${esc(l.titulo)}</h2>
-      <p class="muted">Toca una palabra para verla. Toca la frase para traducirla entera.</p>
+    <div class="reader-toolbar">
+      <div class="reader-toolbar-row">
+        <button class="btn-back" id="back-lecturas">← Lecturas</button>
+        <button class="reader-toggle" id="lect-todo" aria-pressed="false" aria-controls="reader-text">Traducir todo</button>
+      </div>
+      <div class="reader-location"><span id="reader-position">Frase 1 de ${l.frases.length}</span><span>${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span></div>
+      <div class="reader-track" aria-hidden="true"><span id="reader-fill"></span></div>
     </div>
-    <article class="lectura">
+    <div class="view-head">
+      <span class="eyebrow">${l.tipo === "cuento" ? "Un cuento en inglés" : "Inglés en contexto"}</span>
+      <h2>${esc(l.titulo)}</h2>
+      <p class="muted">Toca una palabra para consultar su significado. Traduce cada frase cuando lo necesites.</p>
+    </div>
+    <article class="lectura" id="reader-text" aria-label="Texto de la lectura">
       ${l.frases
         .map(
-          ([en, es], n) => `<p class="lect-frase" data-n="${n}">
-            <span class="lect-en" lang="en">${trocearFrase(en)}</span>
-            <button class="lect-audio" data-speak="${esc(en)}" aria-label="Escuchar la frase">🔊</button>
-            <em class="lect-es" hidden>${esc(es)}</em>
-          </p>`,
+          ([en, es], n) => `<section class="lect-frase" data-n="${n}" aria-label="Frase ${n + 1}">
+            <div class="reader-sentence-head">
+              <span class="reader-number" aria-hidden="true">${String(n + 1).padStart(2, "0")}</span>
+              <div class="reader-sentence-actions">
+                <button class="reader-translate" data-translate="${n}" aria-expanded="false" aria-controls="reader-es-${n}" aria-label="Traducir frase ${n + 1}">Traducir</button>
+                <button class="lect-audio" data-speak="${esc(en)}" aria-label="Escuchar frase ${n + 1}">${TODAY_TOOL_ICONS.listen}</button>
+              </div>
+            </div>
+            <p class="lect-en" lang="en">${trocearFrase(en)}</p>
+            <p class="lect-es" id="reader-es-${n}" lang="es" hidden>${esc(es)}</p>
+          </section>`,
         )
         .join("")}
     </article>
-    <div class="row-actions">
-      <button class="btn btn-ghost" id="lect-todo">Ver todas las traducciones</button>
-      <button class="btn" id="lect-hecha">✓ Marcar como leída</button>
+    <div class="reader-finish">
+      <p>Has llegado al final</p>
+      <span>Vuelve a las frases que quieras practicar o guarda esta lectura como terminada.</span>
+      <button class="btn" id="lect-hecha">✓ ${store.lecturas?.[l.id] ? "Leída · volver a lecturas" : "Marcar como leída"}</button>
     </div>
     <div id="lect-pop" class="wordpop" hidden></div>`;
 
@@ -4334,7 +4348,7 @@ function abrirLectura(id) {
   $("#lect-todo").onclick = () => {
     const ocultas = $$(".lect-es", box).some((e) => e.hidden);
     $$(".lect-es", box).forEach((e) => (e.hidden = !ocultas));
-    $("#lect-todo").textContent = ocultas ? "Ocultar traducciones" : "Ver todas las traducciones";
+    sincronizarTraducciones();
   };
 
   $("#lect-hecha").onclick = () => {
@@ -4360,16 +4374,65 @@ function abrirLectura(id) {
       mostrarPalabra(palabra.textContent);
       return;
     }
+    const traducir = e.target.closest("[data-translate]");
+    if (traducir) {
+      const traduccion = $(".lect-es", traducir.closest(".lect-frase"));
+      traduccion.hidden = !traduccion.hidden;
+      sincronizarTraducciones();
+      return;
+    }
     if (e.target.closest(".lect-audio") || e.target.closest("button")) return;
     const frase = e.target.closest(".lect-frase");
     if (frase) {
       const es = $(".lect-es", frase);
       es.hidden = !es.hidden;
+      sincronizarTraducciones();
     }
   };
 
   irAlInicio(box);
+  programarPosicionLectura();
 }
+
+/** Los controles individuales y el general reflejan la misma visibilidad. */
+function sincronizarTraducciones() {
+  const box = $("#lectura-detalle");
+  const frases = $$(".lect-frase", box);
+  frases.forEach((frase, n) => {
+    const visible = !$(".lect-es", frase).hidden;
+    const boton = $("[data-translate]", frase);
+    boton.setAttribute("aria-expanded", String(visible));
+    boton.setAttribute("aria-label", `${visible ? "Ocultar traducción de" : "Traducir"} frase ${n + 1}`);
+    boton.textContent = visible ? "Ocultar" : "Traducir";
+    frase.classList.toggle("is-translated", visible);
+  });
+  const todas = frases.length > 0 && frases.every((frase) => !$(".lect-es", frase).hidden);
+  $("#lect-todo").setAttribute("aria-pressed", String(todas));
+  $("#lect-todo").textContent = todas ? "Ocultar todo" : "Traducir todo";
+  programarPosicionLectura();
+}
+
+// Indica posición en el texto, sin marcar la lectura como terminada por scroll.
+let readerFrame = null;
+function programarPosicionLectura() {
+  if (readerFrame !== null) return;
+  readerFrame = requestAnimationFrame(() => {
+    readerFrame = null;
+    const box = $("#lectura-detalle");
+    if (!lecturaAbierta || box.hidden || !box.closest(".view.is-active")) return;
+    const frases = $$(".lect-frase", box);
+    if (!frases.length) return;
+    const linea = Math.max($(".reader-toolbar", box).getBoundingClientRect().bottom + 24, innerHeight * .4);
+    let actual = 0;
+    frases.forEach((frase, n) => {
+      if (frase.getBoundingClientRect().top <= linea) actual = n;
+    });
+    $("#reader-position").textContent = `Frase ${actual + 1} de ${frases.length}`;
+    $("#reader-fill").style.width = `${((actual + 1) / frases.length) * 100}%`;
+  });
+}
+addEventListener("scroll", programarPosicionLectura, { passive: true });
+addEventListener("resize", programarPosicionLectura);
 
 function cerrarPop() {
   const pop = $("#lect-pop");
