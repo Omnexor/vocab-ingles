@@ -953,12 +953,6 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 .speak-del { color: var(--muted); margin-left: 4px; }
 .speak-del:hover { border-color: var(--danger); color: var(--danger); }
 
-.tap-hint {
-  margin: 12px 0 0;
-  font-size: 13px;
-  color: var(--accent);
-  font-weight: 600;
-}
 .card.is-tapada { cursor: pointer; }
 .card.is-tapada:hover { border-color: var(--accent); }
 
@@ -1242,13 +1236,6 @@ main { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 20px; }
   font-size: 15px;
 }
 .example em { display: block; color: var(--muted); font-style: normal; margin-top: 2px; }
-
-.hidden-until-reveal {
-  filter: blur(8px);
-  user-select: none;
-  pointer-events: none;
-  transition: filter 0.25s ease;
-}
 
 .speak {
   border: 1px solid var(--line);
@@ -2995,16 +2982,31 @@ main { max-width: 1120px; padding-inline: 20px; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
   max-width: 680px;
+  position: static;
+  margin: 0 0 8px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 .today-actions .btn {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 9px;
-  min-height: 60px;
-  padding: 8px 10px;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
   text-align: left;
 }
+.today-actions .btn:first-child { border-color: transparent; }
+.today-actions .today-tool-icon { width: 24px; height: 24px; background: transparent; }
+.today-actions .today-tool-copy small { font-size: 12px; font-weight: 400; }
 .today-tool-icon {
   display: grid;
   place-items: center;
@@ -3037,11 +3039,14 @@ main { max-width: 1120px; padding-inline: 20px; }
   white-space: nowrap;
 }
 .today-actions #more-words {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
-  background: var(--accent-soft);
+  border-color: transparent;
+  background: transparent;
 }
-.today-actions #more-words .today-tool-icon { color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.today-actions #more-words .today-tool-icon { color: var(--muted); background: transparent; }
 .today-actions #toggle-tapar .today-tool-icon { background: transparent; }
+.today-actions #toggle-tapar[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.today-actions #toggle-tapar[aria-pressed="true"] .today-tool-copy b,
+.today-actions #toggle-tapar[aria-pressed="true"] .today-tool-icon { color: var(--accent); }
 
 @media (max-width: 719px) {
   .view[data-view="hoy"] .view-head { margin-bottom: 16px; }
@@ -3054,17 +3059,65 @@ main { max-width: 1120px; padding-inline: 20px; }
 
 @media (max-width: 420px) {
   .today-actions .btn {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    flex-direction: column;
     gap: 4px;
-    min-height: 64px;
-    padding: 7px 4px;
+    min-height: 56px;
+    padding: 8px 4px;
     text-align: center;
   }
   .today-tool-icon { width: 28px; height: 28px; border-radius: 9px; }
   .today-tool-icon svg { width: 17px; height: 17px; }
-  .today-tool-copy b { font-size: 11px; }
+  .today-tool-copy b { font-size: 12px; }
   .today-tool-copy small { display: none; }
+}
+
+/* Hoy: las palabras son el centro; practicar es un estado, no otra pantalla. */
+.today-mode-hint { max-width: 680px; margin: 0 0 16px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.today-mode-hint:empty { display: none; }
+.card-answer[hidden], .card-pron[hidden], .card-reveal[hidden], .card-recall-hint[hidden] { display: none; }
+.card-recall-hint { margin: 20px 0 12px; color: var(--muted); font-size: 14px; }
+.card-reveal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.card-reveal svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.source-note { margin-top: 24px; max-width: 680px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.source-note summary { min-height: 48px; padding-block: 12px; cursor: pointer; }
+.source-note p { margin: 0 0 16px; }
+.source-note code { overflow-wrap: anywhere; }
+#hoy-cards > .card { box-shadow: none; }
+#hoy-cards > .card::before { display: none; }
+#hoy-cards .word { font-weight: 700; letter-spacing: -.035em; }
+#hoy-cards .example { border: 0; border-radius: 12px; }
+#hoy-cards .example em { margin-top: 8px; }
+
+@media (max-width: 719px) {
+  body:has(.view[data-view="hoy"].is-active) .daybar { margin-bottom: 20px; box-shadow: none; background: var(--card); }
+  body:has(.view[data-view="hoy"].is-active) .daybar::before,
+  body:has(.view[data-view="hoy"].is-active) .daybar::after { display: none; }
+  .view[data-view="hoy"] .view-head h2 { font-size: 28px; font-weight: 700; letter-spacing: -.035em; }
+  #hoy-cards .word { font-size: 32px; line-height: 1.15; }
+  #hoy-cards > .card { padding: 20px 16px; border-radius: 16px; }
+  #hoy-cards .translation { font-size: 20px; font-weight: 600; }
+  #hoy-cards .card-top { flex-wrap: wrap; }
+  #hoy-cards .card-top > div:first-child { flex: 1 1 160px; }
+  #hoy-cards .card-tools { margin-left: auto; }
+  .topbar .icon-btn, .topbar.is-compact .icon-btn { width: 44px; height: 44px; }
+  .daily-plan .stepper button { min-width: 44px; min-height: 44px; }
 }
 
 /* ---------- Biblioteca: búsqueda y filtros táctiles ---------- */

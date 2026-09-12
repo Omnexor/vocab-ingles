@@ -10,14 +10,16 @@ const output = resolve(process.env.MOBILE_OUTPUT || '../../mobile-review');
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 try {
-  for (const [width, height, colorScheme] of [[320, 740, 'light'], [360, 800, 'light'], [390, 844, 'light'], [430, 932, 'dark']]) {
+  for (const [width, height, colorScheme] of [[320, 740, 'light'], [360, 800, 'light'], [390, 844, 'light'], [430, 932, 'dark'], [1280, 900, 'light']]) {
     const context = await browser.newContext({
-      viewport: { width, height }, isMobile: true, hasTouch: true,
+      viewport: { width, height }, isMobile: width < 720, hasTouch: width < 720,
       deviceScaleFactor: 1, colorScheme, reducedMotion: width === 360 ? 'no-preference' : 'reduce', serviceWorkers: 'block',
     });
     const page = await context.newPage();
     const errors = [];
     const httpErrors = [];
+    let generationRequests = 0;
+    page.on('request', request => { if (request.url().endsWith('/api/generate')) generationRequests++; });
     page.on('pageerror', error => errors.push(error.message));
     page.on('response', response => {
       if (response.status() >= 400) httpErrors.push(`${response.status()} ${response.url()}`);
@@ -29,6 +31,51 @@ try {
     await page.locator('#listen-all').waitFor();
     await noOverflow();
     await capture('home');
+    const practice = page.locator('#toggle-tapar');
+    const firstCard = page.locator('#hoy-cards .card[data-id]').first();
+    const firstWord = await firstCard.locator('.word').innerText();
+    const requestsBeforePractice = generationRequests;
+    await practice.click();
+    assert.equal(await practice.getAttribute('aria-pressed'), 'true');
+    assert.equal(await practice.evaluate(element => element === document.activeElement), true);
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), false);
+    assert.equal(await firstCard.locator('.card-pron').isVisible(), false);
+    const reveal = firstCard.locator('[data-reveal]');
+    await reveal.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), true);
+    assert.equal(await reveal.getAttribute('aria-expanded'), 'true');
+    assert.equal(await reveal.evaluate(element => element === document.activeElement), true);
+    await page.keyboard.press('Space');
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), false);
+    const revealSize = await reveal.boundingBox();
+    assert.ok(revealSize.width >= 44 && revealSize.height >= 44);
+    await capture('practice');
+    await firstCard.locator('.word').click();
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), true);
+    await practice.click();
+    assert.equal(await practice.getAttribute('aria-pressed'), 'false');
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), true);
+    assert.equal(await reveal.isVisible(), false);
+    assert.equal(await firstCard.locator('.word').innerText(), firstWord);
+    assert.equal(generationRequests, requestsBeforePractice, 'Practice must not fetch another batch');
+    await page.locator('#plan-toggle').click();
+    assert.equal(await page.locator('#plan-config').isVisible(), true);
+    await noOverflow();
+    await page.locator('#plan-toggle').click();
+    assert.equal(await page.locator('#plan-config').isVisible(), false);
+    await practice.click();
+    await page.reload();
+    await page.locator('#listen-all').waitFor();
+    assert.equal(await practice.getAttribute('aria-pressed'), 'true', 'Practice preference survives reload');
+    assert.equal(await firstCard.locator('.card-answer').isVisible(), false);
+    const previousCards = await page.locator('#hoy-cards .card[data-id]').count();
+    await page.locator('#more-words').click();
+    await page.waitForFunction(count => document.querySelectorAll('#hoy-cards .card[data-id]').length > count, previousCards);
+    const addedCard = page.locator('#hoy-cards .card[data-id]').last();
+    assert.equal(await addedCard.locator('.card-answer').isVisible(), false);
+    assert.equal(await addedCard.locator('[data-reveal]').isVisible(), true);
+    await practice.click();
     await page.getByRole('button', { name: 'Aprender', exact: true }).click();
     await page.locator('#modo-lecturas').click();
     await noOverflow();

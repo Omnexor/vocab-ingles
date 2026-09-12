@@ -582,7 +582,6 @@ function toast(msg) {
 }
 
 function wordCard(w, { blurred = false, position = null, total = null } = {}) {
-  const hide = blurred ? " hidden-until-reveal" : "";
   const hasPosition = Number.isInteger(position) && Number.isInteger(total);
   const positionMarkup = hasPosition
     ? `<span class="card-position" aria-hidden="true"><b>${position}</b><span>/${total}</span></span>`
@@ -594,7 +593,7 @@ function wordCard(w, { blurred = false, position = null, total = null } = {}) {
         <div>
           <p class="word" lang="en">${esc(w.en)}</p>
           <div class="meta-row">
-            <span class="pron${hide}">${esc(w.pron || "—")}</span>
+            <span class="pron card-pron" ${blurred ? "hidden" : ""}>${esc(w.pron || "—")}</span>
             ${w.cat && w.cat !== "mixto" ? `<span class="cat-chip">${esc(nombreCategoria(w.cat))}</span>` : ""}
           </div>
         </div>
@@ -603,14 +602,46 @@ function wordCard(w, { blurred = false, position = null, total = null } = {}) {
           <button class="speak" data-speak="${esc(w.en)}" title="Escuchar" aria-label="Escuchar ${esc(w.en)}">${TODAY_TOOL_ICONS.listen}</button>
         </div>
       </div>
-      ${blurred ? `<p class="tap-hint">Toca para ver la traducción</p>` : ""}
-      <p class="translation${hide}">${esc(w.es)}</p>
+      ${hasPosition ? `<p class="card-recall-hint" ${blurred ? "" : "hidden"}>¿Recuerdas qué significa?</p>
+        <button class="card-reveal" data-reveal aria-expanded="${!blurred}" aria-controls="answer-${esc(w.id)}" ${blurred ? "" : "hidden"}>${TODAY_TOOL_ICONS.show}<span>Ver traducción</span></button>` : ""}
+      <div class="card-answer" ${hasPosition ? `id="answer-${esc(w.id)}"` : ""} ${blurred ? "hidden" : ""}>
+      <p class="translation">${esc(w.es)}</p>
       ${
         w.example
-          ? `<p class="example${hide}">${esc(w.example)}<em>${esc(w.exampleEs)}</em></p>`
+          ? `<p class="example" lang="en">${esc(w.example)}<em lang="es">${esc(w.exampleEs)}</em></p>`
           : ""
       }
+      </div>
     </article>`;
+}
+
+function setCardRevealed(card, revealed) {
+  card.classList.toggle("is-tapada", !revealed);
+  $(".card-answer", card).hidden = !revealed;
+  $(".card-pron", card).hidden = !revealed;
+  const hint = $(".card-recall-hint", card);
+  if (hint) hint.hidden = revealed;
+  const button = $("[data-reveal]", card);
+  if (button) {
+    button.setAttribute("aria-expanded", String(revealed));
+    button.innerHTML = `${TODAY_TOOL_ICONS[revealed ? "hide" : "show"]}<span>${revealed ? "Ocultar traducción" : "Ver traducción"}</span>`;
+  }
+}
+
+function syncPracticeMode() {
+  const practice = !!store.settings.tapar;
+  const button = $("#toggle-tapar");
+  if (button) {
+    button.setAttribute("aria-pressed", String(practice));
+    button.innerHTML = todayTool("hide", "Practicar", practice ? "activado" : "sin respuestas");
+  }
+  $("#hoy-mode-hint").textContent = practice
+    ? "Intenta recordar. Después, toca Ver traducción."
+    : "Escucha, lee el ejemplo y activa Practicar para ponerte a prueba.";
+  $$("#hoy-cards .card[data-id]").forEach(card => {
+    setCardRevealed(card, !practice);
+    $("[data-reveal]", card).hidden = !practice;
+  });
 }
 
 /** Mantiene correctos los contadores si se añaden palabras sin repintar todo. */
@@ -725,6 +756,8 @@ async function renderHoy() {
   cards.innerHTML = wordSkeletons();
   cards.setAttribute("aria-busy", "true");
   actions.innerHTML = "";
+  $("#hoy-source").innerHTML = "";
+  $("#hoy-mode-hint").textContent = "";
   sub.textContent = "Preparando tus palabras…";
 
   const { words, source } = await ensureDailyBatch();
@@ -759,14 +792,16 @@ async function renderHoy() {
 
   const aviso =
     source === "seed"
-      ? `<div class="callout callout-tip compacto">
-           <b>Lista local</b>
-           <p>Para palabras nuevas cada día, pon tu <code>ANTHROPIC_API_KEY</code> en
-           <code>.env.local</code>. Lo demás funciona igual.</p>
-         </div>`
+      ? `<details class="source-note">
+           <summary>Estás usando la colección incluida</summary>
+           <p>Puedes escuchar, practicar y guardar tu progreso con estas palabras.
+           Para generar vocabulario nuevo con IA, configura <code>ANTHROPIC_API_KEY</code>
+           en <code>.env.local</code> del servidor.</p>
+         </details>`
       : "";
 
-  cards.innerHTML = aviso + words.map((w, indice) => wordCard(w, {
+  $("#hoy-source").innerHTML = aviso;
+  cards.innerHTML = words.map((w, indice) => wordCard(w, {
     blurred: store.settings.tapar,
     position: indice + 1,
     total: words.length,
@@ -781,7 +816,9 @@ async function renderHoy() {
   actions.innerHTML = `
     <button class="btn btn-ghost" id="listen-all">${todayTool("listen", "Escuchar", `${words.length} ${words.length === 1 ? "palabra" : "palabras"}`)}</button>
     <button class="btn btn-ghost" id="more-words">${todayTool("add", faltanObjetivo ? "Completar" : "Añadir", faltanObjetivo ? `${faltanObjetivo} para el objetivo` : "más palabras")}</button>
-    <button class="btn btn-quiet" id="toggle-tapar">${todayTool(store.settings.tapar ? "show" : "hide", store.settings.tapar ? "Mostrar" : "Ocultar", "respuestas")}</button>`;
+    <button class="btn btn-quiet" id="toggle-tapar" aria-pressed="${!!store.settings.tapar}" aria-controls="hoy-cards" aria-describedby="hoy-mode-hint">${todayTool("hide", "Practicar", "sin respuestas")}</button>`;
+
+  syncPracticeMode();
 
   $("#listen-all").onclick = async () => {
     const btn = $("#listen-all");
@@ -800,8 +837,7 @@ async function renderHoy() {
   $("#toggle-tapar").onclick = () => {
     store.settings.tapar = !store.settings.tapar;
     save();
-    renderHoy();
-    toast(store.settings.tapar ? "Toca cada tarjeta para descubrirla" : "Traducciones a la vista");
+    syncPracticeMode();
   };
 
   updateChrome();
@@ -4706,12 +4742,15 @@ document.addEventListener("click", (e) => {
   const game = e.target.closest("[data-juego]");
   if (game) abrirJuego(game.dataset.juego);
 
-  // Tocar una tarjeta tapada la descubre.
+  const reveal = e.target.closest("[data-reveal]");
+  if (reveal) {
+    setCardRevealed(reveal.closest(".card"), reveal.getAttribute("aria-expanded") !== "true");
+    return;
+  }
+  // El gesto de tocar la tarjeta sigue disponible, además del botón accesible.
   const tapada = e.target.closest(".card.is-tapada");
   if (tapada && !btn) {
-    tapada.classList.remove("is-tapada");
-    $$(".hidden-until-reveal", tapada).forEach((el) => el.classList.remove("hidden-until-reveal"));
-    $(".tap-hint", tapada)?.remove();
+    setCardRevealed(tapada, true);
   }
 
   const del = e.target.closest("[data-borrar]");
