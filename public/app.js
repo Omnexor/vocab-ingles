@@ -3779,6 +3779,7 @@ function lessonProgress(id) {
 
 async function renderLeccionesIndex() {
   await cargarLecciones();
+  quiz = null;
   $("#leccion-detalle").hidden = true;
   $("#lectura-detalle").hidden = true;
   $("#lecciones-index").hidden = false;
@@ -3795,9 +3796,19 @@ async function renderLeccionesIndex() {
   $("#count-lecturas").textContent = `${textosLeidos}/${TEXTOS.length}`;
   renderLecturasIndex();
 
+  const siguiente = LESSONS.find(l => !lessonProgress(l.id).done && lessonProgress(l.id).last)
+    || LESSONS.find(l => !lessonProgress(l.id).done);
+  $("#learning-next").innerHTML = siguiente ? `
+    <div class="learning-next-card">
+      <span class="eyebrow">Tu siguiente paso</span>
+      <h3>${esc(siguiente.title)}</h3>
+      <p>${lessonProgress(siguiente.id).last ? "Vuelve a practicar esta lección. Al terminar podrás repasar solo lo que te cueste." : esc(siguiente.goal)}</p>
+      <button class="btn" data-lesson="${siguiente.id}">${lessonProgress(siguiente.id).last ? "Retomar lección" : "Empezar lección"}</button>
+    </div>` : `<div class="learning-next-card"><h3>Has superado todas las lecciones</h3><p>Elige una para volver a practicar o aplica lo aprendido en Lecturas.</p></div>`;
+
   $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
     const p = lessonProgress(l.id);
-    const estado = p.done ? `Superada · ${p.best}%` : p.best ? `Mejor intento · ${p.best}%` : "Sin empezar";
+    const estado = p.done ? `Superada · ${p.best}%` : p.last ? `Mejor intento · ${p.best}%` : "Sin empezar";
     return `<button class="lesson-card" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(estado)}">
       <span class="lesson-tag">${esc(l.tag)}</span>
       <span class="lesson-title">${esc(l.title)}</span>
@@ -3889,19 +3900,28 @@ async function openLeccion(id) {
   $("#lecciones-index").hidden = true;
   const box = $("#leccion-detalle");
   box.hidden = false;
+  box.dataset.lessonId = id;
+  quiz = null;
   document.title = `${lesson.title} · Vocab`;
 
   box.innerHTML = `
-    <button class="btn-back" id="back-lecciones">← Lecciones</button>
+    <div class="lesson-toolbar">
+      <button class="btn-back" id="back-lecciones">← Aprender</button>
+      <button class="lesson-theory-toggle" id="lesson-theory-toggle" aria-expanded="false" aria-controls="lesson-theory" hidden>Consultar teoría</button>
+    </div>
     <div class="view-head">
       <span class="lesson-tag">${esc(lesson.tag)}</span>
       <h2>${esc(lesson.title)}</h2>
       <p class="muted">${esc(lesson.goal)}</p>
     </div>
-    <article class="lesson-body">${lesson.blocks.map(blockHtml).join("")}</article>
-    <div class="row-actions">
-      <button class="btn" id="start-quiz">${p.done ? "Practicar otra vez" : "Practicar"}</button>
-      <button class="btn btn-ghost" id="ai-quiz">Ejercicios nuevos</button>
+    <div class="lesson-overview" id="lesson-overview">
+      <p><b>${lesson.quiz.length} ejercicios</b> · Acierta al menos el 80% para superar la lección.</p>
+      <span>Lee la explicación o comprueba lo que ya sabes. Podrás consultar la teoría y repasar tus errores.</span>
+      <button class="btn" id="start-quiz">${p.done ? "Practicar otra vez" : "Empezar práctica"}</button>
+    </div>
+    <div id="lesson-theory">
+      <article class="lesson-body">${lesson.blocks.map(blockHtml).join("")}</article>
+      <div class="row-actions lesson-extra-actions"><button class="btn" id="start-quiz-bottom">Practicar lo aprendido</button><button class="btn btn-ghost" id="ai-quiz">Ejercicios nuevos con IA</button></div>
     </div>
     <div id="quiz-box"></div>`;
 
@@ -3910,7 +3930,17 @@ async function openLeccion(id) {
     renderLeccionesIndex();
   };
   $("#start-quiz").onclick = () => startQuiz(lesson, lesson.quiz);
+  $("#start-quiz-bottom").onclick = () => startQuiz(lesson, lesson.quiz);
   $("#ai-quiz").onclick = () => aiQuiz(lesson);
+  $("#lesson-theory-toggle").onclick = () => {
+    const theory = $("#lesson-theory");
+    theory.hidden = !theory.hidden;
+    $("#quiz-box").hidden = !theory.hidden;
+    $("#lesson-theory-toggle").setAttribute("aria-expanded", String(!theory.hidden));
+    $("#lesson-theory-toggle").textContent = theory.hidden ? "Consultar teoría" : quiz.i >= quiz.items.length ? "Volver al resultado" : "Volver al ejercicio";
+    if (theory.hidden) focusLessonQuiz();
+    else theory.scrollIntoView({ block: "start", behavior: "instant" });
+  };
 
   irAlInicio(box);
 }
@@ -3951,7 +3981,8 @@ async function aiQuiz(lesson) {
       return Number.isInteger(e.answer) && e.answer >= 0 && e.answer < e.options.length;
     });
     if (!utiles.length) throw new Error("No llegó ningún ejercicio");
-    startQuiz(lesson, utiles, { ia: true });
+    const detail = $("#leccion-detalle");
+    if (!detail.hidden && detail.closest(".view.is-active") && detail.dataset.lessonId === lesson.id) startQuiz(lesson, utiles, { ia: true });
   } catch (err) {
     // Los mensajes propios están en español y explican qué pasó; los del
     // navegador («Failed to fetch») no le dicen nada a nadie.
@@ -3959,13 +3990,31 @@ async function aiQuiz(lesson) {
     toast(nuestro ? err.message : "No se pudieron generar los ejercicios. Inténtalo otra vez.");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Ejercicios nuevos";
+    btn.textContent = "Ejercicios nuevos con IA";
   }
 }
 
-function startQuiz(lesson, items, { ia = false } = {}) {
-  quiz = { lesson, items, i: 0, aciertos: 0, nose: 0, elegida: null, ia };
+function startQuiz(lesson, items, { ia = false, review = false } = {}) {
+  if (!items.length) return;
+  quiz = { lesson, items, i: 0, aciertos: 0, nose: 0, elegida: null, ia, review, missed: [] };
+  $("#lesson-overview").hidden = true;
+  $("#lesson-theory").hidden = true;
+  $("#quiz-box").hidden = false;
+  $(".lesson-extra-actions").hidden = true;
+  $("#lesson-theory-toggle").hidden = false;
+  $("#lesson-theory-toggle").setAttribute("aria-expanded", "false");
+  $("#lesson-theory-toggle").textContent = "Consultar teoría";
   renderQuiz();
+}
+
+function focusLessonQuiz() {
+  requestAnimationFrame(() => {
+    const box = $("#quiz-box");
+    if (!box || box.hidden || $("#leccion-detalle").hidden || !box.closest(".view.is-active")) return;
+    const target = $(".explain, .quiz-q, .lesson-result-title", box);
+    target?.focus({ preventScroll: true });
+    (target?.matches(".explain") ? target : box).scrollIntoView({ block: "start", behavior: "instant" });
+  });
 }
 
 function renderQuiz() {
@@ -3978,7 +4027,7 @@ function renderQuiz() {
   if (i >= items.length) {
     const pct = Math.round((quiz.aciertos / items.length) * 100);
     const prev = lessonProgress(quiz.lesson.id);
-    store.lessons[quiz.lesson.id] = {
+    if (!quiz.review) store.lessons[quiz.lesson.id] = {
       best: Math.max(prev.best, pct),
       done: prev.done || pct >= 80,
       last: todayStr(),
@@ -3986,23 +4035,30 @@ function renderQuiz() {
     registerStudyDay();
     save();
 
+    const nextLesson = LESSONS.find(l => l.id !== quiz.lesson.id && !lessonProgress(l.id).done);
+    const canContinue = !quiz.review && pct >= 80 && nextLesson;
+
     box.innerHTML = `
       <div class="card quiz-result" aria-live="polite">
-        <p class="result-emoji">${pct >= 80 ? "🎉" : pct >= 50 ? "👍" : "💪"}</p>
+        <h3 class="lesson-result-title" tabindex="-1">${quiz.review ? "Repaso de errores terminado" : pct >= 80 ? "Lección superada" : "Vamos a reforzar lo aprendido"}</h3>
         <p class="result-score">${quiz.aciertos} de ${items.length} · ${pct}%</p>
-        <p class="muted">${pct >= 80 ? "Lección superada." : "Repasa la teoría y vuelve a intentarlo."}${
+        <p class="muted">${quiz.review ? "Este repaso no cambia tu nota. Haz la prueba completa para comprobar la lección." : quiz.missed.length ? "Puedes volver a intentar solo los ejercicios que fallaste o marcaste como No lo sé." : "Has acertado todos los ejercicios. Puedes continuar con otra lección."}${
           quiz.nose ? ` · ${quiz.nose} ${quiz.nose === 1 ? "no la sabías" : "no las sabías"}` : ""
         }</p>
         <div class="row-actions">
-          <button class="btn" id="retry-quiz">Repetir</button>
-          <button class="btn btn-ghost" id="more-quiz">Ejercicios nuevos</button>
+          ${quiz.missed.length ? `<button class="btn" id="review-mistakes">Repasar ${quiz.missed.length} ${quiz.missed.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
+          ${canContinue ? `<button class="btn ${quiz.missed.length ? "btn-ghost" : ""}" id="next-lesson">Siguiente lección</button>` : ""}
+          <button class="btn ${quiz.missed.length || canContinue ? "btn-ghost" : ""}" id="retry-quiz">Prueba completa</button>
+          <button class="btn btn-ghost" id="finish-lesson">Volver a Aprender</button>
         </div>
       </div>`;
 
     $("#retry-quiz").onclick = () => startQuiz(quiz.lesson, quiz.lesson.quiz);
-    $("#more-quiz").onclick = () => aiQuiz(quiz.lesson);
+    if ($("#review-mistakes")) $("#review-mistakes").onclick = () => startQuiz(quiz.lesson, quiz.missed, { ia: quiz.ia, review: true });
+    if ($("#next-lesson")) $("#next-lesson").onclick = () => openLeccion(nextLesson.id);
+    $("#finish-lesson").onclick = () => { quiz = null; renderLeccionesIndex(); };
     updateChrome();
-    box.scrollIntoView({ behavior: "smooth", block: "center" });
+    focusLessonQuiz();
     return;
   }
 
@@ -4018,13 +4074,13 @@ function renderQuiz() {
       <div class="quiz-progress-wrap">
         <div class="quiz-progress-meta">
           <span>Ejercicio <b>${i + 1}</b> de ${items.length}</span>
-          <span>${quiz.ia ? "Generado ahora" : pendientes ? `${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : "Último"}</span>
+          <span>${quiz.review ? "Repaso de errores" : quiz.ia ? "Generado ahora" : pendientes ? `${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : "Último"}</span>
         </div>
         <div class="quiz-progress" role="progressbar" aria-label="Progreso de los ejercicios" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${porcentaje}">
           <span style="width:${porcentaje}%"></span>
         </div>
       </div>
-      <p class="quiz-q">${esc(item.q)}</p>
+      <h3 class="quiz-q" tabindex="-1">${esc(item.q)}</h3>
       <div class="options">
         ${item.options
           .map((opt, idx) => {
@@ -4038,9 +4094,10 @@ function renderQuiz() {
       ${respondida ? "" : `<button class="btn btn-nose" id="nose"><span class="nose-icon" aria-hidden="true">?</span>No lo sé</button>`}
       ${
         respondida
-          ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
+          ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}" tabindex="-1" aria-live="polite">
                <b class="feedback-title"><span class="feedback-icon" aria-hidden="true">${acertada ? "✓" : noLaSabia ? "?" : "!"}</span>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(item.options[item.answer])}` : "No exactamente"}</b>
                <p>${esc(item.why || "")}</p>
+               ${!acertada && !noLaSabia ? `<p><b>Respuesta correcta:</b> ${esc(item.options[item.answer])}</p>` : ""}
              </div>
              <button class="btn" id="next-q">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
           : ""
@@ -4052,12 +4109,14 @@ function renderQuiz() {
       b.onclick = () => {
         quiz.elegida = Number(b.dataset.opt);
         if (quiz.elegida === item.answer) quiz.aciertos += 1;
+        else quiz.missed.push(item);
         renderQuiz();
       };
     });
     $("#nose").onclick = () => {
       quiz.elegida = NO_LO_SE;
       quiz.nose += 1;
+      quiz.missed.push(item);
       renderQuiz();
     };
   } else {
@@ -4067,6 +4126,7 @@ function renderQuiz() {
       renderQuiz();
     };
   }
+  focusLessonQuiz();
 }
 
 /* ------------------------------------------------------------------ *
@@ -4913,8 +4973,10 @@ $("#btn-reset").addEventListener("click", () => {
  */
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea, select")) return;
+  if ((e.key === "Enter" || e.key === " ") && e.target.closest("button, summary, a")) return;
   const vista = $(".view.is-active");
   if (!vista) return;
+  if (vista.dataset.view === "lecciones" && (!quiz || $("#quiz-box")?.hidden || $("#leccion-detalle").hidden)) return;
 
   const explorarVisible =
     $('.view[data-view="lista"]').classList.contains("is-active") && listaModo === "explorar";
