@@ -18,12 +18,24 @@ Los borradores se guardan en `phraseDrafts` por identificador. Recargar conserva
 
 Los campos nuevos conservan los datos anteriores, viajan en la copia de seguridad general y funcionan sin conexión después de cargar la app. Los marcadores inválidos se ignoran y los campos de texto solo muestran cadenas.
 
+## Comprensión de lecturas
+
+Las 14 lecturas y cuentos incluyen tres preguntas cada uno (42 en total). Primero se comprueba la idea principal; después, un detalle y otra pista, significado contextual o inferencia. Las preguntas están redactadas en español para separar la comprensión del texto inglés de la dificultad de entender la consigna.
+
+Antes de contestar se puede consultar el texto original y sus traducciones. Esa respuesta queda identificada como apoyada; abrir la explicación después de responder no cambia la clasificación. Cada devolución cita las frases originales que justifican la respuesta, con su traducción. «No lo sé» tiene un registro propio, distinto de una elección incorrecta.
+
+`readingChecks` conserva el orden de las opciones, las respuestas, los apoyos y el primer resultado completo. Los reintentos mantienen ese primer resultado y avisan de que se repiten las mismas preguntas. Tres respuestas no certifican dominio ni retención: no conceden dominio gramatical ni marcan automáticamente el texto como leído. El marcador de lectura y el resumen personal se conservan mientras se practica.
+
+Las sesiones inválidas o de otra versión se reinician al entrar; un fallo de almacenamiento se avisa dentro del ejercicio. El módulo de preguntas forma parte del núcleo offline.
+
 ## Verificación
 
 Con el servidor local en el puerto 3000 y Playwright disponible, o `PLAYWRIGHT_MODULE` apuntando a su módulo:
 
 ```text
 node scripts/check-context-learning-ui.mjs
+node scripts/check-reading-practice.mjs
+node scripts/check-reading-comprehension-ui.mjs
 node scripts/check-mobile.mjs
 node scripts/check-learning-hub-ui.mjs
 node scripts/check-grammar-offline.mjs

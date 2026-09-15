@@ -10,6 +10,7 @@ assert.ok(files.includes('grammar-practice.js'));
 assert.ok(files.includes('game-learning.js'));
 assert.ok(files.includes('game-missions.js'));
 assert.ok(files.includes('game-audio.js'));
+assert.ok(files.includes('reading-practice.js'));
 const hash = createHash('sha256');
 for (const file of files) hash.update(await readFile(new URL(file, root)));
 const seal = hash.digest('hex').slice(0, 16);

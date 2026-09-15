@@ -11,6 +11,7 @@ import { PATH, isPronunciation, orderedLessons, prerequisites, prepareQuiz, shuf
 import { GAME_OBJECTIVES, reviewCards, dueCards, scheduleMistake, schedulePractice, answerReview, reviewStage, reviewExercise, reviewPlan, reviewSessionValid, gameSummary, spelling, assessDictation, reviewCorrect } from "./game-learning.js";
 import { MISSIONS, missionById, newMission, validMissionRun, missionQuestion, answerMission, advanceMission, missionSummary, missionCard, recommendMission } from "./game-missions.js";
 import { createGameAudio } from './game-audio.js';
+import { READING_QUESTIONS, newReadingCheck, validReadingCheck, readingCheckSummary, supportReadingCheck, answerReadingCheck, advanceReadingCheck } from './reading-practice.js';
 
 /* ------------------------------------------------------------------ *
  * Las lecciones se cargan aparte, y a propósito
@@ -72,6 +73,7 @@ const defaults = () => ({
   phraseDrafts: {}, // intentos propios; se comparan con un ejemplo, sin nota automática
   readingSessions: {}, // punto de lectura, no una medida de comprensión
   readingNotes: {}, // resumen personal de cada lectura
+  readingChecks: {}, // comprensión: respuestas, apoyos y primer intento
   lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
   gamesLast: {}, // id -> fecha de la última partida, para saber qué tienes olvidado
@@ -5152,6 +5154,89 @@ const trocearFrase = (frase) =>
     .map((t) => (/^[A-Za-z']+$/.test(t) ? `<button class="rword">${esc(t)}</button>` : esc(t)))
     .join("");
 
+function savedReadingCheck(id) {
+  const session = store.readingChecks?.[id];
+  return validReadingCheck(session, id) ? session : null;
+}
+
+function openReadingCheck(l) {
+  flushReadingProgress();
+  cerrarPop();
+  let session = savedReadingCheck(l.id) || newReadingCheck(l.id);
+  if (!session) return;
+  const box = $("#lectura-detalle");
+  const panel = $("#reading-check");
+  box.classList.add("is-checking");
+  panel.hidden = false;
+  const persist = () => {
+    if (!store.readingChecks || typeof store.readingChecks !== "object" || Array.isArray(store.readingChecks)) store.readingChecks = {};
+    store.readingChecks[l.id] = session;
+    save();
+  };
+  const storageNote = () => sinSitio ? "No se ha podido guardar. No cierres la página si quieres conservar este intento." : "Intento guardado en este navegador.";
+  const summary = s => `<dl class="reading-check-stats"><div><dt>Aciertos sin consultar</dt><dd>${s.independent}</dd></div><div><dt>Aciertos con el texto</dt><dd>${s.assisted}</dd></div><div><dt>Para reforzar</dt><dd>${s.wrong}</dd></div><div><dt>No lo sabía</dt><dd>${s.unknown}</dd></div></dl>`;
+  const focus = selector => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    $(selector, panel).focus({ preventScroll: true });
+  };
+  const render = () => {
+    const done = session.position === 3;
+    panel.innerHTML = `<div class="reading-check-toolbar"><button class="btn-back" id="reading-check-exit">← Volver al texto</button><span>${done ? "Completado" : `${session.position + 1} de 3`}</span></div>
+      <p class="eyebrow">${esc(l.titulo)} · Comprensión</p>
+      ${done ? `<h3 id="reading-check-title" tabindex="-1">Esto es lo que has comprendido</h3>
+        <p class="muted">Resultado de este intento. Consultar el texto es una ayuda válida; aquí queda diferenciada.</p>
+        ${summary(readingCheckSummary(session))}
+        <details class="reading-check-source"><summary>Ver el primer intento</summary>${summary(session.first || readingCheckSummary(session))}</details>
+        <p class="muted">Tres preguntas orientan tu práctica, pero no certifican el dominio del texto. Repetirás las mismas preguntas: vuelve a leer las frases que te costaron.</p>
+        <button class="btn" id="reading-check-retry">Volver a practicar</button>` : (() => {
+        const i = session.position, q = READING_QUESTIONS[l.id][i];
+        const answered = session.responses.length > i;
+        const response = session.responses[i];
+        const correct = answered && response !== null && session.order[i][response] === 0;
+        return `<span class="lesson-tag">${esc(q.kind)}</span><h3 id="reading-check-title" tabindex="-1">${esc(q.q)}</h3>
+          <p class="muted">Intenta recordar primero. Si necesitas ayuda, consulta el texto antes de responder.</p>
+          <details id="reading-check-source" class="reading-check-source"><summary>Consultar el texto</summary>
+            <p id="reading-check-support" class="muted">${session.helped[i] ? "Esta respuesta quedará registrada con apoyo del texto." : "Abrir el texto antes de responder registra el uso de apoyo."}</p>
+            ${l.frases.map(([en, es], n) => `<div class="reading-check-line"><span class="eyebrow">Frase ${n + 1}</span><p lang="en">${esc(en)}</p><details><summary>Traducción</summary><p>${esc(es)}</p></details></div>`).join("")}</details>
+          <div class="reading-check-options" role="group" aria-labelledby="reading-check-title">${session.order[i].map((option, n) => `<button data-reading-choice="${n}" ${answered ? "disabled" : ""} class="reading-check-option${answered && option === 0 ? " is-correct" : answered && n === response ? " is-wrong" : ""}"><span>${esc(q.options[option])}</span>${answered && option === 0 ? '<small>✓ Respuesta correcta</small>' : answered && n === response ? '<small>Tu respuesta · para reforzar</small>' : ""}</button>`).join("")}</div>
+          ${answered ? `<section class="reading-check-feedback" aria-labelledby="reading-feedback-title"><h4 id="reading-feedback-title" tabindex="-1">${response === null ? "Vamos a encontrar la respuesta" : correct ? session.helped[i] ? "Correcto, con apoyo del texto" : "Correcto, sin consultar" : "Revisa estas pistas del texto"}</h4><p>${esc(q.why)}</p>
+            ${q.lines.map(n => `<blockquote><span class="eyebrow">Frase ${n}</span><p lang="en">${esc(l.frases[n - 1][0])}</p><p class="muted">${esc(l.frases[n - 1][1])}</p></blockquote>`).join("")}
+            <button class="btn" id="reading-check-next">${i === 2 ? "Ver resultado" : "Siguiente pregunta"}</button></section>` : '<button class="btn btn-ghost" id="reading-check-unknown">No lo sé · ver explicación</button>'}`;
+      })()}
+      <p id="reading-check-save" class="practice-save-status" role="status">${storageNote()}</p>`;
+    $("#reading-check-exit").onclick = () => abrirLectura(l.id);
+    if (done) {
+      $("#reading-check-retry").onclick = () => {
+        session = newReadingCheck(l.id, session.first || readingCheckSummary(session));
+        persist(); render(); focus("#reading-check-title");
+      };
+      return;
+    }
+    $("#reading-check-source").ontoggle = event => {
+      if (!event.currentTarget.open) return;
+      const supported = supportReadingCheck(session);
+      if (supported === session) return;
+      session = supported; persist();
+      $("#reading-check-support").textContent = "Esta respuesta quedará registrada con apoyo del texto.";
+      $("#reading-check-save").textContent = storageNote();
+    };
+    const answer = choice => {
+      session = answerReadingCheck(session, choice);
+      persist(); render();
+      $("#reading-feedback-title").focus({ preventScroll: true });
+      $(".reading-check-feedback").scrollIntoView({ block: "start", behavior: "instant" });
+    };
+    $$("[data-reading-choice]", panel).forEach(button => { button.onclick = () => answer(Number(button.dataset.readingChoice)); });
+    if ($("#reading-check-unknown")) $("#reading-check-unknown").onclick = () => answer(null);
+    if ($("#reading-check-next")) $("#reading-check-next").onclick = () => {
+      session = advanceReadingCheck(session);
+      if (session.position === 3) registerStudyDay();
+      persist(); render(); focus("#reading-check-title"); updateChrome();
+    };
+  };
+  persist(); render(); focus("#reading-check-title");
+}
+
 function abrirLectura(id) {
   const l = getTexto(id);
   if (!l) return;
@@ -5165,6 +5250,7 @@ function abrirLectura(id) {
   $("#leccion-detalle").hidden = true;
   const box = $("#lectura-detalle");
   box.hidden = false;
+  box.classList.remove("is-checking");
   document.title = `${l.titulo} · Vocab`;
 
   box.innerHTML = `
@@ -5199,6 +5285,13 @@ function abrirLectura(id) {
         )
         .join("")}
     </article>
+    <section class="reading-check-intro" aria-labelledby="reading-check-intro-title">
+      <span class="eyebrow">Del texto a la comprensión</span>
+      <h3 id="reading-check-intro-title">Comprueba lo que entendiste</h3>
+      <p>Tres preguntas sobre la idea principal y las pistas del texto. Cada respuesta tiene una explicación y las frases que la justifican.</p>
+      <button class="btn" id="start-reading-check">${savedReadingCheck(l.id)?.position === 3 ? "Ver comprobación" : savedReadingCheck(l.id) ? "Continuar comprobación" : "Practicar comprensión"}</button>
+      <span class="muted">Puedes pausar y volver al texto cuando quieras.</span>
+    </section>
     <div class="reader-finish">
       <p>Quédate con la idea principal</p>
       <span>¿De qué trata el texto? Resúmelo en inglés o español con tus propias palabras. Es opcional y no recibe una nota automática.</span>
@@ -5207,8 +5300,10 @@ function abrirLectura(id) {
       <span id="reading-note-status" class="practice-save-status" role="status"></span>
       <button class="btn" id="lect-hecha">✓ ${store.lecturas?.[l.id] ? "Leída · volver a lecturas" : "Marcar como leída"}</button>
     </div>
+    <section id="reading-check" aria-label="Práctica de comprensión" hidden></section>
     <div id="lect-pop" class="wordpop" hidden></div>`;
 
+  $("#start-reading-check").onclick = () => openReadingCheck(l);
   $("#back-lecturas").onclick = returnToReadings;
   $("#reader-restart").onclick = () => {
     rememberReadingPosition(l, 0);
@@ -5309,7 +5404,7 @@ function programarPosicionLectura() {
   readerFrame = requestAnimationFrame(() => {
     readerFrame = null;
     const box = $("#lectura-detalle");
-    if (!lecturaAbierta || readerRestoring || box.hidden || !box.closest(".view.is-active")) return;
+    if (!lecturaAbierta || readerRestoring || box.hidden || box.classList.contains("is-checking") || !box.closest(".view.is-active")) return;
     const frases = $$(".lect-frase", box);
     if (!frases.length) return;
     const linea = $(".reader-toolbar", box).getBoundingClientRect().bottom + 24;
