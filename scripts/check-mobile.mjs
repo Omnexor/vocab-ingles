@@ -116,7 +116,7 @@ try {
     await capture('scrolled');
     await page.locator('#back-lecturas').click();
     assert.equal(await firstReading.isVisible(), true);
-    assert.match(await firstReading.innerText(), /Pendiente/);
+    assert.match(await firstReading.innerText(), /En curso/);
     await firstReading.click();
     assert.equal(await page.locator('.lect-es:visible').count(), 0);
     await page.locator('#lect-hecha').click();

@@ -684,6 +684,51 @@ h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.025em; }
 .frase-ejemplo em { display: block; margin-top: 3px; color: var(--muted); font-size: 13.5px; }
 
 /* En el juego las opciones son frases enteras: necesitan varias líneas. */
+.content-intro { margin-bottom: 20px; }
+.content-intro h3 { font-size: 22px; line-height: 1.3; letter-spacing: -.025em; }
+.content-intro p { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 64ch; }
+#panel-frases, #panel-lecturas { max-width: 960px; margin-inline: auto; }
+#chips-frases { margin-block: 16px 12px; }
+#chips-frases .chip { min-height: 44px; }
+#panel-frases .frase-card { cursor: default; padding: 20px; border-radius: 16px; box-shadow: none; }
+.phrase-card-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.phrase-card-actions .btn { flex: 1; min-height: 44px; padding: 8px; font-size: 13px; box-shadow: none; }
+.phrase-card-actions [data-phrase-practice] { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+#panel-frases .phrase-practice-card { border-color: var(--accent); display: grid; gap: 12px; }
+.phrase-practice-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.phrase-practice-top .eyebrow { margin: 0; }
+.phrase-practice-top .btn-back { position: static; margin: 0; min-height: 44px; padding: 8px; font-size: 12px; }
+.phrase-situation { margin: 0; font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: -.02em; scroll-margin-top: 144px; }
+.phrase-situation:focus, .phrase-model:focus { outline: none; }
+.phrase-practice-card > p { margin: 0; font-size: 14px; line-height: 1.6; }
+.phrase-practice-card label, .reader-finish label { font-size: 14px; font-weight: 650; }
+.phrase-practice-card textarea, .reader-finish textarea { width: 100%; min-height: 88px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--text); font: inherit; font-size: 16px; line-height: 1.5; resize: vertical; }
+.phrase-practice-actions { display: grid; gap: 8px; }
+.phrase-practice-actions .btn, .phrase-model .btn { min-height: 48px; box-shadow: none; }
+.practice-save-status { display: block; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.phrase-model { display: grid; gap: 12px; padding: 16px; border-radius: 12px; background: var(--accent-soft); scroll-margin-top: 144px; }
+.phrase-model p, .phrase-model .eyebrow { margin: 0; }
+.phrase-model p { font-size: 14px; line-height: 1.6; }
+.phrase-model .frase-en { font-size: 20px; }
+.reading-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+.reading-filters label { display: grid; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 650; }
+.reading-filters select { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 16px; }
+#lecturas-lista .lesson-state { white-space: normal; font-size: 12px; line-height: 1.5; }
+.reader-bookmark { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 8px; }
+.reader-bookmark > span { max-width: 24ch; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.reader-bookmark .btn-back { flex-shrink: 0; font-size: 12px; }
+#lectura-detalle .lect-frase:focus { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (min-width: 900px) {
+  #frases-lista .frase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .phrase-practice-card { grid-column: 1 / -1; }
+}
+@media (max-width: 719px) {
+  #panel-frases .frase-card { padding: 16px; }
+  .phrase-card-actions { gap: 4px; }
+  .phrase-card-actions .btn { font-size: 12px; }
+  .phrase-model { padding: 16px 12px; }
+}
+
 .option-frase {
   white-space: normal;
   text-align: left;

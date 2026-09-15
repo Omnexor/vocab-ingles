@@ -69,6 +69,9 @@ const defaults = () => ({
   lessonSessions: {}, // prácticas en curso, guardadas en este navegador
   lessonMistakes: {}, // ejercicios pendientes del último intento
   lessonNotes: {}, // frases propias: autoevaluación, no una nota automática
+  phraseDrafts: {}, // intentos propios; se comparan con un ejemplo, sin nota automática
+  readingSessions: {}, // punto de lectura, no una medida de comprensión
+  readingNotes: {}, // resumen personal de cada lectura
   lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
   gamesLast: {}, // id -> fecha de la última partida, para saber qué tienes olvidado
@@ -4798,12 +4801,21 @@ function cambiarModoAprender(modo) {
  * qué situación cabe y dónde está la trampa para quien viene del español.
  * ------------------------------------------------------------------ */
 
-let catFrase = "idioms";
+let catFrase = "all";
 let fraseAbierta = null;
+let phraseQuery = "";
+let phrasePractice = null;
+const phraseDraft = id => typeof store.phraseDrafts?.[id] === "string" ? store.phraseDrafts[id].slice(0, 500) : "";
+
+function savePhraseDraft(id, value) {
+  if (!store.phraseDrafts || typeof store.phraseDrafts !== "object" || Array.isArray(store.phraseDrafts)) store.phraseDrafts = {};
+  store.phraseDrafts[id] = value.slice(0, 500);
+  save();
+}
 
 function renderChipsFrases() {
   const cont = $("#chips-frases");
-  cont.innerHTML = CATEGORIAS_FRASES.map(
+  cont.innerHTML = [{ id: "all", nombre: "Todas", emoji: "" }, ...CATEGORIAS_FRASES].map(
     (c) =>
       `<button class="chip ${catFrase === c.id ? "is-active" : ""}" data-catfrase="${c.id}" aria-pressed="${catFrase === c.id}">${c.emoji} ${esc(c.nombre)}</button>`,
   ).join("");
@@ -4813,45 +4825,105 @@ function renderChipsFrases() {
       catFrase = b.dataset.catfrase;
       fraseAbierta = null;
       renderFrases();
+      $(`[data-catfrase="${catFrase}"]`).focus({ preventScroll: true });
     };
   });
 }
 
 function renderFrases() {
   renderChipsFrases();
-  const cat = CATEGORIAS_FRASES.find((c) => c.id === catFrase);
-  const suyas = FRASES.filter((f) => f.cat === catFrase);
+  const query = learningText(phraseQuery.trim());
+  const suyas = FRASES.filter(f => (catFrase === "all" || f.cat === catFrase)
+    && learningText(`${f.en} ${f.es} ${f.cuando} ${f.situacion} ${f.contexto || ""}`).includes(query));
+  $("#phrase-results").textContent = `${suyas.length} ${suyas.length === 1 ? "expresión" : "expresiones"}${phraseQuery.trim() ? ` para «${phraseQuery.trim()}»` : " para usar en contexto"}`;
+  $("#phrase-search").value = phraseQuery;
+  $("#phrase-search").oninput = event => { phraseQuery = event.target.value; renderFrases(); };
 
   // Las de situación van agrupadas por contexto (restaurante, aeropuerto…):
   // es como se buscan de verdad, cuando estás a punto de meterte en una.
   const contextos = contextosDe(catFrase);
-  const grupos = contextos.length
+  const grupos = catFrase === "all" ? CATEGORIAS_FRASES.map(c => ({ titulo: c.nombre, frases: suyas.filter(f => f.cat === c.id) })) : contextos.length
     ? contextos.map((ctx) => ({ titulo: ctx, frases: suyas.filter((f) => f.contexto === ctx) }))
     : [{ titulo: "", frases: suyas }];
 
   $("#frases-lista").innerHTML = `
-    <p class="frases-sub">${suyas.length} frases · ${esc(cat.pista)}</p>
     ${grupos
+      .filter(g => g.frases.length)
       .map(
         (g) => `
       ${g.titulo ? `<h3 class="frase-grupo">${esc(g.titulo)}</h3>` : ""}
       <div class="frase-grid">${g.frases.map(tarjetaFrase).join("")}</div>`,
       )
-      .join("")}`;
+      .join("")}${!suyas.length ? '<div class="learning-empty"><h4>No encontramos esa expresión</h4><p>Prueba con una situación o una palabra en inglés o español.</p><button class="btn btn-ghost" id="phrase-clear">Ver todas las expresiones</button></div>' : ""}`;
 
-  $$("#frases-lista [data-frase]").forEach((b) => {
-    b.onclick = (e) => {
-      if (e.target.closest("[data-speak]")) return; // el altavoz no abre ni cierra
-      fraseAbierta = fraseAbierta === b.dataset.frase ? null : b.dataset.frase;
+  const focusAction = (id, action) => $(`[data-frase="${id}"] [data-phrase-${action}]`)?.focus({ preventScroll: true });
+  $$("[data-phrase-toggle]").forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.phraseToggle;
+      fraseAbierta = fraseAbierta === id ? null : id;
       renderFrases();
+      focusAction(id, "toggle");
     };
   });
+  $$("[data-phrase-practice]").forEach(b => { b.onclick = () => {
+    phrasePractice = { id: b.dataset.phrasePractice, revealed: false };
+    renderFrases();
+    const heading = $(`[data-frase="${phrasePractice.id}"] .phrase-situation`);
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView({ block: "start", behavior: "instant" });
+  }; });
+  $$("[data-phrase-exit]").forEach(b => { b.onclick = () => {
+    const id = b.dataset.phraseExit;
+    phrasePractice = null;
+    renderFrases();
+    focusAction(id, "practice");
+  }; });
+  const input = $("#phrase-response");
+  if (input) input.oninput = () => {
+    savePhraseDraft(phrasePractice.id, input.value);
+    $("#phrase-save-status").textContent = sinSitio ? "No se ha podido guardar. Copia tu respuesta antes de salir." : "Borrador guardado en este navegador.";
+    if ($("#phrase-compare")) $("#phrase-compare").disabled = !input.value.trim();
+  };
+  const reveal = () => {
+    phrasePractice.revealed = true;
+    renderFrases();
+    $("#phrase-model").focus({ preventScroll: true });
+    $("#phrase-model").scrollIntoView({ block: "start", behavior: "instant" });
+  };
+  if ($("#phrase-compare")) $("#phrase-compare").onclick = reveal;
+  if ($("#phrase-skip")) $("#phrase-skip").onclick = reveal;
+  if ($("#phrase-retry")) $("#phrase-retry").onclick = () => {
+    savePhraseDraft(phrasePractice.id, "");
+    phrasePractice.revealed = false;
+    renderFrases();
+    $("#phrase-response").focus();
+  };
+  if ($("#phrase-clear")) $("#phrase-clear").onclick = () => { phraseQuery = ""; catFrase = "all"; renderFrases(); $("#phrase-search").focus(); };
+}
+
+function phrasePracticeHtml(f) {
+  const revealed = phrasePractice.revealed;
+  const draft = phraseDraft(f.id);
+  return `<article class="frase-card phrase-practice-card" data-frase="${esc(f.id)}">
+    <div class="phrase-practice-top"><span class="eyebrow">Inténtalo en contexto</span><button class="btn-back" data-phrase-exit="${esc(f.id)}">Cerrar práctica</button></div>
+    <h4 class="phrase-situation" tabindex="-1">${esc(f.situacion || f.es)}</h4>
+    <p class="muted">¿Qué dirías en inglés? Escribe una respuesta antes de mirar el ejemplo.</p>
+    <label for="phrase-response">Tu respuesta</label>
+    <textarea id="phrase-response" lang="en" rows="2" maxlength="500" spellcheck="false" autocomplete="off" placeholder="¿Cómo lo dirías?">${esc(draft)}</textarea>
+    <p id="phrase-save-status" class="practice-save-status" role="status">${sinSitio ? "No se ha podido guardar. Copia tu respuesta antes de salir." : draft ? "Tu borrador está guardado en este navegador." : "Puedes salir y continuar tu respuesta después."}</p>
+    ${!revealed ? `<div class="phrase-practice-actions"><button class="btn" id="phrase-compare" ${draft.trim() ? "" : "disabled"}>Comparar mi respuesta</button><button class="btn btn-ghost" id="phrase-skip">No lo sé · ver ejemplo</button></div>` : `<section class="phrase-model" id="phrase-model" tabindex="-1" aria-label="Ejemplo para comparar">
+      <span class="eyebrow">Una forma de decirlo</span><p class="frase-en" lang="en">${esc(f.en)}</p><p class="frase-pron">${esc(f.pron)}</p><p>${esc(f.es)}</p><button class="btn btn-ghost" data-speak="${esc(f.en)}">Escuchar el ejemplo</button>
+      <p><b>Fíjate en el contexto</b><br>${esc(f.cuando)}</p>${f.ojo ? `<p>${esc(f.ojo)}</p>` : ""}
+      <p class="muted">¿Tu respuesta comunica la misma idea y encaja en esta situación? Puede haber otras respuestas válidas. Esta comparación es una autoevaluación, sin nota automática.</p>
+      <button class="btn" id="phrase-retry">Intentar de nuevo sin el ejemplo</button></section>`}
+  </article>`;
 }
 
 function tarjetaFrase(f) {
+  if (phrasePractice?.id === f.id) return phrasePracticeHtml(f);
   const abierta = fraseAbierta === f.id;
   return `
-    <article class="frase-card ${abierta ? "is-open" : ""}" data-frase="${esc(f.id)}" role="button" tabindex="0" aria-expanded="${abierta}">
+    <article class="frase-card ${abierta ? "is-open" : ""}" data-frase="${esc(f.id)}">
       <div class="frase-head">
         <div class="frase-textos">
           ${f.mal ? `<p class="frase-mal"><s lang="en">${esc(f.mal)}</s></p>` : ""}
@@ -4861,9 +4933,10 @@ function tarjetaFrase(f) {
         </div>
         <button class="speak" data-speak="${esc(f.en)}" aria-label="Escuchar">🔊</button>
       </div>
+      <div class="phrase-card-actions"><button class="btn btn-ghost" data-phrase-toggle="${esc(f.id)}" aria-expanded="${abierta}" aria-controls="phrase-detail-${esc(f.id)}">${abierta ? "Ocultar explicación" : "Uso y ejemplos"}</button><button class="btn btn-ghost" data-phrase-practice="${esc(f.id)}">${phraseDraft(f.id) ? "Retomar intento" : "Practicar"} <span aria-hidden="true">→</span></button></div>
       ${
         abierta
-          ? `<div class="frase-detalle">
+          ? `<div class="frase-detalle" id="phrase-detail-${esc(f.id)}">
                ${f.literal ? `<p class="frase-literal"><b>Palabra por palabra:</b> ${esc(f.literal)} <em>— y por eso no se puede traducir así.</em></p>` : ""}
                <p><b>De dónde sale</b><br>${esc(f.porque)}</p>
                <p><b>Cuándo se dice</b><br>${esc(f.cuando)}</p>
@@ -4880,7 +4953,7 @@ function tarjetaFrase(f) {
                    .join("")}
                </div>
              </div>`
-          : `<p class="frase-mas">Tocar para ver por qué se dice así</p>`
+          : `<div id="phrase-detail-${esc(f.id)}" hidden></div>`
       }
     </article>`;
 }
@@ -4895,6 +4968,51 @@ const TEXTOS = [
   ...LECTURAS.map((l) => ({ ...l, tipo: "lectura" })),
 ];
 const getTexto = (id) => TEXTOS.find((t) => t.id === id);
+let readingLevel = "all";
+let readingStatus = "all";
+let readingReturn = null;
+let readerRestoring = false;
+let readerSaveTimer = null;
+
+function readingSession(text) {
+  const session = store.readingSessions?.[text.id];
+  return session && Number.isInteger(session.index) && session.index >= 0 && session.index < text.frases.length
+    && Number.isFinite(session.updatedAt) ? session : null;
+}
+
+function flushReadingProgress() {
+  if (readerSaveTimer === null) return;
+  clearTimeout(readerSaveTimer);
+  readerSaveTimer = null;
+  save();
+  if ($("#reader-save-note")) $("#reader-save-note").textContent = sinSitio ? "No se ha podido guardar el punto de lectura." : "Punto de lectura guardado";
+}
+
+function rememberReadingPosition(text, index, touch = false) {
+  if (!touch && readingSession(text)?.index === index) return;
+  if (!store.readingSessions || typeof store.readingSessions !== "object" || Array.isArray(store.readingSessions)) store.readingSessions = {};
+  store.readingSessions[text.id] = { index, updatedAt: Date.now() };
+  if (readerSaveTimer !== null) clearTimeout(readerSaveTimer);
+  if ($("#reader-save-note")) $("#reader-save-note").textContent = "Guardando punto de lectura…";
+  readerSaveTimer = setTimeout(flushReadingProgress, 300);
+}
+addEventListener("pagehide", flushReadingProgress);
+document.addEventListener("visibilitychange", () => { if (document.hidden) flushReadingProgress(); });
+
+async function returnToReadings() {
+  flushReadingProgress();
+  lecturaAbierta = null;
+  cerrarPop();
+  await renderLeccionesIndex();
+  cambiarModoAprender("lecturas");
+  const previous = readingReturn;
+  readingReturn = null;
+  if (previous) requestAnimationFrame(() => {
+    const card = $(`#lecturas-lista [data-lectura="${previous.id}"]`);
+    if (card?.checkVisibility()) card.focus({ preventScroll: true });
+    window.scrollTo({ top: previous.scroll, behavior: "instant" });
+  });
+}
 
 const GRUPOS_TEXTO = [
   { tipo: "cuento", nombre: "Cuentos", pista: "con historia: engancha y arrastra" },
@@ -4903,28 +5021,43 @@ const GRUPOS_TEXTO = [
 
 function tarjetaTexto(l) {
   const leida = store.lecturas?.[l.id];
+  const session = readingSession(l);
   const frases = l.frases.length;
-  const estado = leida ? "Leída" : "Pendiente";
+  const estado = session ? leida ? "Releyendo" : "En curso" : leida ? "Leída" : "Pendiente";
   return `<button class="reading-card" data-lectura="${l.id}" aria-label="${esc(l.titulo)}. ${esc(l.resumen)}. ${estado}">
     <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
     <span class="lesson-title">${esc(l.titulo)}</span>
     <span class="lesson-goal">${esc(l.resumen)}</span>
     <span class="lesson-meta">
-      <span class="lesson-state${leida ? " is-done" : ""}">${estado} · ${frases} frases</span>
-      <span class="lesson-open">Leer <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
+      <span class="lesson-state${leida && !session ? " is-done" : ""}">${estado} · ${session ? `frase ${session.index + 1} de ${frases}` : `${frases} frases`}</span>
+      <span class="lesson-open">${session ? "Continuar" : "Leer"} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
     </span>
   </button>`;
 }
 
 function renderLecturasIndex() {
+  const matches = TEXTOS.filter(t => (readingLevel === "all" || t.nivel === readingLevel)
+    && (readingStatus === "all" || readingStatus === "active" && readingSession(t)
+      || readingStatus === "read" && store.lecturas?.[t.id] || readingStatus === "unread" && !store.lecturas?.[t.id]));
+  const next = matches.filter(t => readingSession(t)).sort((a, b) => readingSession(b).updatedAt - readingSession(a).updatedAt)[0]
+    || matches.find(t => !store.lecturas?.[t.id] && t.nivel === store.settings.level)
+    || matches.find(t => !store.lecturas?.[t.id]) || matches[0];
+  const session = next && readingSession(next);
+  $("#reading-next").innerHTML = next ? `<section class="learning-next-card reading-next-card"><div class="learning-next-top"><span class="eyebrow">${session ? "Tu lectura en curso" : store.lecturas?.[next.id] ? "Vuelve a un texto conocido" : "Lee algo nuevo"}</span><span class="learning-next-unit">${esc(NIVEL_NOMBRE[next.nivel])} · ${next.frases.length} frases</span></div><h3>${esc(next.titulo)}</h3><p>${session ? `Retoma desde la frase ${session.index + 1}. Las traducciones empiezan ocultas para que puedas volver a intentarlo.` : esc(next.resumen)}</p><button class="btn" data-lectura="${next.id}">${session ? "Continuar lectura" : "Empezar a leer"} <span aria-hidden="true">→</span></button></section>` : "";
+  $("#reading-results").textContent = `${matches.length} ${matches.length === 1 ? "texto disponible" : "textos disponibles"}`;
+  $("#reading-level").value = readingLevel;
+  $("#reading-status").value = readingStatus;
+  $("#reading-level").onchange = event => { readingLevel = event.target.value; renderLecturasIndex(); };
+  $("#reading-status").onchange = event => { readingStatus = event.target.value; renderLecturasIndex(); };
   $("#lecturas-lista").innerHTML = GRUPOS_TEXTO.map((g) => {
-    const suyos = TEXTOS.filter((t) => t.tipo === g.tipo);
+    const suyos = matches.filter((t) => t.tipo === g.tipo);
     if (!suyos.length) return "";
     return `<section class="text-group">
       <h3 class="text-group-title"><span><b>${esc(g.nombre)}</b><small>${esc(g.pista)}</small></span><em>${suyos.length}</em></h3>
       <div class="lesson-grid">${suyos.map(tarjetaTexto).join("")}</div>
     </section>`;
-  }).join("");
+  }).join("") || `<div class="learning-empty"><h4>${readingStatus === "active" ? "Todavía no hay lecturas en curso" : "No hay textos con estos filtros"}</h4><p>Explora la biblioteca y elige una lectura. Guardaremos el punto donde la dejes.</p><button class="btn btn-ghost" id="reading-clear">Ver toda la biblioteca</button></div>`;
+  if ($("#reading-clear")) $("#reading-clear").onclick = () => { readingLevel = "all"; readingStatus = "all"; renderLecturasIndex(); $("#reading-level").focus(); };
 }
 
 /**
@@ -5022,6 +5155,10 @@ const trocearFrase = (frase) =>
 function abrirLectura(id) {
   const l = getTexto(id);
   if (!l) return;
+  flushReadingProgress();
+  if (!$("#lecciones-index").hidden) readingReturn = { id, scroll: window.scrollY };
+  const resume = readingSession(l);
+  readerRestoring = true;
   lecturaAbierta = l;
 
   $("#lecciones-index").hidden = true;
@@ -5038,6 +5175,7 @@ function abrirLectura(id) {
       </div>
       <div class="reader-location"><span id="reader-position">Frase 1 de ${l.frases.length}</span><span>${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span></div>
       <div class="reader-track" aria-hidden="true"><span id="reader-fill"></span></div>
+      <div class="reader-bookmark"><span id="reader-save-note">${resume ? "Punto de lectura guardado" : "Tu punto de lectura se guarda aquí"}</span><button id="reader-restart" class="btn-back">Desde el principio</button></div>
     </div>
     <div class="view-head">
       <span class="eyebrow">${l.tipo === "cuento" ? "Un cuento en inglés" : "Inglés en contexto"}</span>
@@ -5062,17 +5200,26 @@ function abrirLectura(id) {
         .join("")}
     </article>
     <div class="reader-finish">
-      <p>Has llegado al final</p>
-      <span>Vuelve a las frases que quieras practicar o guarda esta lectura como terminada.</span>
+      <p>Quédate con la idea principal</p>
+      <span>¿De qué trata el texto? Resúmelo en inglés o español con tus propias palabras. Es opcional y no recibe una nota automática.</span>
+      <label for="reading-note">Mi resumen</label>
+      <textarea id="reading-note" maxlength="1000" rows="3" placeholder="La idea que me llevo de esta lectura…">${esc(typeof store.readingNotes?.[l.id] === "string" ? store.readingNotes[l.id] : "")}</textarea>
+      <span id="reading-note-status" class="practice-save-status" role="status"></span>
       <button class="btn" id="lect-hecha">✓ ${store.lecturas?.[l.id] ? "Leída · volver a lecturas" : "Marcar como leída"}</button>
     </div>
     <div id="lect-pop" class="wordpop" hidden></div>`;
 
-  $("#back-lecturas").onclick = () => {
-    lecturaAbierta = null;
-    cerrarPop();
-    renderLeccionesIndex();
-    cambiarModoAprender("lecturas");
+  $("#back-lecturas").onclick = returnToReadings;
+  $("#reader-restart").onclick = () => {
+    rememberReadingPosition(l, 0);
+    irAlInicio(box);
+    programarPosicionLectura();
+  };
+  $("#reading-note").oninput = event => {
+    if (!store.readingNotes || typeof store.readingNotes !== "object" || Array.isArray(store.readingNotes)) store.readingNotes = {};
+    store.readingNotes[l.id] = event.target.value;
+    save();
+    $("#reading-note-status").textContent = sinSitio ? "No se ha podido guardar. Copia tu resumen antes de salir." : "Resumen guardado en este navegador.";
   };
 
   $("#lect-todo").onclick = () => {
@@ -5082,14 +5229,14 @@ function abrirLectura(id) {
   };
 
   $("#lect-hecha").onclick = () => {
+    flushReadingProgress();
     store.lecturas = store.lecturas || {};
     store.lecturas[l.id] = todayStr();
+    if (store.readingSessions && typeof store.readingSessions === "object") delete store.readingSessions[l.id];
     registerStudyDay();
     save();
-    toast("Lectura marcada como leída");
-    lecturaAbierta = null;
-    renderLeccionesIndex();
-    cambiarModoAprender("lecturas");
+    toast(sinSitio ? "No se ha podido guardar la lectura como terminada." : "Lectura marcada como leída");
+    returnToReadings();
     updateChrome();
   };
 
@@ -5120,8 +5267,21 @@ function abrirLectura(id) {
     }
   };
 
+  rememberReadingPosition(l, resume?.index ?? 0, true);
   irAlInicio(box);
-  programarPosicionLectura();
+  requestAnimationFrame(() => {
+    if (lecturaAbierta?.id !== id || box.hidden) { readerRestoring = false; return; }
+    if (resume?.index > 0) {
+      const sentence = $(`[data-n="${resume.index}"]`, box);
+      const toolbar = $(".reader-toolbar", box);
+      const stickyBottom = (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.offsetHeight;
+      window.scrollBy({ top: sentence.getBoundingClientRect().top - stickyBottom - 16, behavior: "instant" });
+      sentence.setAttribute("tabindex", "-1");
+      sentence.focus({ preventScroll: true });
+    }
+    readerRestoring = false;
+    programarPosicionLectura();
+  });
 }
 
 /** Los controles individuales y el general reflejan la misma visibilidad. */
@@ -5149,16 +5309,17 @@ function programarPosicionLectura() {
   readerFrame = requestAnimationFrame(() => {
     readerFrame = null;
     const box = $("#lectura-detalle");
-    if (!lecturaAbierta || box.hidden || !box.closest(".view.is-active")) return;
+    if (!lecturaAbierta || readerRestoring || box.hidden || !box.closest(".view.is-active")) return;
     const frases = $$(".lect-frase", box);
     if (!frases.length) return;
-    const linea = Math.max($(".reader-toolbar", box).getBoundingClientRect().bottom + 24, innerHeight * .4);
+    const linea = $(".reader-toolbar", box).getBoundingClientRect().bottom + 24;
     let actual = 0;
     frases.forEach((frase, n) => {
       if (frase.getBoundingClientRect().top <= linea) actual = n;
     });
     $("#reader-position").textContent = `Frase ${actual + 1} de ${frases.length}`;
     $("#reader-fill").style.width = `${((actual + 1) / frases.length) * 100}%`;
+    rememberReadingPosition(lecturaAbierta, actual);
   });
 }
 addEventListener("scroll", programarPosicionLectura, { passive: true });
