@@ -127,3 +127,24 @@ export function advanceReadingCheck(s) {
   if (s.position >= 3 || s.responses.length !== s.position + 1) return s;
   return { ...s, position: s.position + 1, first: s.position === 2 && !s.first ? readingCheckSummary(s) : s.first };
 }
+
+// Review only completed attempts: never expose a future answer in an active check.
+export function readingCheckReview(s, id) {
+  if (!validReadingCheck(s, id) || s.position !== 3) return [];
+  const priority = { wrong: 0, unknown: 1, assisted: 2, independent: 3 };
+  return READING_QUESTIONS[id].map((question, index) => {
+    const response = s.responses[index];
+    const outcome = response === null ? 'unknown' : s.order[index][response] !== 0 ? 'wrong' : s.helped[index] ? 'assisted' : 'independent';
+    return { index, question, outcome, selected: response === null ? null : question.options[s.order[index][response]] };
+  }).sort((a, b) => priority[a.outcome] - priority[b.outcome] || a.index - b.index);
+}
+
+export function readingCheckState(s, id) {
+  if (!validReadingCheck(s, id)) return { mode: 'none', label: 'Comprensión sin practicar', action: null };
+  if (s.position < 3) return { mode: 'active', label: `Comprensión · ${s.position} de 3 revisadas`, action: 'Continuar comprobación' };
+  const { independent, assisted, wrong, unknown } = readingCheckSummary(s);
+  const needs = wrong + unknown;
+  return { mode: needs ? 'reinforce' : 'complete',
+    label: needs ? `${needs} ${needs === 1 ? 'respuesta para reforzar' : 'respuestas para reforzar'}` : assisted ? `${assisted} ${assisted === 1 ? 'acierto con apoyo' : 'aciertos con apoyo'} · ${independent} sin consultar` : '3 aciertos sin consultar · este intento',
+    action: needs ? 'Revisar respuestas' : 'Ver comprobación' };
+}

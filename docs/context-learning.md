@@ -28,6 +28,14 @@ Antes de contestar se puede consultar el texto original y sus traducciones. Esa 
 
 Las sesiones inválidas o de otra versión se reinician al entrar; un fallo de almacenamiento se avisa dentro del ejercicio. El módulo de preguntas forma parte del núcleo offline.
 
+### Del resultado al refuerzo
+
+Al terminar se pueden desplegar las tres respuestas, ordenadas por errores, «No lo sé», aciertos con apoyo y aciertos sin consultar. Se muestra qué eligió el alumno, la respuesta correcta y sus evidencias, sin cambiar la puntuación. «Releer desde la frase…» lleva al pasaje original y coloca el foco bajo la barra de lectura. Desde esa barra se vuelve a las respuestas sin buscar el final del texto.
+
+La biblioteca separa el estado de lectura del estado de comprensión. Permite filtrar comprobaciones pendientes y textos con respuestas incorrectas o desconocidas en el intento actual. Los aciertos con apoyo no se presentan como errores. La recomendación prioriza comprobaciones pendientes y después respuestas para reforzar, siempre dentro de los filtros elegidos; los botones acceden directamente al intento guardado.
+
+Volver al texto antes de responder una pregunta también registra apoyo. Volver después de responder no altera el registro. La revisión detallada solo está disponible al completar las tres preguntas, para no revelar respuestas futuras.
+
 ## Verificación
 
 Con el servidor local en el puerto 3000 y Playwright disponible, o `PLAYWRIGHT_MODULE` apuntando a su módulo:

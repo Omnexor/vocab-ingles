@@ -10,7 +10,7 @@ const version = Number((await readFile(new URL('../public/sw.js', import.meta.ur
 const browser = await chromium.launch();
 try {
   for (const [width, height, colorScheme] of [[320, 740, 'light'], [390, 844, 'light'], [430, 932, 'dark'], [1280, 900, 'light']]) {
-    const context = await browser.newContext({ viewport: { width, height }, colorScheme, reducedMotion: 'reduce', isMobile: width < 720, hasTouch: width < 720, serviceWorkers: width === 390 ? 'allow' : 'block' });
+    const context = await browser.newContext({ viewport: { width, height }, colorScheme, reducedMotion: width === 390 ? 'no-preference' : 'reduce', isMobile: width < 720, hasTouch: width < 720, serviceWorkers: width === 390 ? 'allow' : 'block' });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -34,6 +34,14 @@ try {
     assert.equal(await page.locator('.reading-check-feedback').count(), 0);
     for (const button of await page.locator('[data-reading-choice]').all()) assert.ok((await button.boundingBox()).height >= 48);
     const bookmark = (await data()).readingSessions[id].index;
+    await page.locator('#reading-check-exit').click();
+    assert.equal((await data()).readingChecks[id].helped[0], true, 'Returning to the text before answering counts as support');
+    await page.locator('#back-lecturas').click();
+    await page.locator('#reading-status').selectOption('check-active');
+    assert.equal(await page.locator('#lecturas-lista .reading-entry').count(), 1);
+    await capture('pending-library');
+    await page.locator('#reading-next [data-reading-practice]').click();
+    await page.locator('#reading-check-title').waitFor();
     await page.locator('#reading-check-source > summary').click();
     await page.waitForFunction(([key, id]) => JSON.parse(localStorage.getItem(key)).readingChecks[id].helped[0], [key, id]);
     await page.locator('#reading-check-source > summary').click();
@@ -70,6 +78,28 @@ try {
     assert.equal((await data()).lecturas[id], undefined, 'Completion does not mark the text as read');
     assert.deepEqual((await data()).lessons, {});
     await capture('result');
+    assert.deepEqual(await page.locator('[data-review-question]').evaluateAll(items => items.map(item => Number(item.dataset.reviewQuestion))), [2, 1, 0]);
+    const review = page.locator('[data-review-question="2"]');
+    await review.locator('summary').focus(); await page.keyboard.press('Enter');
+    assert.match(await review.locator('.reading-review-content').innerText(), /Tu respuesta/);
+    assert.match(await review.locator('.reading-review-content').innerText(), /Respuesta correcta/);
+    await review.scrollIntoViewIfNeeded(); await capture('review');
+    const complete = (await data()).readingChecks[id];
+    const line = Number(await review.locator('[data-reading-line]').getAttribute('data-reading-line'));
+    await review.locator('[data-reading-line]').click();
+    await page.waitForFunction(n => document.activeElement?.dataset.n === String(n), line);
+    assert.ok(await page.locator(`[data-n="${line}"]`).isVisible());
+    assert.ok(await page.locator('#reader-check-return').isVisible());
+    await capture('reread');
+    await page.locator('#reader-check-return').click();
+    assert.deepEqual((await data()).readingChecks[id], complete, 'Targeted rereading cannot change the result');
+    await page.locator('#reading-check-exit').click();
+    await page.locator('#back-lecturas').click();
+    await page.locator('#reading-status').selectOption('reinforce');
+    assert.equal(await page.locator('#lecturas-lista .reading-entry').count(), 1);
+    assert.match(await page.locator('.reading-entry-practice').innerText(), /2 respuestas para reforzar/);
+    await capture('reinforce-library');
+    await page.locator('#lecturas-lista [data-reading-practice]').click();
     await page.locator('#reading-check-retry').click();
     for (let i = 0; i < 3; i++) {
       state = (await data()).readingChecks[id];
@@ -82,6 +112,11 @@ try {
     await page.locator('#reading-check-exit').click();
     assert.ok(await page.locator('#reader-text').isVisible());
     assert.equal(await page.locator('#start-reading-check').innerText(), 'Ver comprobación');
+    await page.locator('#back-lecturas').click();
+    await page.locator('#reading-status').selectOption('reinforce');
+    assert.equal(await page.locator('#lecturas-lista .reading-entry').count(), 0, 'This attempt no longer has wrong or unknown answers');
+    await page.locator('#reading-clear').click();
+    assert.match(await page.locator(`.reading-entry:has([data-lectura="${id}"]) .reading-entry-practice`).innerText(), /3 aciertos sin consultar/);
     // Malformed imported state must restart safely, without deleting the notes.
     await page.addInitScript(([key, id]) => {
       const s = JSON.parse(localStorage.getItem(key)); s.readingChecks = { [id]: { version: 1, position: 2, responses: null } }; localStorage.setItem(key, JSON.stringify(s));

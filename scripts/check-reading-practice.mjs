@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { LECTURAS } from '../public/readings.js';
 import { CUENTOS } from '../public/stories.js';
-import { READING_QUESTIONS, newReadingCheck, validReadingCheck, readingCheckSummary, supportReadingCheck, answerReadingCheck, advanceReadingCheck } from '../public/reading-practice.js';
+import { READING_QUESTIONS, newReadingCheck, validReadingCheck, readingCheckSummary, supportReadingCheck, answerReadingCheck, advanceReadingCheck, readingCheckReview, readingCheckState } from '../public/reading-practice.js';
 const texts = [...LECTURAS, ...CUENTOS];
 assert.deepEqual(Object.keys(READING_QUESTIONS).sort(), texts.map(t => t.id).sort());
 for (const text of texts) {
@@ -19,6 +19,8 @@ for (const text of texts) {
   for (const random of [() => 0, () => .5, () => .999, Math.random]) {
     let s = newReadingCheck(text.id, null, random);
     assert.ok(validReadingCheck(s, text.id));
+    assert.equal(readingCheckState(s, text.id).mode, 'active');
+    assert.deepEqual(readingCheckReview(s, text.id), [], 'Active attempts never expose answers');
     assert.equal(new Set(s.order.map(row => row.indexOf(0))).size, 3, 'Balanced answer positions');
     assert.equal(advanceReadingCheck(s), s);
     assert.equal(answerReadingCheck(s, -1), s);
@@ -32,13 +34,23 @@ for (const text of texts) {
     assert.ok(validReadingCheck(JSON.parse(JSON.stringify(s)), text.id));
     assert.deepEqual(readingCheckSummary(s), { total: 3, independent: 0, assisted: 1, wrong: 1, unknown: 1 });
     assert.deepEqual(s.first, readingCheckSummary(s));
+    assert.equal(readingCheckState(s, text.id).mode, 'reinforce');
+    const review = readingCheckReview(s, text.id);
+    assert.deepEqual(review.map(item => item.outcome), ['wrong', 'unknown', 'assisted']);
+    assert.deepEqual(review.map(item => item.index), [2, 1, 0]);
+    assert.equal(review[0].selected, questions[2].options[1]);
+    assert.equal(review[1].selected, null);
     assert.equal(advanceReadingCheck(s), s);
     let retry = newReadingCheck(text.id, s.first, random);
     for (let i = 0; i < 3; i++) retry = advanceReadingCheck(answerReadingCheck(retry, retry.order[i].indexOf(0)));
     assert.equal(readingCheckSummary(retry).independent, 3);
+    assert.equal(readingCheckState(retry, text.id).mode, 'complete');
+    assert.ok(readingCheckReview(retry, text.id).every(item => item.outcome === 'independent'));
     assert.deepEqual(retry.first, s.first, 'Repeating must preserve the first result');
     for (const bad of [null, {}, { ...s, version: -1 }, { ...s, id: 'missing' }, { ...s, position: 9 }, { ...s, responses: [] }, { ...s, order: [[0, 0, 0]] }, { ...s, helped: [0, 0, 0] }, { ...s, first: {} }]) {
       assert.equal(validReadingCheck(bad, text.id), false);
+      assert.equal(readingCheckState(bad, text.id).mode, 'none');
+      assert.deepEqual(readingCheckReview(bad, text.id), []);
     }
   }
 }

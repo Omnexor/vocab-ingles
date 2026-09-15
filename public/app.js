@@ -11,7 +11,7 @@ import { PATH, isPronunciation, orderedLessons, prerequisites, prepareQuiz, shuf
 import { GAME_OBJECTIVES, reviewCards, dueCards, scheduleMistake, schedulePractice, answerReview, reviewStage, reviewExercise, reviewPlan, reviewSessionValid, gameSummary, spelling, assessDictation, reviewCorrect } from "./game-learning.js";
 import { MISSIONS, missionById, newMission, validMissionRun, missionQuestion, answerMission, advanceMission, missionSummary, missionCard, recommendMission } from "./game-missions.js";
 import { createGameAudio } from './game-audio.js';
-import { READING_QUESTIONS, newReadingCheck, validReadingCheck, readingCheckSummary, supportReadingCheck, answerReadingCheck, advanceReadingCheck } from './reading-practice.js';
+import { READING_QUESTIONS, newReadingCheck, validReadingCheck, readingCheckSummary, supportReadingCheck, answerReadingCheck, advanceReadingCheck, readingCheckReview, readingCheckState } from './reading-practice.js';
 
 /* ------------------------------------------------------------------ *
  * Las lecciones se cargan aparte, y a propósito
@@ -5026,7 +5026,8 @@ function tarjetaTexto(l) {
   const session = readingSession(l);
   const frases = l.frases.length;
   const estado = session ? leida ? "Releyendo" : "En curso" : leida ? "Leída" : "Pendiente";
-  return `<button class="reading-card" data-lectura="${l.id}" aria-label="${esc(l.titulo)}. ${esc(l.resumen)}. ${estado}">
+  const check = readingCheckState(store.readingChecks?.[l.id], l.id);
+  return `<article class="reading-entry"><button class="reading-card" data-lectura="${l.id}" aria-label="${esc(l.titulo)}. ${esc(l.resumen)}. ${estado}">
     <span class="lesson-tag">${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span>
     <span class="lesson-title">${esc(l.titulo)}</span>
     <span class="lesson-goal">${esc(l.resumen)}</span>
@@ -5034,18 +5035,27 @@ function tarjetaTexto(l) {
       <span class="lesson-state${leida && !session ? " is-done" : ""}">${estado} · ${session ? `frase ${session.index + 1} de ${frases}` : `${frases} frases`}</span>
       <span class="lesson-open">${session ? "Continuar" : "Leer"} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
     </span>
-  </button>`;
+  </button><div class="reading-entry-practice"><span>${esc(check.label)}</span>${check.action ? `<button class="reading-practice-link" data-reading-practice="${l.id}" aria-label="${esc(check.action)}: ${esc(l.titulo)}">${esc(check.action)} <span aria-hidden="true">→</span></button>` : ""}</div></article>`;
 }
 
 function renderLecturasIndex() {
   const matches = TEXTOS.filter(t => (readingLevel === "all" || t.nivel === readingLevel)
     && (readingStatus === "all" || readingStatus === "active" && readingSession(t)
-      || readingStatus === "read" && store.lecturas?.[t.id] || readingStatus === "unread" && !store.lecturas?.[t.id]));
-  const next = matches.filter(t => readingSession(t)).sort((a, b) => readingSession(b).updatedAt - readingSession(a).updatedAt)[0]
+      || readingStatus === "read" && store.lecturas?.[t.id] || readingStatus === "unread" && !store.lecturas?.[t.id]
+      || readingStatus === "check-active" && readingCheckState(store.readingChecks?.[t.id], t.id).mode === "active"
+      || readingStatus === "reinforce" && readingCheckState(store.readingChecks?.[t.id], t.id).mode === "reinforce"));
+  const recent = [...matches].sort((a, b) => (readingSession(b)?.updatedAt || 0) - (readingSession(a)?.updatedAt || 0));
+  const next = recent.find(t => readingCheckState(store.readingChecks?.[t.id], t.id).mode === "active")
+    || recent.find(t => readingCheckState(store.readingChecks?.[t.id], t.id).mode === "reinforce")
+    || recent.find(t => readingSession(t))
     || matches.find(t => !store.lecturas?.[t.id] && t.nivel === store.settings.level)
     || matches.find(t => !store.lecturas?.[t.id]) || matches[0];
   const session = next && readingSession(next);
   $("#reading-next").innerHTML = next ? `<section class="learning-next-card reading-next-card"><div class="learning-next-top"><span class="eyebrow">${session ? "Tu lectura en curso" : store.lecturas?.[next.id] ? "Vuelve a un texto conocido" : "Lee algo nuevo"}</span><span class="learning-next-unit">${esc(NIVEL_NOMBRE[next.nivel])} · ${next.frases.length} frases</span></div><h3>${esc(next.titulo)}</h3><p>${session ? `Retoma desde la frase ${session.index + 1}. Las traducciones empiezan ocultas para que puedas volver a intentarlo.` : esc(next.resumen)}</p><button class="btn" data-lectura="${next.id}">${session ? "Continuar lectura" : "Empezar a leer"} <span aria-hidden="true">→</span></button></section>` : "";
+  const check = next && readingCheckState(store.readingChecks?.[next.id], next.id);
+  if (check && ["active", "reinforce"].includes(check.mode)) {
+    $("#reading-next").innerHTML = `<section class="learning-next-card reading-next-card"><div class="learning-next-top"><span class="eyebrow">${check.mode === "active" ? "Retoma tu comprobación" : "Tu siguiente paso"}</span><span class="learning-next-unit">${esc(NIVEL_NOMBRE[next.nivel])}</span></div><h3>${esc(next.titulo)}</h3><p>${esc(check.label)}. ${check.mode === "active" ? "Continúa donde lo dejaste, sin repetir lo que ya respondiste." : "Vuelve a las pistas del texto antes de intentarlo otra vez."}</p><button class="btn" data-reading-practice="${next.id}">${check.action} <span aria-hidden="true">→</span></button><button class="btn btn-ghost" data-lectura="${next.id}">Volver a leer el texto</button></section>`;
+  }
   $("#reading-results").textContent = `${matches.length} ${matches.length === 1 ? "texto disponible" : "textos disponibles"}`;
   $("#reading-level").value = readingLevel;
   $("#reading-status").value = readingStatus;
@@ -5159,6 +5169,11 @@ function savedReadingCheck(id) {
   return validReadingCheck(session, id) ? session : null;
 }
 
+function readingReviewMarkup(l, session) {
+  const labels = { wrong: "Para reforzar", unknown: "No lo sabía", assisted: "Correcto con apoyo", independent: "Correcto sin consultar" };
+  return `<section class="reading-review" aria-labelledby="reading-review-title"><h4 id="reading-review-title">Tus respuestas, una a una</h4><p class="muted">Primero aparecen las que necesitan atención. Abre una pregunta para recuperar la explicación.</p>${readingCheckReview(session, l.id).map(({ index, question: q, outcome, selected }) => `<details class="reading-review-item" data-review-question="${index}"><summary><span class="reading-review-status">${labels[outcome]} · ${esc(q.kind)}</span><span>${esc(q.q)}</span></summary><div class="reading-review-content">${selected === null ? '<p class="muted">Elegiste «No lo sé».</p>' : `<p><span class="muted">Tu respuesta:</span> ${esc(selected)}</p>`}<p><strong>Respuesta correcta:</strong> ${esc(q.options[0])}</p><p>${esc(q.why)}</p>${q.lines.map(n => `<blockquote><span class="eyebrow">Frase ${n}</span><p lang="en">${esc(l.frases[n - 1][0])}</p><p class="muted">${esc(l.frases[n - 1][1])}</p></blockquote>`).join("")}<button class="btn btn-ghost" data-reading-line="${q.lines[0] - 1}">Releer desde la frase ${q.lines[0]}</button></div></details>`).join("")}</section>`;
+}
+
 function openReadingCheck(l) {
   flushReadingProgress();
   cerrarPop();
@@ -5187,6 +5202,7 @@ function openReadingCheck(l) {
         <p class="muted">Resultado de este intento. Consultar el texto es una ayuda válida; aquí queda diferenciada.</p>
         ${summary(readingCheckSummary(session))}
         <details class="reading-check-source"><summary>Ver el primer intento</summary>${summary(session.first || readingCheckSummary(session))}</details>
+        ${readingReviewMarkup(l, session)}
         <p class="muted">Tres preguntas orientan tu práctica, pero no certifican el dominio del texto. Repetirás las mismas preguntas: vuelve a leer las frases que te costaron.</p>
         <button class="btn" id="reading-check-retry">Volver a practicar</button>` : (() => {
         const i = session.position, q = READING_QUESTIONS[l.id][i];
@@ -5204,8 +5220,13 @@ function openReadingCheck(l) {
             <button class="btn" id="reading-check-next">${i === 2 ? "Ver resultado" : "Siguiente pregunta"}</button></section>` : '<button class="btn btn-ghost" id="reading-check-unknown">No lo sé · ver explicación</button>'}`;
       })()}
       <p id="reading-check-save" class="practice-save-status" role="status">${storageNote()}</p>`;
-    $("#reading-check-exit").onclick = () => abrirLectura(l.id);
+    $("#reading-check-exit").onclick = () => {
+      // Returning to the full text before answering is also a form of support.
+      session = supportReadingCheck(session);
+      persist(); abrirLectura(l.id);
+    };
     if (done) {
+      $$("[data-reading-line]", panel).forEach(button => { button.onclick = () => abrirLectura(l.id, { startAt: Number(button.dataset.readingLine) }); });
       $("#reading-check-retry").onclick = () => {
         session = newReadingCheck(l.id, session.first || readingCheckSummary(session));
         persist(); render(); focus("#reading-check-title");
@@ -5237,12 +5258,13 @@ function openReadingCheck(l) {
   persist(); render(); focus("#reading-check-title");
 }
 
-function abrirLectura(id) {
+function abrirLectura(id, { check = false, startAt = null } = {}) {
   const l = getTexto(id);
   if (!l) return;
   flushReadingProgress();
   if (!$("#lecciones-index").hidden) readingReturn = { id, scroll: window.scrollY };
-  const resume = readingSession(l);
+  const targeted = Number.isInteger(startAt) && startAt >= 0 && startAt < l.frases.length;
+  const resume = targeted ? { index: startAt } : readingSession(l);
   readerRestoring = true;
   lecturaAbierta = l;
 
@@ -5262,6 +5284,7 @@ function abrirLectura(id) {
       <div class="reader-location"><span id="reader-position">Frase 1 de ${l.frases.length}</span><span>${esc(NIVEL_NOMBRE[l.nivel] || l.nivel)}</span></div>
       <div class="reader-track" aria-hidden="true"><span id="reader-fill"></span></div>
       <div class="reader-bookmark"><span id="reader-save-note">${resume ? "Punto de lectura guardado" : "Tu punto de lectura se guarda aquí"}</span><button id="reader-restart" class="btn-back">Desde el principio</button></div>
+      ${savedReadingCheck(l.id) ? `<button class="reading-practice-link reader-check-return" id="reader-check-return">${savedReadingCheck(l.id).position === 3 ? "Volver a mis respuestas" : "Continuar comprobación"} <span aria-hidden="true">→</span></button>` : ""}
     </div>
     <div class="view-head">
       <span class="eyebrow">${l.tipo === "cuento" ? "Un cuento en inglés" : "Inglés en contexto"}</span>
@@ -5304,6 +5327,7 @@ function abrirLectura(id) {
     <div id="lect-pop" class="wordpop" hidden></div>`;
 
   $("#start-reading-check").onclick = () => openReadingCheck(l);
+  if ($("#reader-check-return")) $("#reader-check-return").onclick = () => openReadingCheck(l);
   $("#back-lecturas").onclick = returnToReadings;
   $("#reader-restart").onclick = () => {
     rememberReadingPosition(l, 0);
@@ -5363,10 +5387,12 @@ function abrirLectura(id) {
   };
 
   rememberReadingPosition(l, resume?.index ?? 0, true);
-  irAlInicio(box);
+  if (!check && !targeted) irAlInicio(box);
+  if (targeted) window.scrollTo({ top: 0, behavior: "instant" });
   requestAnimationFrame(() => {
     if (lecturaAbierta?.id !== id || box.hidden) { readerRestoring = false; return; }
-    if (resume?.index > 0) {
+    if (check) { readerRestoring = false; openReadingCheck(l); return; }
+    if (resume?.index > 0 || targeted) {
       const sentence = $(`[data-n="${resume.index}"]`, box);
       const toolbar = $(".reader-toolbar", box);
       const stickyBottom = (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.offsetHeight;
@@ -5688,6 +5714,8 @@ document.addEventListener("click", (e) => {
 
   const lect = e.target.closest("[data-lectura]");
   if (lect) abrirLectura(lect.dataset.lectura);
+  const readingPractice = e.target.closest("[data-reading-practice]");
+  if (readingPractice) abrirLectura(readingPractice.dataset.readingPractice, { check: true });
 
   const game = e.target.closest("[data-juego]");
   if (game) abrirJuego(game.dataset.juego);
