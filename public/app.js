@@ -7,6 +7,10 @@ import { conjugar, verbosConjugables, tercera, gerundio, pasado, participio } fr
 import { EJERCICIOS_MODALES } from "./modals.js";
 import { FRASES, CATEGORIAS_FRASES, contextosDe } from "./phrases.js";
 import { conGuiones } from "./silabas.js";
+import { PATH, isPronunciation, orderedLessons, prerequisites, prepareQuiz, shuffled, isCorrect, correctAnswer, dueReview, learningState, recordLearning } from "./learning-engine.js";
+import { GAME_OBJECTIVES, reviewCards, dueCards, scheduleMistake, schedulePractice, answerReview, reviewStage, reviewExercise, reviewPlan, reviewSessionValid, gameSummary, spelling, assessDictation, reviewCorrect } from "./game-learning.js";
+import { MISSIONS, missionById, newMission, validMissionRun, missionQuestion, answerMission, advanceMission, missionSummary, missionCard, recommendMission } from "./game-missions.js";
+import { createGameAudio } from './game-audio.js';
 
 /* ------------------------------------------------------------------ *
  * Las lecciones se cargan aparte, y a propósito
@@ -25,13 +29,15 @@ import { conGuiones } from "./silabas.js";
 
 let LESSONS = [];
 let getLesson = () => null;
+let productionItems = () => [];
 let cargaLecciones = null;
 
 function cargarLecciones() {
   if (!cargaLecciones) {
-    cargaLecciones = import("./lessons.js").then((m) => {
-      LESSONS = m.LESSONS;
+    cargaLecciones = Promise.all([import("./lessons.js"), import("./grammar-practice.js")]).then(([m, practice]) => {
+      LESSONS = orderedLessons(m.LESSONS);
       getLesson = m.getLesson;
+      productionItems = practice.productionItems;
     });
   }
   return cargaLecciones;
@@ -62,9 +68,15 @@ const defaults = () => ({
   lessons: {}, // id -> { best: 0-100, done: bool, last: "YYYY-MM-DD" }
   lessonSessions: {}, // prácticas en curso, guardadas en este navegador
   lessonMistakes: {}, // ejercicios pendientes del último intento
+  lessonNotes: {}, // frases propias: autoevaluación, no una nota automática
   lecturas: {}, // id -> fecha en que la leíste
   games: {}, // id -> mejor marca
   gamesLast: {}, // id -> fecha de la última partida, para saber qué tienes olvidado
+  gameLearning: {}, // últimas sesiones: aciertos independientes, ayudas y errores
+  gameReview: {}, // errores de juegos; no depende del cupo de palabras nuevas
+  gameMode: "learn",
+  missionSessions: {}, // complete route and feedback survive reloads
+  missionProgress: {}, // first baseline and bounded history, kept on device
   confusiones: {}, // "palabra|palabra" -> veces que has cambiado una por otra
 });
 
@@ -559,11 +571,22 @@ function todayTool(icon, title, detail) {
  * Lleva una pantalla o detalle al inicio respetando la preferencia de
  * movimiento, y coloca el foco en su título para navegación accesible.
  */
+let inicioFocusVersion = 0;
 function irAlInicio(contenedor = null) {
+  const version = ++inicioFocusVersion;
   const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
   window.scrollTo({ top: 0, behavior: reducido ? "auto" : "smooth" });
   if (!contenedor) return;
+  const focoInicial = document.activeElement;
   requestAnimationFrame(() => {
+    if (version !== inicioFocusVersion || !contenedor.isConnected || contenedor.hidden) return;
+    const vista = contenedor.closest('.view');
+    if (vista && !vista.classList.contains('is-active')) return;
+    const focoActual = document.activeElement;
+    // A late animation frame must not steal focus after the learner starts
+    // typing or chooses another control (especially with a mobile keyboard).
+    if (focoActual?.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if (focoActual !== focoInicial && focoActual !== document.body) return;
     const titulo = $(".view-head h2", contenedor);
     if (!titulo) return;
     titulo.tabIndex = -1;
@@ -1479,7 +1502,7 @@ const JUEGOS = [
     id: "rapida",
     emoji: "⚡",
     nombre: "Respuesta rápida",
-    desc: "60 segundos. Te doy la traducción, eliges la palabra en inglés.",
+    desc: "Recupera la palabra sin prisa. El reto de 60 segundos es opcional.",
     minimo: 4,
     record: "puntos",
   },
@@ -1503,7 +1526,7 @@ const JUEGOS = [
     id: "parejas",
     emoji: "🔗",
     nombre: "Emparejar",
-    desc: "Seis parejas inglés–español contra el reloj.",
+    desc: "Relaciona seis parejas inglés–español. Sin reloj por defecto.",
     minimo: 6,
     record: "tiempo",
   },
@@ -1585,21 +1608,26 @@ const JUEGOS = [
 const GRUPOS_JUEGOS = [
   { nombre: "Significado", pista: "saber qué quiere decir", juegos: ["rapida", "hueco"] },
   { nombre: "Oído y pronunciación", pista: "reconocerla y decirla", juegos: ["escucha", "hablar", "dictado"] },
-  { nombre: "Escritura", pista: "producirla tú, sin ayuda", juegos: ["escribe", "ordena"] },
+  { nombre: "Escritura", pista: "de las letras guiadas al recuerdo escrito", juegos: ["escribe", "ordena"] },
   { nombre: "Gramática", pista: "las formas que no se deducen", juegos: ["irregulares", "modales"] },
   { nombre: "Cómo se dice", pista: "lo que sale entero, sin traducir", juegos: ["frases"] },
   { nombre: "Tus errores", pista: "justo lo que se te resiste", juegos: ["falsos", "confusas"] },
-  { nombre: "Memoria", pista: "a contrarreloj", juegos: ["parejas"] },
+  { nombre: "Memoria", pista: "relacionar forma y significado", juegos: ["parejas"] },
 ];
 
 let juego = null; // estado del juego en curso
 let gameTimer = null;
+let activeGameId = null;
+let gameReviewRun = null;
+const missionAudio = createGameAudio(window);
 
 function pararJuego() {
+  missionAudio.stop();
   clearInterval(gameTimer);
   gameTimer = null;
   pararEscucha();
   juego = null;
+  gameReviewRun = null;
 }
 
 /* ---------- Reconocimiento de voz ---------- */
@@ -1696,7 +1724,7 @@ function gamePool() {
   return [...propias, ...extra];
 }
 
-const mezclar = (arr) => [...arr].sort(() => Math.random() - 0.5);
+const mezclar = (arr) => shuffled(arr);
 /** Escapa los caracteres que tienen significado especial dentro de una expresión regular. */
 const escRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const record = (id) => store.games?.[id] ?? 0;
@@ -1714,14 +1742,17 @@ function estadoJuego(g) {
 }
 
 function guardarRecord(id, valor, menorEsMejor = false) {
+  const summary = gameSummary(juego || {});
+  store.gameLearning = store.gameLearning || {};
+  store.gameLearning[id] = { ...summary, date: todayStr() };
   store.games = store.games || {};
   const actual = store.games[id];
   // Sin marca previa cuenta como récord, pero un cero no: ni la primera
   // partida debería celebrar un 0 de 10, ni una resuelta entera a base de
   // pistas, que para el récord vale lo mismo que un cero.
   const esMarca = menorEsMejor || valor > 0;
-  const mejor =
-    actual === undefined ? esMarca : menorEsMejor ? valor < actual : valor > actual;
+  const comparable = !["rapida", "parejas"].includes(id) || store.gameMode === "challenge";
+  const mejor = comparable && (actual === undefined ? esMarca : menorEsMejor ? valor < actual : valor > actual);
   if (mejor) store.games[id] = valor;
   // Se apunta siempre, aunque no sea récord: es lo que permite recomendarte la
   // destreza que llevas más tiempo sin tocar.
@@ -1741,6 +1772,7 @@ function guardarRecord(id, valor, menorEsMejor = false) {
  */
 function penalizar(w) {
   if (!w?.en) return;
+  guardarErrorJuego(w);
   // Se apunta para el resumen del final: terminar una partida sabiendo el
   // marcador pero no QUÉ fallaste no sirve de nada.
   if (juego) {
@@ -1760,6 +1792,31 @@ function penalizar(w) {
   real.due = todayStr();
   save();
   updateChrome();
+}
+
+function guardarErrorJuego(word = null) {
+  if (!juego || !activeGameId) return;
+  const item = juego.items?.[juego.i];
+  const w = word || (activeGameId === "rapida" ? juego.actual : item?.w || item);
+  let card;
+  if (activeGameId === "irregulares" && item?.v) {
+    const { v, hueco } = item;
+    card = { prompt: `Escribe el ${hueco === "pasado" ? "pasado simple" : "participio"} de ${v.base} (${v.es}).`, accepted: [v[hueco], ...v[hueco].split("/")], explanation: `${v.base} · ${v.pasado} · ${v.participio}. El participio se usa, por ejemplo, después de have; el pasado simple sitúa una acción pasada.` };
+  } else if (activeGameId === "modales" && item?.frase) {
+    card = { prompt: `${item.frase} — ${item.es} Escribe el modal que expresa esta intención.`, accepted: [item.opciones[item.correcta]], explanation: item.why };
+  } else if (activeGameId === "frases" && item?.en) {
+    card = { prompt: `Recupera la expresión practicada: ${item.situacion} (${item.es})`, accepted: [item.en], explanation: `${item.porque} Comparamos la expresión del juego; pueden existir otras formas válidas de responder a esta situación.` };
+  } else if (activeGameId === "dictado" && w?.example) {
+    card = { prompt: `Recupera la frase del dictado: ${w.exampleEs || "Escucha el modelo si necesitas ayuda"}`, accepted: [w.example], explanation: `${w.example} — ${w.exampleEs || ""}. Revisa el sentido además del sonido.`, exact: true };
+  } else if (w?.en && w?.es) {
+    const synonyms = (juego.pool || []).filter(x => mismoEs(x, w)).map(x => x.en);
+    card = { prompt: `Escribe en inglés (forma de diccionario): ${w.es}`, accepted: [...new Set([w.en, ...synonyms])], explanation: `${w.en} — ${w.es}.${w.example ? ` ${w.example} — ${w.exampleEs || ""}` : ""}` };
+  }
+  if (!card) return;
+  card.key = `${activeGameId}|${card.prompt}`;
+  card.game = activeGameId;
+  store.gameReview = scheduleMistake(store.gameReview, card, todayStr());
+  save();
 }
 
 /**
@@ -1917,7 +1974,10 @@ function juegoRecomendado() {
   }
 
   const ultima = store.gamesLast || {};
-  const nunca = jugables.filter((g) => !ultima[g.id]);
+  const weak = jugables.filter(g => store.gameLearning?.[g.id]?.accuracy != null && store.gameLearning[g.id].accuracy < 80 && ultima[g.id] !== todayStr())
+    .sort((a, b) => store.gameLearning[a.id].accuracy - store.gameLearning[b.id].accuracy)[0];
+  if (weak) return { id: weak.id, def: weak, motivo: "En tu última sesión necesitaste más ayuda. Practica con calma y revisa las explicaciones." };
+  const nunca = jugables.filter((g) => !ultima[g.id]).sort((a, b) => Number(b.id === "escribe") - Number(a.id === "escribe"));
   if (nunca.length) {
     const g = nunca[0];
     return { id: g.id, def: g, motivo: "Todavía no lo has probado, y entrena algo que no tocas en los demás." };
@@ -1962,12 +2022,21 @@ function renderJuegosIndex() {
 
   renderChipsJuegos();
   renderJuegoSugerido();
+  renderMissionHub();
+  renderGameReviewPlan();
+  if (!$("#game-learning-hub")) $("#juego-sugerido").insertAdjacentHTML("beforebegin", '<div id="game-learning-hub"></div>');
+  $("#game-learning-hub").innerHTML = `<section class="game-learning-panel">
+    <label for="game-mode">Tu ritmo en Respuesta rápida y Emparejar</label>
+    <select id="game-mode"><option value="learn" ${store.gameMode !== "challenge" ? "selected" : ""}>Aprender sin reloj</option><option value="challenge" ${store.gameMode === "challenge" ? "selected" : ""}>Reto con reloj</option></select>
+    <p>Un récord mide una partida, no dominio. Los errores se guardan para volver a recordarlos.</p>
+  </section>`;
+  $("#game-mode").onchange = event => { store.gameMode = event.target.value; save(); };
 
   const pool = gamePool().length;
   const lios = paresConfusos().length;
   const filtro = juegoCat === "mixto" ? "" : ` de ${nombreCategoria(juegoCat).toLowerCase()}`;
   $("#juegos-sub").textContent =
-    `${pool} palabras${filtro} en juego · fallar una la devuelve al repaso` +
+    `${pool} palabras${filtro} en juego · aprende, corrige y vuelve a recordar` +
     (lios ? ` · ${lios} ${lios === 1 ? "pareja que mezclas" : "parejas que mezclas"}` : "");
 
   const tarjeta = (g) => {
@@ -1981,6 +2050,7 @@ function renderJuegosIndex() {
       </span>
       <span class="game-meta">
         <span class="game-state${estado.warning ? " is-warning" : ""}">${esc(estado.texto)}</span>
+        ${store.gameLearning?.[g.id]?.total ? `<span class="game-learning-last">Última: ${store.gameLearning[g.id].independent}/${store.gameLearning[g.id].total} sin ayuda</span>` : ""}
         <span class="game-requirement">${esc(requisito)}</span>
         <span class="game-play">${estado.warning ? "Ver motivo" : "Jugar"} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
       </span>
@@ -2002,8 +2072,174 @@ function renderJuegosIndex() {
   }).join("");
 }
 
+/* ---------- Misiones: una ruta, no un marcador de velocidad ---------- */
+function reviewDateLabel(day) {
+  if (day <= todayStr()) return 'Hoy';
+  if (day === addDays(1)) return 'Mañana';
+  return new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short' }).format(new Date(`${day}T12:00:00`));
+}
+function renderGameReviewPlan() {
+  if (!$('#game-review-plan')) $('#mission-hub').insertAdjacentHTML('beforebegin', '<div id="game-review-plan"></div>');
+  const plan = reviewPlan(store.gameReview, todayStr());
+  const box = $('#game-review-plan');
+  box.hidden = !plan.total;
+  if (!plan.total) { box.innerHTML = ''; return; }
+  const firstAttempts = plan.today.independent + plan.today.assisted + plan.today.wrong;
+  box.innerHTML = `<section class="card review-plan">
+    <p class="eyebrow">Tu plan de repaso</p><h3>${plan.due ? `${plan.due} ${plan.due === 1 ? 'objetivo' : 'objetivos'} para hoy` : 'Por hoy, al día'}</h3>
+    <p>${plan.due ? `Una ronda incluye hasta 10 objetivos. ${plan.upcoming} ${plan.upcoming === 1 ? 'queda programado' : 'quedan programados'} para después.` : `Próxima comprobación: ${esc(reviewDateLabel(plan.next))}. Tienes ${plan.upcoming} ${plan.upcoming === 1 ? 'objetivo programado' : 'objetivos programados'}.`}</p>
+    ${firstAttempts ? `<p class="review-day-summary">En los repasos que tocaban hoy: <b>${plan.today.independent}/${firstAttempts} sin ayuda</b> · ${plan.today.assisted} con ayuda · ${plan.today.wrong} ${plan.today.wrong === 1 ? 'fallo' : 'fallos'}. Solo cuenta el primer intento.</p>` : ''}
+    <button class="btn ${plan.due ? '' : 'btn-ghost'}" id="open-game-review">${plan.due ? `Repasar ahora · ${Math.min(10, plan.due)}` : 'Practicar antes de la fecha'}</button>
+    <p class="muted">${plan.due ? 'Los objetivos de hoy van primero. Los futuros no se mezclan en esta ronda.' : 'Es opcional. Ensayar ahora no adelanta las comprobaciones de otros días.'}</p>
+    <details><summary>Ver objetivos y próximas fechas</summary><div class="review-plan-groups">${plan.groups.map((group, i) => {
+      const label = group.mission ? missionById(group.mission)?.title || 'Misión guardada' : JUEGOS.find(g => g.id === group.game)?.nombre || 'Práctica guardada';
+      return `<article><h4>${esc(label)}</h4><p>${group.total} ${group.total === 1 ? 'objetivo' : 'objetivos'} · ${group.due ? `${group.due} para hoy` : esc(reviewDateLabel(group.next))}</p><p class="muted">${group.support ? `${group.support} ${group.support === 1 ? 'necesita' : 'necesitan'} refuerzo. ` : ''}${group.maintenance ? `${group.maintenance} en mantenimiento.` : 'Comprobaciones espaciadas en curso.'}</p><button class="btn btn-ghost" data-review-group="${i}">${group.due ? 'Repasar este grupo' : 'Practicar este grupo antes'}</button></article>`;
+    }).join('')}</div><p class="muted">No mostramos las respuestas antes de practicar. Estar al día no significa haber dominado todos los objetivos.</p></details>
+  </section>`;
+  $('#open-game-review').onclick = () => abrirRepasoJuegos();
+  $$('[data-review-group]', box).forEach(button => button.onclick = () => {
+    const group = plan.groups[Number(button.dataset.reviewGroup)];
+    abrirRepasoJuegos(group.game, group.mission);
+  });
+}
+
+function missionAudioMarkup(question, run) {
+  if (!question.audio) return '';
+  return `<div class="mission-audio"><div class="row-actions"><button class="btn" id="task-listen">${run.listenedTo === question.audio ? 'Repetir audio' : 'Escuchar'}</button><button class="btn btn-ghost" id="task-slow">Lento (ayuda)</button></div>
+    <p id="task-audio-status" role="status">${run.audioFailed ? 'El audio no ha respondido. Reintenta o practica leyendo la transcripción.' : run.listenedTo === question.audio ? 'Audio reproducido. Puedes responder.' : 'Pulsa Escuchar. No necesitas micrófono.'}</p>
+    <button class="btn btn-ghost" id="task-transcript">${run.transcript ? 'Texto consultado · con ayuda' : 'Ver transcripción (ayuda)'}</button>
+    ${run.transcript ? `<p class="pista-box" lang="en">${esc(question.audio)}</p>` : ''}
+    <p class="muted">Puedes repetir. Lento y texto cuentan como ayuda.</p></div>`;
+}
+function bindMissionAudio(question, run, render) {
+  if (!question.audio || !$('#task-listen')) return;
+  const play = slow => {
+    if (slow) run.help = true;
+    save();
+    $('#task-audio-status').textContent = 'Reproduciendo…';
+    missionAudio.play(question.audio, { slow,
+      onComplete: () => { run.listenedTo = question.audio; run.audioFailed = false; save(); render(); },
+      onError: () => { run.audioFailed = true; save(); render(); },
+    });
+  };
+  $('#task-listen').onclick = () => play(false);
+  $('#task-slow').onclick = () => play(true);
+  $('#task-transcript').onclick = () => { missionAudio.stop(); run.help = true; run.transcript = true; save(); render(); };
+}
+
+function renderMissionHub() {
+  if (!$("#mission-hub")) $("#juego-sugerido").insertAdjacentHTML('beforebegin', '<div id="mission-hub"></div>');
+  const sessions = store.missionSessions || {};
+  const progress = store.missionProgress || {};
+  const recommendation = recommendMission(MISSIONS, sessions, progress, todayStr());
+  const { mission: next, resumed } = recommendation;
+  const due = dueCards(store.gameReview, todayStr()).length;
+  const complete = MISSIONS.filter(m => progress[m.id]).length;
+  $("#mission-hub").innerHTML = `<section class="mission-hub card">
+    <p class="eyebrow">Aprende jugando · ruta guiada</p>
+    <h3>${esc(next.title)}</h3><p>${esc(next.goal)}</p>
+    <p class="muted">${esc(recommendation.reason)}</p>
+    <ol class="mission-path" aria-label="Recorrido de una misión"><li>Explora</li><li>Reconoce</li><li>Recuerda</li><li>Aplica</li></ol>
+    <p class="muted">${esc(next.level)} · 3 objetivos · sin reloj. Puedes salir y retomar.</p>
+    ${due ? `<button class="btn" id="mission-review">Primero, repaso de hoy · ${due}</button>` : ''}
+    <button class="btn ${due ? 'btn-ghost' : ''}" id="mission-start">${resumed ? 'Continuar misión' : 'Empezar misión'}</button>
+    <p class="muted">${complete} de ${MISSIONS.length} misiones practicadas. Completar no significa dominar: después comprobarás qué recuerdas en otros días.</p>
+    <details><summary>Elegir misión y ver mi progreso</summary><div class="mission-list">${MISSIONS.map(m => {
+      const p = progress[m.id];
+      const cards = reviewCards(store.gameReview).filter(c => c.mission === m.id);
+      const checked = cards.filter(c => reviewStage(c) === 3).length;
+      return `<article><h4>${esc(m.title)}</h4><p class="muted">${esc(m.level)}</p>${p ? `<p>Inicio: ${p.firstBaseline}/3 · último contexto final: ${p.last.transfer}/3 sin ayuda.</p><p>${checked}/3 objetivos con tres comprobaciones espaciadas; continúan en mantenimiento.</p>` : '<p>Todavía sin medición inicial.</p>'}<button class="btn btn-ghost" data-mission="${m.id}">${sessions[m.id] && !sessions[m.id].completed ? 'Retomar' : p ? 'Volver a practicar' : 'Empezar'}</button></article>`;
+    }).join('')}</div><p class="muted">Datos guardados solo en este navegador. Comparamos tareas distintas sobre los mismos objetivos, no pruebas equivalentes ni un nivel oficial. Al repetir una misión, sus contextos ya pueden ser familiares.</p></details>
+  </section>`;
+  $("#mission-start").onclick = () => abrirMision(next.id);
+  if ($("#mission-review")) $("#mission-review").onclick = () => abrirRepasoJuegos();
+  $$('[data-mission]', $("#mission-hub")).forEach(button => button.onclick = () => abrirMision(button.dataset.mission));
+  // Keep free play available, with lower priority than the structured route.
+  $("#juego-sugerido").hidden = true;
+}
+
+function abrirMision(id) {
+  const mission = missionById(id);
+  if (!mission) return;
+  pararJuego(); activarVista('juegos');
+  store.missionSessions ||= {};
+  const previous = store.missionSessions[id];
+  if (!validMissionRun(previous, mission) || previous.completed) store.missionSessions[id] = newMission(mission, todayStr());
+  save();
+  $("#juegos-index").hidden = true;
+  const box = $("#juego-activo"); box.hidden = false;
+  box.innerHTML = `<button class="btn-back" id="back-juegos">← Guardar y salir</button><div class="view-head"><h2>${esc(mission.title)}</h2><p class="muted">${esc(mission.goal)}</p></div><div id="mission-box"></div>`;
+  $("#back-juegos").onclick = renderJuegosIndex;
+  document.title = `${mission.title} · Vocab`;
+  renderMision(mission); irAlInicio(box);
+}
+
+function renderMision(mission) {
+  missionAudio.stop();
+  const run = store.missionSessions[mission.id];
+  const box = $("#mission-box");
+  if (run.i >= run.steps.length) {
+    if (!run.completed) {
+      run.completed = todayStr();
+      const result = missionSummary(run);
+      store.missionProgress ||= {};
+      const previous = store.missionProgress[mission.id];
+      store.missionProgress[mission.id] = { firstBaseline: previous?.firstBaseline ?? result.baseline, last: result, history: [...(previous?.history || []), result].slice(-20) };
+      for (const item of mission.items) store.gameReview = schedulePractice(store.gameReview, missionCard(mission, item), todayStr());
+      registerStudyDay(); save(); updateChrome();
+    }
+    const result = missionSummary(run);
+    box.innerHTML = `<section class="card mission-result"><p class="eyebrow">Misión practicada</p><h3 tabindex="-1">${result.transfer === 3 ? 'Lo has aplicado sin ayuda' : 'Ya sabes qué reforzar'}</h3>
+      <dl class="mission-metrics"><div><dt>Antes de practicar</dt><dd>${result.baseline}/3</dd></div><div><dt>${mission.mode === 'listening' ? 'Escucha y escribe' : 'Recuerdo escrito'}</dt><dd>${result.recall}/3</dd></div><div><dt>Otro contexto</dt><dd>${result.transfer}/3</dd></div></dl>
+      <p>Son primeros intentos sin ayuda. Las pistas y los reintentos sirven para practicar, pero no elevan estas cifras.</p>
+      <h4>La siguiente meta: recordarlo otro día</h4><p>Los tres objetivos están en tu repaso. Harás tres comprobaciones sin ayuda, separadas por 1, 3 y 7 días; después habrá mantenimiento. Si necesitas ayuda, volverás a reforzarlo.</p>
+      <p class="muted">Estos resultados no demuestran dominio ni eficacia del método. ${mission.mode === 'listening' ? 'Se evalúa extraer datos de audios sintéticos breves, no comprender cualquier conversación real.' : 'Los contextos son ejercicios escritos acotados, no conversación libre.'}</p>
+      <button class="btn" id="mission-done">Ver mi ruta y próximos repasos</button>
+      <details><summary>Seguir jugando libremente</summary><p>Practican destrezas relacionadas; las partidas libres no sustituyen las comprobaciones de la misión.</p><div class="row-actions">${mission.games.map(id => { const g = JUEGOS.find(g => g.id === id); return g ? `<button class="btn btn-ghost" data-juego="${id}">${esc(g.nombre)}</button>` : ''; }).join('')}</div></details>
+    </section>`;
+    $("#mission-done").onclick = renderJuegosIndex;
+    $('h3', box).focus({ preventScroll: true }); return;
+  }
+  const step = run.steps[run.i];
+  const item = mission.items[step.item];
+  const response = run.answers[run.i];
+  const labels = { baseline: 'Punto de partida', example: 'Explora el ejemplo', choice: 'Reconoce el significado', recall: 'Recuerda sin opciones', retry: 'Otra oportunidad de práctica', transfer: 'Aplica en otro contexto' };
+  const question = missionQuestion(mission, step);
+  box.innerHTML = `<section class="card mission-exercise">
+    <p class="quiz-count">${esc(labels[step.kind])} · objetivo ${step.item + 1} de 3</p>
+    <progress value="${run.i}" max="${run.steps.length}" aria-label="Avance de la misión"></progress>
+    ${step.kind === 'example' ? `<h3 tabindex="-1">${esc(item.meaning)}</h3><p class="mission-example" lang="en">${esc(item.example)}</p><p>${esc(item.explanation)}</p><button class="btn btn-ghost" data-speak="${esc(item.example.split(' — ')[0])}">Escuchar el ejemplo</button><button class="btn" id="mission-next">Lo he leído · continuar</button>` : `
+    <h3 tabindex="-1">${esc(question.prompt)}</h3>
+    ${!response ? missionAudioMarkup(question, run) : ''}
+    ${question.audio ? '<p class="muted">Busca solo el dato preguntado. Puedes escribir cifras o números en inglés; los datos cambian en cada situación.</p>' : step.kind === 'baseline' ? '<p class="muted">Prueba sin pistas. Si no lo sabes, está bien: lo aprenderás después. Esta comprobación no bloquea ninguna misión.</p>' : step.kind === 'retry' ? '<p class="muted">Volvemos a lo que costó más. Este reintento no cambia tu primer resultado.</p>' : '<p class="muted">Recupera la palabra o expresión practicada. No hace falta escribir la frase completa.</p>'}
+    ${response ? `<div class="explain ${step.kind === 'baseline' ? '' : response.correct ? 'ok' : 'ko'}" tabindex="-1"><b>${step.kind === 'baseline' ? 'Respuesta guardada' : response.correct ? response.assisted ? 'Correcto con ayuda' : 'Correcto, sin ayuda' : `Modelo: ${esc(question.accepted[0])}`}</b><p>${step.kind === 'baseline' ? 'Verás los modelos al terminar los tres intentos iniciales.' : esc(item.explanation)}</p>${question.audio && step.kind !== 'baseline' ? `<p lang="en">${esc(question.audio)}</p><p>Dato esperado: ${esc(question.accepted[0])}</p>` : ''}</div><button class="btn" id="mission-next">Continuar</button>` : step.kind === 'choice' ? `<div class="quiz-options">${mezclar(question.options).map(value => `<button class="quiz-option" data-mission-answer="${esc(value)}">${esc(value)}</button>`).join('')}</div><button class="btn btn-nose" id="mission-skip">No lo sé</button>` : `<form id="mission-form"><label for="mission-answer">${question.audio ? 'El dato que has oído (cifras o inglés)' : 'Tu respuesta en inglés'}</label><input id="mission-answer" lang="en" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" required value="${esc(run.draft || '')}"><button class="btn" type="submit">${step.kind === 'baseline' ? 'Guardar respuesta' : 'Comprobar'}</button></form>
+    ${step.kind !== 'baseline' && !question.audio ? `<button class="btn btn-ghost" id="mission-help">${run.help ? 'Modelo consultado · cuenta como ayuda' : 'Necesito una pista'}</button>${run.help ? `<p class="pista-box">${esc(question.accepted[0])} — ${esc(item.explanation)}</p>` : ''}` : ''}<button class="btn btn-nose" id="mission-skip">No lo sé</button>`}`}
+    <p class="quiz-save-note">${sinSitio ? 'No se ha podido guardar. Mantén la app abierta y exporta una copia en Ajustes.' : 'Tu avance se guarda en este navegador. Puedes salir y continuar después.'}</p>
+  </section>`;
+  const next = $('#mission-next');
+  if (next) next.onclick = () => { store.missionSessions[mission.id] = advanceMission(run); save(); renderMision(mission); irAlInicio(box); };
+  const input = $('#mission-answer');
+  if (input) input.oninput = () => { run.draft = input.value; save(); };
+  const submit = (value, unknown = false) => {
+    if (run.answers[run.i] || (!unknown && !value.trim())) return;
+    if (question.audio && !unknown && !run.help && run.listenedTo !== question.audio) { $('#task-audio-status').textContent = 'Primero escucha el audio completo o consulta la transcripción.'; $('#task-listen').focus(); return; }
+    const updated = answerMission(run, mission, value, todayStr(), unknown);
+    store.missionSessions[mission.id] = updated;
+    const answer = updated.answers[updated.i];
+    if (step.kind !== 'baseline' && (!answer.correct || answer.assisted)) store.gameReview = scheduleMistake(store.gameReview, missionCard(mission, item), todayStr());
+    save(); renderMision(mission);
+  };
+  if ($('#mission-form')) $('#mission-form').onsubmit = event => { event.preventDefault(); submit(input.value); };
+  $$('[data-mission-answer]', box).forEach(button => button.onclick = () => submit(button.dataset.missionAnswer));
+  if ($('#mission-skip')) $('#mission-skip').onclick = () => submit('', true);
+  if ($('#mission-help')) $('#mission-help').onclick = () => { run.help = true; save(); renderMision(mission); };
+  bindMissionAudio(question, run, () => renderMision(mission));
+  (response ? $('.explain', box) : $('h3', box))?.focus({ preventScroll: true });
+}
+
 function abrirJuego(id) {
   const def = JUEGOS.find((g) => g.id === id);
+  if (!def) return;
   const pool = gamePool();
   if (pool.length < def.minimo) {
     toast(
@@ -2015,6 +2251,7 @@ function abrirJuego(id) {
   }
 
   pararJuego();
+  activeGameId = id;
   // Se puede llegar desde fuera de Juegos (la sugerencia al acabar el repaso),
   // así que la sección tiene que estar delante o la partida se montaría dentro
   // de una vista oculta y no la verías.
@@ -2029,6 +2266,7 @@ function abrirJuego(id) {
       <h2>${def.emoji} ${esc(def.nombre)}</h2>
       <p class="muted">${esc(def.desc)}</p>
     </div>
+    <details class="game-purpose"><summary>Qué estás practicando</summary><p>${esc(GAME_OBJECTIVES[id])}</p></details>
     <div id="game-box"></div>`;
 
   $("#back-juegos").onclick = () => renderJuegosIndex();
@@ -2069,7 +2307,10 @@ function detalle(j, esRecord) {
  */
 function acertar() {
   juego.aciertos += 1;
-  if (juego.pista) juego.conPista = (juego.conPista || 0) + 1;
+  if (juego.pista) {
+    juego.conPista = (juego.conPista || 0) + 1;
+    guardarErrorJuego();
+  }
 }
 
 /** Lo que cuenta para el récord: los aciertos que te salieron solo. */
@@ -2140,15 +2381,95 @@ function repintarConTexto(repintar, selector, texto) {
   campo.focus({ preventScroll: true });
 }
 
+function abrirRepasoJuegos(gameId = null, missionId = null) {
+  const cards = reviewCards(store.gameReview).filter(c => (!gameId || c.game === gameId) && (!missionId || c.mission === missionId));
+  if (!cards.length) return;
+  pararJuego();
+  activarVista("juegos");
+  $("#juegos-index").hidden = true;
+  $("#juego-activo").hidden = false;
+  $("#juego-activo").innerHTML = '<button class="btn-back" id="back-juegos">← Juegos</button><div class="view-head"><h2>Recuerda lo aprendido</h2><p class="muted">Escribe sin opciones. Cada objetivo pasa por tres comprobaciones en días separados y después continúa en mantenimiento.</p></div><div id="game-box"></div>';
+  const previous = store.gameReviewSession;
+  const due = cards.filter(c => c.due <= todayStr());
+  const selection = mezclar(due.length ? due : cards).sort((a, b) => a.due.localeCompare(b.due)).slice(0, 10);
+  gameReviewRun = reviewSessionValid(previous, cards, todayStr(), gameId, missionId)
+    ? previous : { date: todayStr(), gameId, missionId, items: selection.map(reviewExercise), i: 0, independent: 0, response: null, help: false };
+  store.gameReviewSession = gameReviewRun; save();
+  $("#back-juegos").onclick = renderJuegosIndex;
+  renderRepasoJuegos();
+  irAlInicio($("#juego-activo"));
+}
+
+function renderRepasoJuegos() {
+  missionAudio.stop();
+  const run = gameReviewRun;
+  if (!run) return;
+  const box = $("#game-box");
+  if (run.i >= run.items.length) {
+    store.gameReviewSession = null;
+    const remaining = dueCards(store.gameReview, todayStr()).length;
+    const plan = reviewPlan(store.gameReview, todayStr());
+    box.innerHTML = `<section class="card quiz-result"><h3 tabindex="-1">Repaso terminado</h3><p>${run.independent} de ${run.items.length} respuestas sin ayuda.</p><p>${remaining ? `${remaining} objetivos pendientes para hoy.` : 'Ya no quedan objetivos pendientes para hoy.'} ${plan.next ? `Próxima fecha: ${esc(reviewDateLabel(plan.next))}.` : ''}</p><p>Los objetivos siguen programados. Ensayar antes de la fecha no adelanta las etapas.</p>${remaining ? `<button class="btn" id="review-continue">Continuar con ${Math.min(10, remaining)} pendientes</button>` : ''}<button class="btn ${remaining ? 'btn-ghost' : ''}" id="review-done">Ver mi plan de repaso</button></section>`;
+    if ($('#review-continue')) $('#review-continue').onclick = () => abrirRepasoJuegos();
+    $("#review-done").onclick = renderJuegosIndex;
+    $("h3", box).focus();
+    registerStudyDay(); save(); updateChrome();
+    return;
+  }
+  const card = run.items[run.i];
+  const modelViewed = run.modelViewed ?? (!card.audio && run.help);
+  box.innerHTML = `<section class="card game-written-review">
+    <p class="quiz-count">${run.i + 1} de ${run.items.length} · ${card.due <= todayStr() ? "Repaso de hoy" : "Práctica anticipada"}</p>
+    <p class="muted">${reviewStage(card) === 3 ? 'Mantenimiento del recuerdo' : `Comprobación espaciada ${reviewStage(card) + 1} de 3`} · ${esc(card.due)}${card.mission ? card.audio ? ' · escucha otro anuncio' : ' · otro contexto escrito' : ''}</p>
+    <h3>${esc(card.prompt)}</h3>
+    ${!run.response ? missionAudioMarkup(card, run) : card.audio ? `<p lang="en">${esc(card.audio)}</p>` : ''}
+    <form id="game-review-form"><label for="game-review-answer">${card.audio ? 'El dato que has oído (cifras o inglés)' : 'Tu respuesta en inglés'}</label><input id="game-review-answer" maxlength="500" autocomplete="off" autocapitalize="off" spellcheck="false" lang="en" required ${run.response ? "disabled" : ""} value="${esc(run.input || "")}">
+      ${run.response ? "" : '<button class="btn" type="submit">Comprobar</button>'}</form>
+    ${run.response ? `<div class="explain ${run.response.correct ? "ok" : "ko"}" tabindex="-1"><b>${run.response.correct ? run.help ? "Correcto con ayuda" : "Correcto" : "Respuesta esperada: " + esc(card.accepted[0])}</b><p>${esc(card.explanation)}</p><p>${run.help || !run.response.correct ? 'Lo reforzaremos mañana desde la primera comprobación.' : card.due <= todayStr() ? 'Próxima comprobación: ' + esc(store.gameReview[card.key].due) : 'Buen ensayo. La fecha pendiente se mantiene.'}</p></div><button class="btn" id="game-review-next">${run.i + 1 === run.items.length ? "Ver resultado" : "Siguiente"}</button>` : `<button class="btn btn-ghost" id="game-review-model">Consultar modelo (ayuda)</button><p id="game-review-model-text" ${modelViewed ? '' : 'hidden'}>${modelViewed ? esc(card.accepted[0] + ' — ' + card.explanation) : ''}</p><button class="btn btn-nose" id="game-review-skip">No lo sé</button>`}
+    <p class="muted">${sinSitio ? "No se ha podido guardar. Mantén la app abierta." : "Tu repaso se guarda en este navegador."}</p>
+  </section>`;
+  if (run.response) {
+    $(".explain", box).focus({ preventScroll: true });
+    $("#game-review-next").onclick = () => { run.i++; run.response = null; run.help = false; run.modelViewed = false; run.input = ""; run.listenedTo = null; run.transcript = false; run.audioFailed = false; save(); renderRepasoJuegos(); };
+    return;
+  }
+  const input = $("#game-review-answer");
+  input.oninput = () => { run.input = input.value; save(); };
+  const submit = (unknown = false) => {
+    if (run.response || (!unknown && !input.value.trim())) return;
+    if (card.audio && !unknown && !run.help && run.listenedTo !== card.audio) { $('#task-audio-status').textContent = 'Primero escucha el audio completo o consulta la transcripción.'; $('#task-listen').focus(); return; }
+    const correct = !unknown && reviewCorrect(card, input.value);
+    if (correct && !run.help) run.independent++;
+    store.gameReview = answerReview(store.gameReview, card.key, correct, todayStr(), run.help);
+    run.response = { correct }; run.input = input.value;
+    save(); renderRepasoJuegos();
+  };
+  $("#game-review-form").onsubmit = event => { event.preventDefault(); submit(); };
+  $("#game-review-skip").onclick = () => submit(true);
+  $("#game-review-model").onclick = () => {
+    run.help = true; run.modelViewed = true; save();
+    $("#game-review-model-text").hidden = false;
+    $("#game-review-model-text").textContent = `${card.accepted[0]} — ${card.explanation}`;
+  };
+  bindMissionAudio(card, run, renderRepasoJuegos);
+}
+
 function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
   const falladas = (juego?.falladas || []).slice(0, 10);
+  const summary = gameSummary(juego || {});
+  const pending = reviewCards(store.gameReview).filter(c => c.game === activeGameId);
+  const guided = recommendMission(MISSIONS.filter(m => m.games.includes(activeGameId)), store.missionSessions || {}, store.missionProgress || {}, todayStr());
 
   $("#game-box").innerHTML = `
     <div class="card quiz-result" aria-live="polite">
       <p class="result-emoji">${esRecord ? "🏆" : "👏"}</p>
       <p class="result-score">${esc(titulo)}</p>
       <p class="muted">${esc(detalle)}</p>
+      <p class="game-learning-summary"><b>${summary.independent}/${summary.total} sin ayuda</b> · ${summary.assisted} con ayuda · ${summary.wrong} fallos · ${summary.unknown} sin saber</p>
+      <p class="muted">${activeGameId === "parejas" ? "En parejas, la cifra compara emparejamientos correctos con intentos; no mide recuerdo sin ver las fichas." : "Es el resultado de esta práctica, no una certificación de dominio."}</p>
       <div class="row-actions">
+        ${pending.length ? `<button class="btn" id="review-game-errors">Reforzar ${pending.length} errores guardados</button>` : ""}
+        ${guided ? `<button class="btn" id="game-guided-mission">Misión relacionada: ${esc(guided.mission.title)}</button>` : ''}
         <button class="btn" id="rejugar">Otra partida</button>
         <button class="btn btn-ghost" id="volver-juegos">Otros juegos</button>
       </div>
@@ -2169,11 +2490,13 @@ function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
                  )
                  .join("")}
              </ul>
-             <p class="muted">Ya están en tu cola de repaso para hoy.</p>
+             <p class="muted">${sinSitio ? "No se ha podido guardar. Mantén la app abierta y revisa el espacio del navegador." : "Los errores están guardados en Juegos, aunque no haya cupo para añadir palabras al repaso de vocabulario."}</p>
            </div>`
         : ""
     }`;
   $("#rejugar").onclick = reiniciar;
+  if ($('#game-guided-mission')) $('#game-guided-mission').onclick = () => abrirMision(guided.mission.id);
+  if ($("#review-game-errors")) $("#review-game-errors").onclick = () => abrirRepasoJuegos(activeGameId);
   $("#volver-juegos").onclick = () => renderJuegosIndex();
   updateChrome();
 }
@@ -2181,32 +2504,38 @@ function pantallaFinal(titulo, detalle, esRecord, reiniciar) {
 /* ---------- ⚡ Respuesta rápida ---------- */
 
 function iniciarRapida(pool) {
-  juego = { pool, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, restante: 60, actual: null, bloqueado: false };
+  juego = { pool, items: mezclar(pool).slice(0, 10), i: 0, aciertos: 0, fallos: 0, nose: 0, pistas: 0, pista: 0, restante: 60, actual: null, bloqueado: false, timed: store.gameMode === "challenge" };
+  const session = juego;
   clearInterval(gameTimer);
-  gameTimer = setInterval(() => {
-    if (!juego) return clearInterval(gameTimer);
-    juego.restante -= 1;
+  if (juego.timed) gameTimer = setInterval(() => {
+    if (juego !== session) return;
+    if (document.hidden || juego.restante <= 0) return;
+    juego.restante = Math.max(0, juego.restante - 1);
     const reloj = $("#reloj");
     if (reloj) reloj.textContent = juego.restante;
     if (juego.restante <= 0) {
       clearInterval(gameTimer);
-      const esRecord = guardarRecord("rapida", limpios(juego));
-      pantallaFinal(
-        `${juego.aciertos} aciertos`,
-        detalle(juego, esRecord),
-        esRecord,
-        () => iniciarRapida(pool),
-      );
-      juego = null;
+      // Deja leer la corrección de la última respuesta antes del resultado.
+      if (!juego.bloqueado) terminarRapida();
     }
   }, 1000);
   siguienteRapida();
 }
 
+function terminarRapida() {
+  if (!juego) return;
+  clearInterval(gameTimer);
+  const pool = juego.pool;
+  const esRecord = guardarRecord("rapida", limpios(juego));
+  pantallaFinal(`${juego.aciertos} aciertos`, detalle(juego, esRecord), esRecord, () => iniciarRapida(pool));
+  juego = null;
+}
+
 function siguienteRapida(mantenerPista = false) {
   if (!juego) return;
+  if (!mantenerPista && ((!juego.timed && juego.i >= juego.items.length) || (juego.timed && juego.restante <= 0))) return terminarRapida();
   const candidatas = juego.pool.filter((x) => x.en !== juego.actual?.en);
-  const w = mantenerPista ? juego.actual : mezclar(candidatas.length ? candidatas : juego.pool)[0];
+  const w = mantenerPista ? juego.actual : juego.timed ? mezclar(candidatas.length ? candidatas : juego.pool)[0] : juego.items[juego.i];
   // Con pista puesta hay que repintar la MISMA pregunta y las MISMAS opciones:
   // volver a barajar mientras miras la pista sería tramposo y desconcertante.
   const opciones = mantenerPista ? juego.opciones : mezclar([w, ...distractores(juego.pool, w, 3)]);
@@ -2217,7 +2546,7 @@ function siguienteRapida(mantenerPista = false) {
 
   $("#game-box").innerHTML = `
     <div class="game-hud">
-      <span class="hud-time">⏱ <b id="reloj">${juego.restante}</b>s</span>
+      <span class="hud-time">${juego.timed ? `⏱ <b id="reloj">${juego.restante}</b>s` : `${juego.i + 1} / ${juego.items.length} · Sin reloj`}</span>
       <span class="hud-score">${juego.aciertos} aciertos</span>
     </div>
     <div class="card quiz-card">
@@ -2231,7 +2560,7 @@ function siguienteRapida(mantenerPista = false) {
     <div class="row-actions">
       ${botonPista()}
       <button class="btn btn-nose" id="nose">🤷 No lo sé</button>
-    </div>`;
+    </div><div id="rapid-feedback"></div>`;
 
   if ($("#pista")) $("#pista").onclick = () => usarPista(() => siguienteRapida(true));
 
@@ -2239,6 +2568,17 @@ function siguienteRapida(mantenerPista = false) {
     $$("#op-rapida .option").forEach((x) => {
       if (x.dataset.en === juego.actual.en) x.classList.add("is-right");
     });
+
+  const explicar = () => {
+    $$("#op-rapida button").forEach(button => { button.disabled = true; });
+    if ($("#pista")) $("#pista").hidden = true;
+    $("#nose").hidden = true;
+    marcarCorrecta();
+    $("#rapid-feedback").innerHTML = `<div class="explain" tabindex="-1"><b>${esc(w.en)} — ${esc(w.es)}</b><p>${esc(w.example || "Recuerda la palabra e intenta usarla en una frase propia.")}</p><p>${esc(w.exampleEs || "")}</p></div><button class="btn" id="next-rapid">Continuar</button>`;
+    $("#rapid-feedback .explain").focus({ preventScroll: true });
+    $("#rapid-feedback").scrollIntoView({ block: "nearest", behavior: "instant" });
+    $("#next-rapid").onclick = () => { juego.i++; siguienteRapida(); };
+  };
 
   $$("#op-rapida .option").forEach((b) => {
     b.onclick = () => {
@@ -2253,7 +2593,7 @@ function siguienteRapida(mantenerPista = false) {
         marcarCorrecta();
       }
       b.classList.add(bien ? "is-right" : "is-wrong");
-      setTimeout(() => juego && siguienteRapida(), bien ? 250 : 900);
+      explicar();
     };
   });
 
@@ -2265,7 +2605,7 @@ function siguienteRapida(mantenerPista = false) {
     juego.nose += 1;
     penalizar(juego.actual);
     marcarCorrecta();
-    setTimeout(() => juego && siguienteRapida(), 1200);
+    explicar();
   };
 }
 
@@ -2364,10 +2704,11 @@ function renderHueco() {
   $("#game-box").innerHTML = `
     <div class="game-hud"><span class="hud-time">${i + 1} / ${items.length}</span><span class="hud-score">${juego.aciertos} aciertos</span></div>
     <div class="card">
+      <p class="quiz-count">Elige la palabra de diccionario; después verás su forma en la frase.</p>
       <p class="quiz-q">${esc(hueco)}</p>
-      ${respondida ? `<p class="muted">${esc(w.exampleEs)}</p>` : ""}
+      <p class="muted">Sentido buscado: ${esc(w.exampleEs || w.es)}</p>
     </div>
-    ${respondida ? "" : cajaPista(`La frase dice: <em>${esc(w.exampleEs)}</em>`)}
+    ${respondida ? "" : cajaPista(`La palabra significa: <em>${esc(w.es)}</em>`)}
     <div class="options" id="op-hueco">
       ${opciones
         .map((o) => {
@@ -2389,7 +2730,7 @@ function renderHueco() {
     ${
       respondida
         ? `<div class="explain ${juego.elegida === w.en ? "ok" : noLaSabia ? "nose" : "ko"}" aria-live="polite">
-             <b>${noLaSabia ? "Bien reconocerlo — vuelve al repaso" : `${w.en} — ${esc(w.es)}`}</b>
+             <b>${noLaSabia ? "Vamos a repasarla" : `${esc(w.en)} — ${esc(w.es)}`}</b>
              <p>${noLaSabia ? `<b>${esc(w.en)}</b> (${esc(w.pron || "—")}) — ${esc(w.es)}` : ""}</p>
              <p>${esc(w.example)}<br><em>${esc(w.exampleEs)}</em></p>
            </div>
@@ -2499,7 +2840,8 @@ function renderEscribe() {
     // el sinónimo sería injusto, así que se aceptan todas las del banco.
     const validas = [w, ...juego.pool.filter((x) => x.en !== w.en && mismoEs(x, w))];
     const comprobar = (texto, rendida = false) => {
-      const acertada = rendida ? null : validas.find((x) => norm(texto) === norm(x.en));
+      if (!rendida && !texto.trim()) return;
+      const acertada = rendida ? null : validas.find((x) => spelling(texto) === spelling(x.en));
       const bien = Boolean(acertada);
       if (bien) acertar();
       else {
@@ -2521,6 +2863,10 @@ function renderEscribe() {
     $("#comprobar").onclick = () => comprobar(input.value);
     $("#paso").onclick = () => comprobar("", true);
     if ($("#pista")) $("#pista").onclick = () => usarPista(() => repintarConTexto(renderEscribe, "#resp-escribe", input.value));
+    $("#game-box [data-speak]").onclick = () => {
+      if (!juego.pista) juego.pistas++;
+      juego.pista = Math.max(juego.pista, 1);
+    };
   } else {
     $("#next-escribe").onclick = () => {
       juego.i += 1;
@@ -2574,10 +2920,10 @@ function iniciarParejas(pool) {
     ...elegidas.map((w, n) => ({ par: n, cara: "en", texto: w.en, w })),
     ...elegidas.map((w, n) => ({ par: n, cara: "es", texto: w.es, w })),
   ]);
-  juego = { pool, fichas, sel: null, resueltas: 0, fallos: 0, inicio: Date.now() };
+  juego = { pool, fichas, sel: null, resueltas: 0, fallos: 0, conPista: 0, bloqueado: false, inicio: Date.now(), timed: store.gameMode === "challenge" };
 
   clearInterval(gameTimer);
-  gameTimer = setInterval(() => {
+  if (juego.timed) gameTimer = setInterval(() => {
     const el = $("#reloj");
     if (el && juego) el.textContent = ((Date.now() - juego.inicio) / 1000).toFixed(1);
   }, 100);
@@ -2590,7 +2936,7 @@ function renderParejas() {
 
   $("#game-box").innerHTML = `
     <div class="game-hud">
-      <span class="hud-time">⏱ <b id="reloj">0.0</b>s</span>
+      <span class="hud-time">${juego.timed ? '⏱ <b id="reloj">0.0</b>s' : "Sin reloj"}</span>
       <span class="hud-score">${juego.resueltas} / 6</span>
     </div>
     <div class="tiles" id="tiles">
@@ -2598,13 +2944,14 @@ function renderParejas() {
         .map((f, idx) =>
           f.hecha
             ? `<div class="tile is-done">${esc(f.texto)}</div>`
-            : `<button class="tile ${juego.sel === idx ? "is-sel" : ""} ${f.mal ? "is-bad" : ""}" data-ficha="${idx}">${esc(f.texto)}</button>`,
+            : `<button class="tile ${juego.sel === idx ? "is-sel" : ""} ${f.mal ? "is-bad" : ""}" data-ficha="${idx}" ${juego.bloqueado ? "disabled" : ""}>${esc(f.texto)}</button>`,
         )
         .join("")}
-    </div>`;
+    </div><div id="pair-feedback"></div>`;
 
   $$("#tiles [data-ficha]").forEach((b) => {
     b.onclick = () => {
+      if (!juego || juego.bloqueado) return;
       const idx = Number(b.dataset.ficha);
       if (juego.sel === null) {
         juego.sel = idx;
@@ -2619,11 +2966,13 @@ function renderParejas() {
 
       const a = juego.fichas[juego.sel];
       const c = juego.fichas[idx];
+      if (a.cara === c.cara) { juego.sel = idx; renderParejas(); return; }
 
       if (a.par === c.par && a.cara !== c.cara) {
         a.hecha = c.hecha = true;
         juego.sel = null;
         juego.resueltas += 1;
+        if (a.revealed || c.revealed) juego.conPista++;
 
         if (juego.resueltas === 6) {
           clearInterval(gameTimer);
@@ -2631,7 +2980,7 @@ function renderParejas() {
           const esRecord = guardarRecord("parejas", ms, true);
           const pool = juego.pool;
           pantallaFinal(
-            `${(ms / 1000).toFixed(1)} segundos`,
+            juego.timed ? `${(ms / 1000).toFixed(1)} segundos` : "6 parejas relacionadas",
             juego.fallos
               ? `${juego.fallos} fallo${juego.fallos > 1 ? "s" : ""}${esRecord ? " · nuevo récord" : ""}`
               : `Sin fallos${esRecord ? " · nuevo récord" : ""}`,
@@ -2644,15 +2993,21 @@ function renderParejas() {
         renderParejas();
       } else {
         juego.fallos += 1;
+        juego.bloqueado = true;
+        penalizar(a.w);
         penalizar(c.w);
+        juego.fichas.filter(f => f.par === a.par || f.par === c.par).forEach(f => { f.revealed = true; });
         a.mal = c.mal = true;
         renderParejas();
-        setTimeout(() => {
-          if (!juego) return;
+        $("#pair-feedback").innerHTML = `<div class="explain" tabindex="-1"><b>Estas son las relaciones correctas</b><p>${esc(a.w.en)} — ${esc(a.w.es)}</p><p>${esc(c.w.en)} — ${esc(c.w.es)}</p></div><button class="btn" id="pair-continue">Entendido, continuar</button>`;
+        $("#pair-feedback .explain").focus({ preventScroll: true });
+        $("#pair-feedback").scrollIntoView({ block: "nearest", behavior: "instant" });
+        $("#pair-continue").onclick = () => {
           a.mal = c.mal = false;
           juego.sel = null;
+          juego.bloqueado = false;
           renderParejas();
-        }, 550);
+        };
       }
     };
   });
@@ -2782,7 +3137,7 @@ function prepararLetras() {
   const w = juego.items[juego.i];
   const letras = w.en.trim().toLowerCase().split("");
   let barajadas = mezclar(letras);
-  if (letras.length > 3) {
+  if (letras.length > 1) {
     let intentos = 0;
     while (barajadas.join("") === letras.join("") && intentos < 10) {
       barajadas = mezclar(letras);
@@ -3031,13 +3386,14 @@ function renderHablar() {
     juego.estado = "oyendo";
     renderHablar();
 
+    const session = juego;
     const res = await escucharUnaVez();
-    if (!juego) return; // te has salido del juego mientras escuchaba
+    if (juego !== session) return; // un resultado antiguo no afecta a otra partida
 
     // El reconocedor devuelve texto, y ante dos palabras que suenan igual
     // elige una cualquiera: si dices «write» perfectamente puede escribir
-    // «right». Marcarlo como fallo sería injusto, porque lo has pronunciado
-    // bien: es lo único que este juego mide.
+    // «right». No penalizamos esa elección ortográfica del motor.
+    // El texto reconocido es una señal aproximada, no una evaluación fonética.
     const validas = [norm(w.en), ...homofonasDe(w.en).map(norm)];
     const dichas = (res.alternativas || []).map(norm);
     const acertada = dichas.some((d) => validas.includes(d));
@@ -3108,11 +3464,7 @@ function renderDictado() {
   // El verde y el rojo tienen que decir lo mismo que el marcador: si «there»
   // vale por «their», aquí también sale en verde.
   const marcado = r
-    ? palabrasDe(w.example)
-        .map((p, n) => {
-          const bien = r.tuyas[n] === p || homofonasDe(p).map(norm).includes(r.tuyas[n]);
-          return `<span class="${bien ? "dic-ok" : "dic-ko"}">${esc(p)}</span>`;
-        })
+    ? r.tokens.map(token => `<span class="${token.correct ? "dic-ok" : "dic-ko"}">${token.extra ? "[sobra: " : ""}${esc(token.text)}${token.extra ? "]" : ""}</span>`)
         .join(" ")
     : "";
 
@@ -3141,6 +3493,8 @@ function renderDictado() {
         ? `<div class="explain ${r.bien ? "ok" : r.rendida ? "nose" : "ko"}" aria-live="polite">
              <b>${r.bien ? "¡Clavada!" : r.rendida ? "La frase era:" : `${r.aciertos} de ${r.total} palabras`}</b>
              <p class="dictado-frase">${marcado}</p>
+             <p>Modelo: <span lang="en">${esc(w.example)}</span></p>
+             <p>Revisa las palabras marcadas. Los homófonos pueden sonar igual pero cambiar el significado; una omisión no invalida las palabras siguientes.</p>
              <p><em>${esc(w.exampleEs || "")}</em></p>
            </div>
            <button class="btn" id="next-dictado">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
@@ -3161,22 +3515,16 @@ function renderDictado() {
     const input = $("#resp-dictado");
     input.focus({ preventScroll: true });
     const comprobar = (rendida = false) => {
-      const objetivo = palabrasDe(w.example);
-      const tuyas = palabrasDe(input.value);
-      // Un dictado se juzga por lo que has OÍDO. Si la frase lleva «their» y
-      // escribes «there», has oído bien: suenan exactamente igual y solo el
-      // sentido las separa, que es otro ejercicio. Vale la homófona.
-      const vale = (n, escrita) =>
-        escrita === objetivo[n] || homofonasDe(objetivo[n]).map(norm).includes(escrita);
-      const aciertos = rendida ? 0 : objetivo.filter((p, n) => vale(n, tuyas[n])).length;
-      const bien = !rendida && aciertos === objetivo.length && tuyas.length === objetivo.length;
+      if (!rendida && !input.value.trim()) return;
+      const assessment = assessDictation(w.example, rendida ? "" : input.value);
+      const bien = !rendida && assessment.correct;
       if (bien) acertar();
       else {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
         penalizar(w);
       }
-      juego.resultado = { bien, rendida, texto: input.value, tuyas, aciertos, total: objetivo.length };
+      juego.resultado = { bien, rendida, texto: input.value, tokens: assessment.tokens, aciertos: assessment.matched, total: assessment.total };
       renderDictado();
     };
     input.onkeydown = (e) => {
@@ -3240,6 +3588,7 @@ function renderIrregulares() {
   const esperado = hueco === "pasado" ? v.pasado : v.participio;
 
   const celda = (valor, cual, n) => {
+    if (!r && cual !== hueco && cual !== "base" && valor === esperado) return '<span class="irr-forma">—</span><span class="irr-pron">Después de responder</span>';
     if (cual !== hueco) return `<span class="irr-forma" lang="en">${esc(valor)}</span><span class="irr-pron">${esc(prons[n] || "")}</span>`;
     if (r) return `<span class="irr-forma ${r.bien ? "irr-ok" : "irr-ko"}" lang="en">${esc(valor)}</span><span class="irr-pron">${esc(prons[n] || "")}</span>`;
     return `<span class="irr-forma irr-hueco">?</span><span class="irr-pron">&nbsp;</span>`;
@@ -3290,6 +3639,7 @@ function renderIrregulares() {
     input.focus({ preventScroll: true });
     const comprobar = (rendida = false) => {
       // "was/were" vale entero o cualquiera de las dos por separado.
+      if (!rendida && !input.value.trim()) return;
       const validas = [esperado, ...esperado.split("/")].map((s) => norm(s));
       const bien = !rendida && validas.includes(norm(input.value));
       if (bien) acertar();
@@ -3297,6 +3647,7 @@ function renderIrregulares() {
         if (rendida) juego.nose += 1;
         else juego.fallos += 1;
         juego.falladas.push({ en: `${v.base} · ${v.pasado} · ${v.participio}`, es: v.es, pron: v.pron });
+        guardarErrorJuego();
       }
       juego.resultado = { bien, rendida, texto: input.value };
       renderIrregulares();
@@ -3322,7 +3673,8 @@ function renderIrregulares() {
 function iniciarModales(pool) {
   juego = {
     pool,
-    items: mezclar(EJERCICIOS_MODALES).slice(0, 10),
+    items: prepareQuiz(EJERCICIOS_MODALES.map(e => ({ ...e, q: e.frase, options: e.opciones, answer: e.correcta })))
+      .slice(0, 10).map(e => ({ ...e, opciones: e.options, correcta: e.answer })),
     i: 0,
     aciertos: 0,
     fallos: 0,
@@ -3364,7 +3716,7 @@ function renderModales() {
     <div class="card">
       <p class="quiz-count">¿Qué modal encaja?</p>
       <p class="quiz-q" lang="en">${esc(ej.frase)}</p>
-      ${respondida ? `<p class="muted">${esc(ej.es)}</p>` : ""}
+      <p class="muted">Intención: ${esc(ej.es)}</p>
     </div>
     ${respondida ? "" : cajaPista(esc(ej.pista))}
     <div class="options" id="op-modales">
@@ -3407,6 +3759,7 @@ function renderModales() {
         else {
           juego.fallos += 1;
           juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
+          guardarErrorJuego();
         }
         renderModales();
       };
@@ -3415,6 +3768,7 @@ function renderModales() {
       juego.elegida = NO_LO_SE;
       juego.nose += 1;
       juego.falladas.push({ en: ej.opciones[ej.correcta], es: ej.es, pron: "" });
+      guardarErrorJuego();
       renderModales();
     };
     if ($("#pista")) $("#pista").onclick = () => usarPista(renderModales);
@@ -3517,6 +3871,7 @@ function renderFrasesJuego() {
         else {
           juego.fallos += 1;
           juego.falladas.push({ en: f.en, es: f.es, pron: f.pron });
+          guardarErrorJuego();
         }
         renderFrasesJuego();
       };
@@ -3525,6 +3880,7 @@ function renderFrasesJuego() {
       juego.elegida = NO_LO_SE;
       juego.nose += 1;
       juego.falladas.push({ en: f.en, es: f.es, pron: f.pron });
+      guardarErrorJuego();
       renderFrasesJuego();
     };
     if ($("#pista")) $("#pista").onclick = () => usarPista(renderFrasesJuego);
@@ -3774,6 +4130,7 @@ function renderConfusas() {
 const NO_LO_SE = "__no_lo_se__";
 
 let quiz = null; // { lesson, items, i, aciertos, elegida }
+let learningLane = "grammar";
 
 function lessonProgress(id) {
   return store.lessons[id] || { best: 0, done: false, last: null };
@@ -3781,22 +4138,25 @@ function lessonProgress(id) {
 
 function validQuizItems(items) {
   return Array.isArray(items) && items.length > 0 && items.length <= 200 && items.every(item =>
-    item && typeof item.q === "string" && item.q.trim() && Array.isArray(item.options)
+    item && typeof item.q === "string" && item.q.trim() && (item.type === "write"
+      ? Array.isArray(item.accepted) && item.accepted.length > 0 && item.accepted.every(a => typeof a === "string" && a.trim())
+      : Array.isArray(item.options)
     && item.options.length >= 2 && item.options.every(option => typeof option === "string" && option.trim())
-    && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length
+    && Number.isInteger(item.answer) && item.answer >= 0 && item.answer < item.options.length)
     && (item.why == null || typeof item.why === "string"));
 }
 
 // Los contadores se reconstruyen desde las respuestas, nunca desde una nota guardada.
 function lessonSession(id) {
   const draft = store.lessonSessions?.[id];
-  if (!draft || draft.version !== 1 || !validQuizItems(draft.items)
+  if (!draft || ![1, 2].includes(draft.version) || !validQuizItems(draft.items)
     || !Number.isInteger(draft.i) || draft.i < 0 || draft.i >= draft.items.length
     || !Array.isArray(draft.answers) || ![draft.i, draft.i + 1].includes(draft.answers.length)
     || typeof draft.ia !== "boolean" || typeof draft.review !== "boolean" || !Number.isFinite(draft.updatedAt)
     || !draft.answers.every((answer, index) => answer === NO_LO_SE
-      || (Number.isInteger(answer) && answer >= 0 && answer < draft.items[index].options.length))) return null;
-  if (!draft.ia && !draft.review && JSON.stringify(draft.items) !== JSON.stringify(getLesson(id)?.quiz)) return null;
+      || (draft.items[index].type === "write" ? typeof answer === "string" && answer.length <= 500
+        : Number.isInteger(answer) && answer >= 0 && answer < draft.items[index].options.length))) return null;
+  if (draft.version === 2 && !["test", "production", "retention", "errors", "ai"].includes(draft.mode)) return null;
   return draft;
 }
 
@@ -3805,11 +4165,16 @@ function lessonMistakes(id) {
   return mistakes && typeof mistakes.ia === "boolean" && validQuizItems(mistakes.items) ? mistakes : null;
 }
 
+function quizItemKey(item) {
+  return item.type === "write" ? item.id || item.q : JSON.stringify([item.q, [...item.options].sort()]);
+}
+
 function saveLessonSession() {
   if (!store.lessonSessions || typeof store.lessonSessions !== "object" || Array.isArray(store.lessonSessions)) store.lessonSessions = {};
   store.lessonSessions[quiz.lesson.id] = {
-    version: 1, items: quiz.items, answers: [...quiz.answers], i: quiz.i,
-    ia: quiz.ia, review: quiz.review, updatedAt: Date.now(),
+    version: 2, items: quiz.items, answers: [...quiz.answers], i: quiz.i,
+    ia: quiz.ia, review: quiz.review, mode: quiz.mode, eligible: quiz.eligible,
+    input: quiz.input || "", updatedAt: Date.now(),
   };
   save();
 }
@@ -3823,47 +4188,57 @@ async function renderLeccionesIndex() {
   document.title = "Aprender · Vocab";
   irAlInicio($("#lecciones-index"));
 
-  const hechas = LESSONS.filter((l) => lessonProgress(l.id).done).length;
+  const grammar = LESSONS.filter(l => !isPronunciation(l.id));
+  const hechas = grammar.filter(l => lessonProgress(l.id).retentionPasses >= 2).length;
   const textosLeidos = TEXTOS.filter((texto) => store.lecturas?.[texto.id]).length;
   $("#lecciones-sub").textContent = hechas || textosLeidos
-    ? `${hechas} ${hechas === 1 ? "lección superada" : "lecciones superadas"} · ${textosLeidos} ${textosLeidos === 1 ? "lectura terminada" : "lecturas terminadas"}`
-    : "Elige una ruta y avanza a tu ritmo.";
-  $("#count-gramatica").textContent = `${hechas}/${LESSONS.length}`;
+    ? `${hechas} consolidadas en la práctica · ${textosLeidos} lecturas terminadas`
+    : "Comprende, aplica y vuelve a recordar. Sin prisa.";
+  $("#count-gramatica").textContent = `${hechas}/${grammar.length}`;
   $("#count-frases").textContent = FRASES.length;
   $("#count-lecturas").textContent = `${textosLeidos}/${TEXTOS.length}`;
   renderLecturasIndex();
 
-  const paused = LESSONS.filter(l => lessonSession(l.id))
+  const lane = LESSONS.filter(l => isPronunciation(l.id) === (learningLane === "pronunciation"));
+  const paused = lane.filter(l => lessonSession(l.id))
     .sort((a, b) => lessonSession(b.id).updatedAt - lessonSession(a.id).updatedAt)[0];
-  const siguiente = paused || LESSONS.find(l => !lessonProgress(l.id).done && lessonProgress(l.id).last)
-    || LESSONS.find(l => lessonMistakes(l.id))
-    || LESSONS.find(l => !lessonProgress(l.id).done);
+  const siguiente = paused || lane.find(l => dueReview(lessonProgress(l.id), todayStr()))
+    || lane.find(l => lessonMistakes(l.id))
+    || lane.find(l => !lessonProgress(l.id).testPassedAt || (!isPronunciation(l.id) && !lessonProgress(l.id).productionPassedAt));
   const draft = siguiente && lessonSession(siguiente.id);
   const mistakes = siguiente && lessonMistakes(siguiente.id);
   $("#learning-next").innerHTML = siguiente ? `
     <div class="learning-next-card">
-      <span class="eyebrow">${draft ? "Donde lo dejaste" : "Tu siguiente paso"}</span>
+      <span class="eyebrow">${draft ? "Donde lo dejaste" : dueReview(lessonProgress(siguiente.id), todayStr()) ? "Hoy toca recordar" : "Tu siguiente paso"}</span>
       <h3>${esc(siguiente.title)}</h3>
       <p>${draft ? `Ejercicio ${draft.i + 1} de ${draft.items.length}. ${sinSitio ? "No se ha podido guardar el avance. Mantén la app abierta." : "Tu avance está guardado en este navegador."}` : mistakes ? `${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"} para reforzar. Puedes repasarlos sin repetir toda la prueba.` : lessonProgress(siguiente.id).last ? "Vuelve a practicar esta lección y comprueba lo aprendido." : esc(siguiente.goal)}</p>
       <button class="btn" data-lesson="${siguiente.id}">${draft ? "Retomar práctica" : lessonProgress(siguiente.id).last ? "Retomar lección" : "Empezar lección"}</button>
-    </div>` : `<div class="learning-next-card"><h3>Has superado todas las lecciones</h3><p>Elige una para volver a practicar o aplica lo aprendido en Lecturas.</p></div>`;
+    </div>` : `<div class="learning-next-card"><h3>Al día con esta ruta</h3><p>Los repasos aparecerán cuando toque. Mientras tanto, aplica lo aprendido en Lecturas.</p></div>`;
 
-  $("#lecciones-lista").innerHTML = LESSONS.map((l) => {
+  const card = (l) => {
     const p = lessonProgress(l.id);
     const session = lessonSession(l.id);
     const pending = lessonMistakes(l.id);
-    const estado = session ? `En curso · ejercicio ${session.i + 1}/${session.items.length}` : p.done ? `Superada · ${p.best}%` : p.last ? `Mejor intento · ${p.best}%` : "Sin empezar";
+    const estado = session ? `En curso · ejercicio ${session.i + 1}/${session.items.length}` : isPronunciation(l.id) && p.testPassedAt ? "Prueba de reconocimiento superada" : learningState(p, todayStr());
     return `<button class="lesson-card" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(estado)}">
       <span class="lesson-tag">${esc(l.tag)}</span>
       <span class="lesson-title">${esc(l.title)}</span>
       <span class="lesson-goal">${esc(l.goal)}</span>
       ${pending ? `<span class="lesson-pending">${pending.items.length} para reforzar</span>` : ""}
       <span class="lesson-meta">
-        <span class="lesson-state${p.done ? " is-done" : ""}">${esc(estado)}</span>
+        <span class="lesson-state${p.retentionPasses >= 2 ? " is-done" : ""}">${esc(estado)}</span>
         <span class="lesson-open">Abrir <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
       </span>
     </button>`;
-  }).join("");
+  };
+  $("#lecciones-lista").classList.remove("lesson-grid");
+  $("#lecciones-lista").innerHTML = `<div class="learning-route-picker"><label for="learning-lane">Tu ruta</label>
+    <select id="learning-lane"><option value="grammar" ${learningLane === "grammar" ? "selected" : ""}>Gramática · ruta progresiva</option><option value="pronunciation" ${learningLane === "pronunciation" ? "selected" : ""}>Pronunciación · sonidos y ritmo</option></select>
+    <p class="muted">Ruta orientativa, sin bloqueos. Una nota de test no equivale a dominar una regla.</p></div>`
+    + PATH.filter(g => g.pronunciation === (learningLane === "pronunciation")).map((g, i) => `<details class="learning-unit" ${i === 0 || g.ids.includes(siguiente?.id) ? "open" : ""}>
+      <summary>${esc(g.title)} <span>${g.ids.length} lecciones</span></summary>
+      <div class="lesson-grid">${g.ids.map(id => card(getLesson(id))).join("")}</div></details>`).join("");
+  $("#learning-lane").onchange = event => { learningLane = event.target.value; renderLeccionesIndex(); };
 }
 
 /**
@@ -3944,6 +4319,10 @@ async function openLeccion(id) {
   const p = lessonProgress(id);
   const draft = lessonSession(id);
   const mistakes = lessonMistakes(id);
+  const pronunciation = isPronunciation(id);
+  const prerequisite = prerequisites(id).map(getLesson).filter(Boolean);
+  const due = dueReview(p, todayStr());
+  const example = lesson.blocks.filter(b => b.t === "examples").flatMap(b => b.items)[0];
   $("#lecciones-index").hidden = true;
   const box = $("#leccion-detalle");
   box.hidden = false;
@@ -3968,14 +4347,29 @@ async function openLeccion(id) {
         <p>${draft.answers.length > draft.i ? "Tu última respuesta está guardada. Verás la explicación antes de seguir." : "Puedes seguir desde aquí, aunque hayas cerrado la app."}</p>
         <button class="btn" id="resume-quiz">Continuar práctica</button>
       </div>` : ""}
-      <p><b>${lesson.quiz.length} ejercicios</b> · Acierta al menos el 80% para superar la lección.</p>
-      <span>Lee la explicación o comprueba lo que ya sabes. Podrás consultar la teoría y repasar tus errores.</span>
+      <p class="lesson-learning-state"><b>${esc(pronunciation && p.testPassedAt ? "Prueba de reconocimiento superada" : learningState(p, todayStr()))}</b>${p.best ? ` · Mejor test: ${p.best}%` : ""}</p>
+      <p><b>${lesson.quiz.length} ejercicios de reconocimiento</b> · 80% para superar el test, no para demostrar dominio.</p>
+      <span>${pronunciation ? "Escucha e imita los ejemplos. Este test no evalúa tu pronunciación hablada." : "1. Comprende la regla · 2. Supera el test y escribe · 3. Recuerda con otros enunciados, primero a los 2 días y después a los 7."}</span>
+      ${p.done && !p.testPassedAt ? '<p class="muted">Tu nota anterior se conserva. La nueva ruta necesita una prueba actual y práctica escrita; no convierte notas antiguas en dominio.</p>' : ""}
+      ${draft && (draft.version === 1 || draft.eligible === false) ? '<p class="muted">Esta práctica cuenta como entrenamiento, no como evaluación de retención. Si procede de una versión anterior, puede conservar enunciados antiguos. Tu historial no se pierde.</p>' : ""}
+      ${prerequisite.length ? `<p class="lesson-prerequisites">Antes te puede ayudar: ${prerequisite.map(l => `<button class="btn-back" data-lesson="${l.id}">${esc(l.title)}</button>`).join(" ")}</p>` : ""}
       ${store.lessonSessions?.[id] && !draft ? `<p class="muted">La práctica guardada no es compatible con esta lección. Puedes empezar una nueva; tu mejor nota se conserva.</p>` : ""}
       <button class="btn ${draft || mistakes ? "btn-ghost" : ""}" id="start-quiz">${draft ? "Empezar de nuevo" : p.done ? "Practicar otra vez" : "Empezar práctica"}</button>
       ${mistakes ? `<button class="btn ${draft ? "btn-ghost" : ""}" id="saved-mistakes">Reforzar ${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
+      ${!pronunciation ? `<button class="btn btn-ghost" id="start-production">Aplicar por escrito · 2 ejercicios</button>
+        ${due ? '<button class="btn" id="start-retention">Repaso de hoy · otros enunciados</button><p class="muted">Inténtalo sin consultar la teoría. Puedes abrirla si necesitas ayuda, pero entonces contará solo como entrenamiento.</p>' : p.nextReview ? `<p class="muted">Próximo repaso: <b>${esc(p.nextReview)}</b>. Repetir hoy sirve para practicar, pero no acredita retención.</p>` : '<p class="muted">El repaso se programa tras superar el test y los 2 ejercicios escritos. Se consolida con dos repasos diferidos correctos; no es una certificación de nivel.</p>'}` : ""}
     </div>
     <div id="lesson-theory">
       <article class="lesson-body">${lesson.blocks.map(blockHtml).join("")}</article>
+      ${!pronunciation ? `<section class="lesson-transfer card" aria-labelledby="transfer-title">
+        <h3 id="transfer-title">Llévalo a tu vida</h3>
+        <p>Escribe una frase sobre ti usando esta regla. Esta parte es de autoevaluación: no recibe una nota automática.</p>
+        <label for="lesson-note">Tu frase en inglés</label>
+        <textarea id="lesson-note" maxlength="1000" rows="3" lang="en" placeholder="Escribe tu propio ejemplo…">${esc(typeof store.lessonNotes?.[id] === "string" ? store.lessonNotes[id] : "")}</textarea>
+        <p id="note-status" class="muted" role="status"></p>
+        <details><summary>Revisar mi frase</summary><p>¿Expresa lo que querías decir? ¿Has usado la estructura de la lección? Revisa sujeto, verbo y complementos. Si no estás seguro, contrástala con un profesor: comparar un modelo no valida todas las frases posibles.</p>${example ? `<p lang="en">Modelo: ${esc(example.en)}</p><p>${esc(example.es)}</p>` : ""}</details>
+        ${example ? `<details id="order-practice"><summary>Construir un ejemplo con palabras</summary><p>Ordena las palabras y compara con el modelo. Práctica guiada, sin nota.</p><p>${esc(example.es)}</p><div id="order-words" class="order-words"></div><output id="order-output" aria-live="polite"></output><button class="btn btn-ghost" id="order-reset">Volver a ordenar</button><details><summary>Ver modelo</summary><p lang="en">${esc(example.en)}</p></details></details>` : ""}
+      </section>` : ""}
       <div class="row-actions lesson-extra-actions"><button class="btn" id="start-quiz-bottom">Practicar lo aprendido</button><button class="btn btn-ghost" id="ai-quiz">Ejercicios nuevos con IA</button></div>
     </div>
     <div id="quiz-box"></div>`;
@@ -3985,13 +4379,38 @@ async function openLeccion(id) {
     renderLeccionesIndex();
   };
   $("#start-quiz").onclick = () => startQuiz(lesson, lesson.quiz);
-  if ($("#resume-quiz")) $("#resume-quiz").onclick = () => startQuiz(lesson, draft.items, { ia: draft.ia, review: draft.review, resume: draft });
+  if ($("#resume-quiz")) $("#resume-quiz").onclick = () => startQuiz(lesson, draft.items, { ia: draft.ia, review: draft.review, mode: draft.mode, resume: draft });
+  if ($("#start-production")) $("#start-production").onclick = () => startQuiz(lesson, productionItems(lesson), { mode: "production" });
+  if ($("#start-retention")) $("#start-retention").onclick = () => startQuiz(lesson, productionItems(lesson, (p.retentionPasses || 0) % 2 + 1), { mode: "retention" });
+  if ($("#lesson-note")) $("#lesson-note").oninput = event => {
+    if (!store.lessonNotes || typeof store.lessonNotes !== "object" || Array.isArray(store.lessonNotes)) store.lessonNotes = {};
+    store.lessonNotes[id] = event.target.value;
+    save();
+    $("#note-status").textContent = sinSitio ? "No se ha podido guardar. Copia tu frase antes de salir." : "Frase guardada en este navegador.";
+  };
+  if ($("#order-words")) {
+    const resetOrder = () => {
+      $("#order-output").textContent = "";
+      $("#order-words").innerHTML = shuffled(example.en.split(/\s+/)).map(word => `<button class="btn btn-ghost" type="button" lang="en">${esc(word)}</button>`).join("");
+      $$("#order-words button").forEach(button => { button.onclick = () => {
+        $("#order-output").textContent += `${$("#order-output").textContent ? " " : ""}${button.textContent}`;
+        button.disabled = true;
+      }; });
+    };
+    resetOrder();
+    $("#order-reset").onclick = resetOrder;
+  }
   if ($("#saved-mistakes")) $("#saved-mistakes").onclick = () => startQuiz(lesson, mistakes.items, { ia: mistakes.ia, review: true });
   $("#start-quiz-bottom").onclick = () => startQuiz(lesson, lesson.quiz);
   $("#ai-quiz").onclick = () => aiQuiz(lesson);
   $("#lesson-theory-toggle").onclick = () => {
     const theory = $("#lesson-theory");
     theory.hidden = !theory.hidden;
+    if (!theory.hidden && quiz.mode === "retention" && quiz.i < quiz.items.length) {
+      quiz.eligible = false;
+      saveLessonSession();
+      toast("Consultar la teoría convierte este repaso en entrenamiento. Podrás volver a intentarlo.");
+    }
     $("#quiz-box").hidden = !theory.hidden;
     $("#lesson-theory-toggle").setAttribute("aria-expanded", String(!theory.hidden));
     $("#lesson-theory-toggle").textContent = theory.hidden ? "Consultar teoría" : quiz.i >= quiz.items.length ? "Volver al resultado" : "Volver al ejercicio";
@@ -4051,16 +4470,21 @@ async function aiQuiz(lesson) {
   }
 }
 
-function startQuiz(lesson, items, { ia = false, review = false, resume = null } = {}) {
+function startQuiz(lesson, items, { ia = false, review = false, resume = null, mode = "test" } = {}) {
   if (!items.length) return;
   if (!resume && lessonSession(lesson.id) && !confirm("Tienes una práctica guardada de esta lección. ¿Sustituirla por una nueva? Tu mejor nota se conserva.")) return;
   const answers = resume ? [...resume.answers] : [];
   const i = resume?.i || 0;
+  if (!resume) items = prepareQuiz(items);
+  mode = review ? "errors" : ia ? "ai" : mode;
   quiz = {
-    lesson, items, i, answers, ia, review, elegida: answers[i] ?? null,
-    aciertos: answers.filter((answer, index) => answer === items[index].answer).length,
+    lesson, items, i, answers, ia, review, mode, elegida: answers[i] ?? null,
+    input: typeof resume?.input === "string" ? resume.input.slice(0, 500) : "",
+    eligible: resume ? resume.version === 2 && resume.eligible === true
+      : mode !== "retention" || dueReview(lessonProgress(lesson.id), todayStr()),
+    aciertos: answers.filter((answer, index) => isCorrect(items[index], answer)).length,
     nose: answers.filter(answer => answer === NO_LO_SE).length,
-    missed: items.filter((item, index) => index < answers.length && answers[index] !== item.answer),
+    missed: items.filter((item, index) => index < answers.length && !isCorrect(item, answers[index])),
   };
   $("#lesson-overview").hidden = true;
   $("#lesson-theory").hidden = true;
@@ -4076,6 +4500,8 @@ function focusLessonQuiz() {
   requestAnimationFrame(() => {
     const box = $("#quiz-box");
     if (!box || box.hidden || $("#leccion-detalle").hidden || !box.closest(".view.is-active")) return;
+    // Un callback pendiente no debe quitar el foco si ya has empezado a escribir.
+    if (box.contains(document.activeElement) && document.activeElement.matches("input, textarea, select")) return;
     const target = $(".explain, .quiz-q, .lesson-result-title", box);
     target?.focus({ preventScroll: true });
     (target?.matches(".explain") ? target : box).scrollIntoView({ block: "start", behavior: "instant" });
@@ -4092,37 +4518,47 @@ function renderQuiz() {
   if (i >= items.length) {
     const pct = Math.round((quiz.aciertos / items.length) * 100);
     const prev = lessonProgress(quiz.lesson.id);
-    if (!quiz.review) store.lessons[quiz.lesson.id] = {
-      best: Math.max(prev.best, pct),
-      done: prev.done || pct >= 80,
-      last: todayStr(),
-    };
+    if (!quiz.recorded) store.lessons[quiz.lesson.id] = recordLearning(prev, {
+      mode: quiz.mode, percent: pct, day: todayStr(), eligible: quiz.eligible,
+      pronunciation: isPronunciation(quiz.lesson.id),
+    });
+    quiz.recorded = true;
     if (store.lessonSessions) delete store.lessonSessions[quiz.lesson.id];
     if (!store.lessonMistakes || typeof store.lessonMistakes !== "object" || Array.isArray(store.lessonMistakes)) store.lessonMistakes = {};
-    if (quiz.missed.length) store.lessonMistakes[quiz.lesson.id] = { items: quiz.missed, ia: quiz.ia };
+    const attempted = new Set(items.map(quizItemKey));
+    const untouched = (lessonMistakes(quiz.lesson.id)?.items || []).filter(item => !attempted.has(quizItemKey(item)));
+    const pending = [...untouched, ...quiz.missed];
+    if (pending.length) store.lessonMistakes[quiz.lesson.id] = { items: pending, ia: quiz.ia };
     else delete store.lessonMistakes[quiz.lesson.id];
     registerStudyDay();
     save();
 
-    const nextLesson = LESSONS.find(l => l.id !== quiz.lesson.id && !lessonProgress(l.id).done);
-    const canContinue = !quiz.review && pct >= 80 && nextLesson;
+    const current = lessonProgress(quiz.lesson.id);
+    const nextLesson = LESSONS.find(l => l.id !== quiz.lesson.id && isPronunciation(l.id) === isPronunciation(quiz.lesson.id) && !lessonProgress(l.id).testPassedAt);
+    const needsProduction = !isPronunciation(quiz.lesson.id) && current.testPassedAt && !current.productionPassedAt;
+    const canContinue = !quiz.review && pct >= 80 && !needsProduction && nextLesson;
 
     box.innerHTML = `
       <div class="card quiz-result" aria-live="polite">
-        <h3 class="lesson-result-title" tabindex="-1">${quiz.review ? "Repaso de errores terminado" : pct >= 80 ? "Lección superada" : "Vamos a reforzar lo aprendido"}</h3>
+        <h3 class="lesson-result-title" tabindex="-1">${quiz.review ? "Repaso de errores terminado" : quiz.ia || !quiz.eligible ? "Entrenamiento terminado" : quiz.mode === "test" ? pct >= 80 ? "Prueba superada" : "Vamos a reforzar lo aprendido" : pct === 100 ? "Práctica escrita completada" : "Practiquemos esta estructura"}</h3>
         <p class="result-score">${quiz.aciertos} de ${items.length} · ${pct}%</p>
-        <p class="muted">${quiz.review ? "Este repaso no cambia tu nota. Haz la prueba completa para comprobar la lección." : quiz.missed.length ? "Puedes volver a intentar solo los ejercicios que fallaste o marcaste como No lo sé." : "Has acertado todos los ejercicios. Puedes continuar con otra lección."}${
+        <p class="muted">${quiz.review || quiz.ia || !quiz.eligible ? "Este entrenamiento no acredita dominio ni cambia tu mejor test. Completa la ruta actual para avanzar." : quiz.missed.length ? "Revisa la explicación y vuelve a aplicar la regla. Los errores indican qué conviene practicar." : "Buen trabajo. Comprueba el siguiente paso de tu ruta."}${
           quiz.nose ? ` · ${quiz.nose} ${quiz.nose === 1 ? "no la sabías" : "no las sabías"}` : ""
         }</p>
+        <p><b>${esc(isPronunciation(quiz.lesson.id) && current.testPassedAt ? "Reconocimiento superado; practica también en voz alta" : learningState(current, todayStr()))}</b>${current.nextReview ? ` · Próximo repaso: ${esc(current.nextReview)}` : ""}</p>
         <div class="row-actions">
           ${quiz.missed.length ? `<button class="btn" id="review-mistakes">Repasar ${quiz.missed.length} ${quiz.missed.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
           ${canContinue ? `<button class="btn ${quiz.missed.length ? "btn-ghost" : ""}" id="next-lesson">Siguiente lección</button>` : ""}
+          ${needsProduction ? '<button class="btn" id="result-production">Ahora aplícalo por escrito</button>' : ""}
+          ${["production", "retention"].includes(quiz.mode) && quiz.missed.length ? '<button class="btn btn-ghost" id="retry-written">Repetir práctica escrita completa</button>' : ""}
           <button class="btn ${quiz.missed.length || canContinue ? "btn-ghost" : ""}" id="retry-quiz">Prueba completa</button>
           <button class="btn btn-ghost" id="finish-lesson">Volver a Aprender</button>
         </div>
       </div>`;
 
     $("#retry-quiz").onclick = () => startQuiz(quiz.lesson, quiz.lesson.quiz);
+    if ($("#result-production")) $("#result-production").onclick = () => startQuiz(quiz.lesson, productionItems(quiz.lesson), { mode: "production" });
+    if ($("#retry-written")) $("#retry-written").onclick = () => startQuiz(quiz.lesson, quiz.items, { mode: quiz.mode });
     if ($("#review-mistakes")) $("#review-mistakes").onclick = () => startQuiz(quiz.lesson, quiz.missed, { ia: quiz.ia, review: true });
     if ($("#next-lesson")) $("#next-lesson").onclick = () => openLeccion(nextLesson.id);
     $("#finish-lesson").onclick = () => { quiz = null; renderLeccionesIndex(); };
@@ -4134,7 +4570,7 @@ function renderQuiz() {
   saveLessonSession();
   const item = items[i];
   const respondida = elegida !== null;
-  const acertada = respondida && elegida === item.answer;
+  const acertada = respondida && isCorrect(item, elegida);
   const noLaSabia = elegida === NO_LO_SE;
   const porcentaje = Math.round((i / items.length) * 100);
   const pendientes = Math.max(items.length - i - 1, 0);
@@ -4144,7 +4580,7 @@ function renderQuiz() {
       <div class="quiz-progress-wrap">
         <div class="quiz-progress-meta">
           <span>Ejercicio <b>${i + 1}</b> de ${items.length}</span>
-          <span>${quiz.review ? "Repaso de errores" : quiz.ia ? "Generado ahora" : pendientes ? `${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : "Último"}</span>
+          <span>${quiz.review ? "Repaso de errores" : quiz.ia ? "Generado ahora" : quiz.mode === "production" ? "Aplicar por escrito" : quiz.mode === "retention" ? "Recordar sin opciones" : pendientes ? `${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : "Último"}</span>
         </div>
         <div class="quiz-progress" role="progressbar" aria-label="Progreso de los ejercicios" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${porcentaje}">
           <span style="width:${porcentaje}%"></span>
@@ -4152,7 +4588,11 @@ function renderQuiz() {
       </div>
       <p class="quiz-save-note">${sinSitio ? "No se ha podido guardar. Revisa el espacio del navegador." : "Avance guardado en este navegador"}</p>
       <h3 class="quiz-q" tabindex="-1">${esc(item.q)}</h3>
-      <div class="options">
+      ${item.type === "write" ? `<form id="written-form" class="written-answer">
+        <label for="written-response">Escribe lo que falta en el hueco</label>
+        <p class="muted" id="written-hint">${item.strict ? "Usa la contracción pedida." : "Se aceptan mayúsculas, puntuación final y contracciones equivalentes. No se corrigen automáticamente palabras con significado distinto."}</p>
+        <input id="written-response" lang="en" type="text" maxlength="500" required autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="written-hint" value="${esc(respondida ? noLaSabia ? "" : elegida : quiz.input)}" ${respondida ? "disabled" : ""}>
+        ${respondida ? "" : '<button class="btn" type="submit">Comprobar respuesta</button>'}</form>` : `<div class="options">
         ${item.options
           .map((opt, idx) => {
             let cls = "option";
@@ -4161,14 +4601,14 @@ function renderQuiz() {
             return `<button class="${cls}" data-opt="${idx}" ${respondida ? "disabled" : ""}><span class="option-key" aria-hidden="true">${idx + 1}</span><span>${esc(opt)}</span></button>`;
           })
           .join("")}
-      </div>
+      </div>`}
       ${respondida ? "" : `<button class="btn btn-nose" id="nose"><span class="nose-icon" aria-hidden="true">?</span>No lo sé</button>`}
       ${
         respondida
           ? `<div class="explain ${acertada ? "ok" : noLaSabia ? "nose" : "ko"}" tabindex="-1" aria-live="polite">
-               <b class="feedback-title"><span class="feedback-icon" aria-hidden="true">${acertada ? "✓" : noLaSabia ? "?" : "!"}</span>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(item.options[item.answer])}` : "No exactamente"}</b>
+               <b class="feedback-title"><span class="feedback-icon" aria-hidden="true">${acertada ? "✓" : noLaSabia ? "?" : "!"}</span>${acertada ? "Correcto" : noLaSabia ? `La respuesta es: ${esc(correctAnswer(item))}` : "No exactamente"}</b>
                <p>${esc(item.why || "")}</p>
-               ${!acertada && !noLaSabia ? `<p><b>Respuesta correcta:</b> ${esc(item.options[item.answer])}</p>` : ""}
+               ${!acertada && !noLaSabia ? `<p><b>Respuesta esperada:</b> ${esc(correctAnswer(item))}</p>` : ""}
              </div>
              <button class="btn" id="next-q">${i + 1 === items.length ? "Ver resultado" : "Siguiente"}</button>`
           : ""
@@ -4176,6 +4616,19 @@ function renderQuiz() {
     </div>`;
 
   if (!respondida) {
+    if ($("#written-form")) {
+      $("#written-response").oninput = event => { quiz.input = event.target.value; saveLessonSession(); };
+      $("#written-form").onsubmit = event => {
+        event.preventDefault();
+        const response = $("#written-response").value.trim();
+        if (!response || quiz.elegida !== null) return;
+        quiz.elegida = response;
+        quiz.answers[quiz.i] = response;
+        if (isCorrect(item, response)) quiz.aciertos++;
+        else quiz.missed.push(item);
+        renderQuiz();
+      };
+    }
     $$("[data-opt]", box).forEach((b) => {
       b.onclick = () => {
         quiz.elegida = Number(b.dataset.opt);
@@ -4196,6 +4649,7 @@ function renderQuiz() {
     $("#next-q").onclick = () => {
       quiz.i += 1;
       quiz.elegida = null;
+      quiz.input = "";
       renderQuiz();
     };
   }
@@ -4694,7 +5148,7 @@ async function renderAjustes() {
   $("#stats").innerHTML = `
     <div class="stat"><b>${store.words.length}</b><span>palabras</span></div>
     <div class="stat"><b>${learnedWords().length}</b><span>dominadas</span></div>
-    <div class="stat"><b>${LESSONS.filter((l) => lessonProgress(l.id).done).length}/${LESSONS.length}</b><span>lecciones</span></div>
+    <div class="stat"><b>${LESSONS.filter(l => !isPronunciation(l.id) && lessonProgress(l.id).retentionPasses >= 2).length}/${LESSONS.filter(l => !isPronunciation(l.id)).length}</b><span>gramática consolidada</span></div>
     <div class="stat"><b>${store.stats.streak}</b><span>días seguidos</span></div>
     <div class="stat"><b>${store.stats.best}</b><span>mejor racha</span></div>`;
 }
@@ -5073,7 +5527,7 @@ document.addEventListener("keydown", (e) => {
 
   if (e.key === "Enter") {
     const seguir = $(
-      "#next-q, #next-hueco, #next-escribe, #next-repaso, #comprobar-repaso, #rejugar",
+      "#next-q, #next-hueco, #next-escribe, #next-rapid, #next-escucha, #next-ordena, #next-hablar, #next-dictado, #next-irr, #next-modales, #next-frases, #next-falsos, #next-confusas, #game-review-next, #pair-continue, #next-repaso, #comprobar-repaso, #rejugar",
       vista,
     );
     if (seguir) {

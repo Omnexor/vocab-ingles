@@ -152,7 +152,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "En español puedes decir «café bebo yo por las mañanas» y se entiende. En inglés no: el sujeto va SIEMPRE delante del verbo, y nunca se omite.",
+        text: "En una afirmación neutra en inglés, el sujeto suele ir delante del verbo y se expresa: «I drink coffee». Las preguntas pueden invertir el orden y los imperativos suelen omitir el sujeto: «Come here». Aprende primero el orden neutro; no es una regla para todas las frases.",
       },
       {
         t: "error",
@@ -186,7 +186,7 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Cuando el auxiliar aparece, el verbo principal vuelve a su forma base: «Does she works?» está mal; es «Does she work?». La -s ya la lleva el «does».",
+        text: "Después de do/does/did y de los modales de esta lección, el siguiente verbo va en forma base: «Does she work?». No lo generalices a todos los auxiliares: have lleva participio («has worked») y be puede llevar -ing («is working») o participio («is made»).",
       }
     ],
     quiz: [
@@ -815,7 +815,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "«May» y «might» funcionan distinto: se traducen con «puede que», y eso arrastra un subjuntivo en español. «It may rain» no es «puede llover», es «puede QUE LLUEVA». La diferencia entre los dos es solo de probabilidad: «may» es una posibilidad razonable, «might» es más remota. En español eso se nota poniendo «quizá» o «a lo mejor» delante.",
+        text: "May y might pueden expresar posibilidad: «It may rain» puede traducirse como «puede que llueva» o «puede llover». Might puede sonar más tentativo, pero no indica siempre una probabilidad numérica menor: el contexto y la actitud del hablante importan.",
       },
       {
         t: "table",
@@ -903,7 +903,7 @@ export const LESSONS = [
       { q: "«Iría, pero no tengo tiempo» empieza por…", options: ["I go","I will go","I would go"], answer: 2, why: "«Iría» lleva -ía, así que en inglés es would + verbo base." },
       { q: "¿Qué le hace «would» al verbo español que va detrás?", options: ["Lo pone en pasado","Le añade la terminación -ía","Le añade -é (futuro)"], answer: 1, why: "would + base = verbo en condicional: would go = iría, would be = sería." },
       { q: "«Sería mejor esperar» es…", options: ["It would be better to wait","It will be better to wait","It is better to wait"], answer: 0, why: "Sería = would be. El -ía delata al would." },
-      { q: "«It may rain» se traduce mejor como…", options: ["Puede llover","Puede que llueva","Podría haber llovido"], answer: 1, why: "May/might piden «puede que» + subjuntivo en español." },
+      { q: "¿Qué expresa «It may rain»?", options: ["Que seguro lloverá","La posibilidad de que llueva","Que ya ha llovido"], answer: 1, why: "May expresa posibilidad. Puede que llueva y puede llover son traducciones posibles según el contexto." },
       { q: "¿Cuál expresa MÁS seguridad de que va a llover?", options: ["It might rain","It may rain","It will rain"], answer: 2, why: "Will es lo seguro; may es posible; might es lo más remoto." },
       { q: "«Podría ayudarte» (ofrecimiento) es…", options: ["I can help you","I could help you","I must help you"], answer: 1, why: "Podr-ÍA lleva -ía: es «could», el condicional de can." },
       { q: "«Deberías llamarla» es…", options: ["You must call her","You should call her","You would call her"], answer: 1, why: "Deber-ÍA es «should»: consejo con la terminación -ía." }
@@ -948,7 +948,7 @@ export const LESSONS = [
         t: "error",
         wrong: "If I would have money, I would travel.",
         right: "If I had money, I would travel.",
-        why: "«Would» va solo en la mitad del resultado, nunca detrás del «if». En la parte del if va pasado, que es lo que traduce el subjuntivo español.",
+        why: "En este segundo condicional, la hipótesis lleva pasado y el resultado would + base. Otros usos de would dentro de if, como expresar voluntad, pertenecen a estructuras distintas.",
       },
       {
         t: "error",
@@ -969,7 +969,7 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "En el condicional 2 se dice «If I were» para todas las personas, no «If I was». Es la fórmula fija para dar consejos: «If I were you…».",
+        text: "En hipótesis formales se prefiere «were» con todas las personas: «If I were rich». También se oye «was» con I/he/she/it en contextos informales. Para dar consejos, aprende la fórmula «If I were you…».",
       },
       {
         t: "examples",
@@ -981,14 +981,14 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Nunca metas «will» en la parte del «if». Se dice «If it rains», no «If it will rain». El futuro va solo en la otra mitad de la frase.",
+        text: "En el primer condicional habitual, usa presente después de if: «If it rains, I will stay home». Hay otros usos de will dentro de if, por ejemplo para expresar voluntad o una petición cortés; no son el patrón de predicción que practicamos aquí.",
       }
     ],
     quiz: [
       { q: "«If it ___ tomorrow, we'll cancel.»", options: ["will rain","rains","rained"], answer: 1, why: "Condicional 1: if + presente, will + base." },
-      { q: "«If I ___ rich, I would buy a boat.»", options: ["am","was","were"], answer: 2, why: "Condicional 2: se usa «were» para todas las personas." },
+      { q: "Hipótesis en registro formal: «If I ___ rich, I would buy a boat.»", options: ["am","was","were"], answer: 2, why: "En la hipótesis formal se prefiere were. Was también aparece en el habla informal." },
       { q: "«If she had left earlier, she ___ the train.»", options: ["would catch","would have caught","caught"], answer: 1, why: "Condicional 3: would have + participio." },
-      { q: "«If you press this button, the machine ___.»", options: ["stops","will stop","would stop"], answer: 0, why: "Condicional 0: es una verdad que pasa siempre." },
+      { q: "Describe el funcionamiento habitual con condicional cero: «If you press this button, the machine ___.»", options: ["stops","will stop","would stop"], answer: 0, why: "Para esta regla habitual usamos presente + presente. Will stop serviría para predecir un resultado futuro, pero no es el patrón solicitado." },
       { q: "¿Qué está mal?", options: ["If I see him, I'll tell him.","If I will see him, I'll tell him.","I'll tell him if I see him."], answer: 1, why: "Nunca «will» dentro de la cláusula del if." },
       { q: "El subjuntivo español («si tuviera») se traduce al inglés con…", options: ["would + verbo","el pasado simple (had)","el presente"], answer: 1, why: "«Si tuviera» = «If I had». El inglés usa pasado donde el español usa subjuntivo." },
       { q: "«Si fuera tú, aceptaría» es…", options: ["If I would be you, I would accept","If I were you, I would accept","If I am you, I will accept"], answer: 1, why: "Subjuntivo → pasado (were); el -ía de «aceptaría» → would." },
@@ -1431,7 +1431,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "La forma más útil de ver los sufijos es preguntarse qué CLASE de palabra entra y qué clase sale. Un sufijo casi nunca cambia el significado — cambia el papel que la palabra puede hacer en la frase. «Happy» es un adjetivo y describe; «happiness» es un sustantivo y ya se puede usar como sujeto o como objeto.",
+        text: "Para aprender un sufijo, observa tanto el significado como la clase de palabra resultante. Happy es adjetivo y happiness es sustantivo; useful y useless son adjetivos con significados distintos. Un sufijo puede cambiar la función, el significado o ambos.",
       },
       {
         t: "table",
@@ -1486,7 +1486,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "Y con -FUL y -LESS pasa algo que conviene mirar con lupa: son opuestos y solo se distinguen por el final. «Careful» es con cuidado y «careless» es sin cuidado; «useful» es útil y «useless» es inútil. Cambiar una por otra le da la vuelta entera a la frase, y es un despiste fácil al leer rápido.",
+        text: "-ful y -less a veces forman contrastes claros, como useful/useless o careful/careless. No todos los pares son antónimos directos: helpful significa útil o servicial; helpless, indefenso o incapaz de actuar. Aprende también el significado de cada palabra completa.",
       },
       {
         t: "table",
@@ -1536,7 +1536,7 @@ export const LESSONS = [
       { q: "Sustantivo de «happy»:", options: ["happyness","happiness","happily"], answer: 1, why: "Consonante + y: la y pasa a i antes de -ness." },
       { q: "«Sadness» significa…", options: ["triste","tristeza","tristemente"], answer: 1, why: "-ness fabrica el sustantivo abstracto." },
       { q: "«Homeless» significa…", options: ["hogareño","sin techo","casero"], answer: 1, why: "-less es «sin»: home + less." },
-      { q: "«Helpful» y «helpless» son…", options: ["sinónimos","opuestos: servicial e indefenso","el mismo con distinta ortografía"], answer: 1, why: "-ful es «con» y -less es «sin»: cambian el sentido entero." },
+      { q: "¿Qué significan «helpful» y «helpless»?", options: ["significan lo mismo","servicial/útil e indefenso","ambos significan inútil"], answer: 1, why: "Comparten la raíz help, pero no son antónimos directos: helpful describe lo que ayuda; helpless, a quien no puede valerse o actuar." },
       { q: "Si conoces «kind», ¿cuántas palabras tienes casi gratis?", options: ["Ninguna más","Varias: kindly, kindness, unkind","Solo el plural"], answer: 1, why: "De una base salen el adverbio, el sustantivo y el negativo." },
       { q: "«Oscurecer» es…", options: ["darkness","darkly","darken"], answer: 2, why: "Adjetivo dark + -en = el verbo." }
     ],
@@ -1550,7 +1550,7 @@ export const LESSONS = [
     blocks: [
       {
         t: "p",
-        text: "En español el adjetivo suele ir detrás («un coche rojo»). En inglés va SIEMPRE delante del sustantivo, y nunca lleva plural.",
+        text: "El adjetivo que acompaña directamente al sustantivo suele ir delante: «a red car», «two red cars», sin plural. También puede aparecer después de be («the car is red») o de pronombres como something («something interesting»).",
       },
       {
         t: "p",
@@ -1617,7 +1617,7 @@ export const LESSONS = [
       { q: "Orden correcto:", options: ["a leather black new bag","a new black leather bag","a black new leather bag"], answer: 1, why: "Edad → color → material." },
       { q: "¿Dónde puede ir detrás?", options: ["The red is car.","The car is red.","The car red is."], answer: 1, why: "Detrás de «be» y verbos de percepción sí va el adjetivo." },
       { q: "«a ___ table» (redonda, pequeña)", options: ["round small","small round","smalls round"], answer: 1, why: "Tamaño antes que forma: small round table." },
-      { q: "«Un coche rojo»: ¿qué palabra va primero en inglés?", options: ["car","red","da igual"], answer: 1, why: "El adjetivo inglés va SIEMPRE delante: a red car. Justo al revés que en español." },
+      { q: "«Un coche rojo»: ¿qué palabra va primero en inglés?", options: ["car","red","da igual"], answer: 1, why: "En este grupo nominal, red precede a car: a red car. Un adjetivo también puede aparecer después de be: the car is red." },
       { q: "Los adjetivos ingleses, ¿cambian en plural?", options: ["Sí, llevan -s","No, nunca cambian","Solo algunos"], answer: 1, why: "«Two red cars», nunca «two reds cars»." },
       { q: "Los adjetivos ingleses, ¿tienen masculino y femenino?", options: ["Sí","No, son invariables","Solo con personas"], answer: 1, why: "«A tall man» y «a tall woman»: la misma palabra sin cambios." },
       { q: "«Unas chicas altas» es…", options: ["some talls girls","some tall girls","some girls tall"], answer: 1, why: "Delante, sin -s y sin género: tall girls." }
@@ -2877,7 +2877,7 @@ export const LESSONS = [
       { q: "«Is there ___ milk left?»", options: ["some","any","no"], answer: 1, why: "Pregunta normal → any." },
       { q: "«Would you like ___ water?»", options: ["any","some","no"], answer: 1, why: "Es un ofrecimiento → some, aunque sea pregunta." },
       { q: "«We don't have ___ time.»", options: ["some","any","no any"], answer: 1, why: "Negativa → any (o «we have no time»)." },
-      { q: "¿Cuál es correcta?", options: ["I don't know nothing","I don't know anything","I don't know no thing"], answer: 1, why: "Una sola negación por frase: don't + anything." },
+      { q: "¿Cómo expresas «No sé nada» en inglés estándar?", options: ["I don't know nothing","I don't know anything","I don't know no thing"], answer: 1, why: "En esta negación estándar se usa don't + anything. Algunas variedades sí usan concordancia negativa." },
       { q: "«Quiero agua» (en español no ponemos nada delante) es…", options: ["I want water","I want some water","Las dos valen, «some» suena más natural"], answer: 2, why: "El inglés casi siempre pone algo delante; «some water» es lo natural." },
       { q: "En afirmativa se usa…", options: ["some","any","cualquiera"], answer: 0, why: "Some en afirmativa; any en negativa y pregunta." },
       { q: "«¿Tienes hermanos?» es…", options: ["Do you have some brothers?","Do you have any brothers?","Do you have brothers?"], answer: 1, why: "Pregunta normal → any." },
@@ -3199,7 +3199,7 @@ export const LESSONS = [
     quiz: [
       { q: "¿Dónde va el acento en «information»?", options: ["INformation","informAtion","informatION"], answer: 1, why: "Las acabadas en -tion acentúan la sílaba justo anterior." },
       { q: "«REcord» con acento delante es...", options: ["grabar (verbo)","un disco (sustantivo)","lo mismo"], answer: 1, why: "Sustantivo delante, verbo detrás: REcord / reCORD." },
-      { q: "¿Dónde va el acento en «hotel»?", options: ["HOtel","hoTEL","da igual"], answer: 1, why: "hoTEL, en la segunda. En español lo diríamos al revés." },
+      { q: "¿Dónde va el acento en «hotel»?", options: ["HOtel","hoTEL","da igual"], answer: 1, why: "hoTEL, en la segunda sílaba, igual que en español; los sonidos vocálicos sí cambian." },
       { q: "¿Y en «airport»?", options: ["AIRport","airPORT","las dos"], answer: 0, why: "En las palabras compuestas manda la primera parte." },
       { q: "¿Por qué importa el acento?", options: ["Por elegancia","Porque sin él pueden no entenderte","Solo importa en exámenes"], answer: 1, why: "Un acento mal puesto rompe la palabra para el oído nativo, más que un sonido regular." },
       { q: "En español el acento casi siempre cae en…", options: ["la última o la penúltima sílaba","la primera siempre","donde quieras"], answer: 0, why: "Por eso desplazamos el acento inglés sin darnos cuenta." },
@@ -3506,7 +3506,7 @@ export const LESSONS = [
 
   {
     id: "verbos-estado",
-    title: "Verbos que nunca llevan -ing",
+    title: "Verbos de estado: cuándo evitar -ing",
     tag: "Presente",
     goal: "Dejar de decir «I am knowing» y «I am wanting».",
     blocks: [
@@ -3551,7 +3551,7 @@ export const LESSONS = [
       }
     ],
     quiz: [
-      { q: "«Quiero un café» es…", options: ["I am wanting a coffee","I want a coffee","I wanting a coffee"], answer: 1, why: "«Want» es un estado: nunca lleva -ing." },
+      { q: "Expresa un deseo de forma neutra y habitual: «Quiero un café».", options: ["I am wanting a coffee","I want a coffee","I wanting a coffee"], answer: 1, why: "Want expresa aquí un estado y normalmente se usa en presente simple. No significa que la forma wanting sea imposible en todos los contextos." },
       { q: "¿Cuál está bien?", options: ["I am knowing him","I know him","I knowing him"], answer: 1, why: "Saber es un estado, no una acción en curso." },
       { q: "«I'm having lunch» significa…", options: ["Tengo comida","Estoy comiendo","Es incorrecto"], answer: 1, why: "«Have» con -ing cambia de sentido: pasa de poseer a tomar." },
       { q: "¿Cuál SÍ admite -ing normalmente?", options: ["belong","run","cost"], answer: 1, why: "Correr es una acción; pertenecer y costar son estados." },
@@ -3814,7 +3814,7 @@ export const LESSONS = [
       }
     ],
     quiz: [
-      { q: "«Podré ayudarte mañana» es…", options: ["I will can help you","I will be able to help you","I can help you tomorrow"], answer: 1, why: "Dos modales seguidos no se pueden: el futuro de can es will be able to." },
+      { q: "Expresa «Podré ayudarte mañana» usando will + be able to.", options: ["I will can help you tomorrow","I will be able to help you tomorrow","I can help you tomorrow"], answer: 1, why: "La estructura pedida es will be able to. I can help you tomorrow también es una frase válida, pero no usa la estructura solicitada." },
       { q: "«Conseguí arreglarlo» (una vez) es…", options: ["I could fix it","I was able to fix it","I can fix it"], answer: 1, why: "Could vale para habilidad general; un logro puntual pide was able to." },
       { q: "«Quiero poder viajar» es…", options: ["I want to can travel","I want to be able to travel","I want can travel"], answer: 1, why: "Detrás de «to» hace falta un infinitivo, y can no lo tiene." },
       { q: "«No he podido dormir» es…", options: ["I haven't could sleep","I haven't been able to sleep","I couldn't sleep"], answer: 1, why: "En perfecto, can pasa a been able to." },
@@ -4178,21 +4178,21 @@ export const LESSONS = [
 
   {
     id: "doble-negacion",
-    title: "En inglés no hay doble negación",
+    title: "Negación en inglés estándar",
     tag: "Estructuras",
     goal: "Dejar de decir «I don't know nothing».",
     blocks: [
       {
         t: "p",
-        text: "En español la doble negación es obligatoria: «no sé nada», «no he visto a nadie». En inglés es al revés: una sola negación por frase. Si el verbo ya va en negativo, lo de detrás tiene que ser positivo.",
+        text: "Para expresar una negación como «no sé nada» en inglés estándar, usa «I don't know anything» o «I know nothing». No combines don't y nothing con ese mismo sentido en el registro estándar que practicamos aquí.",
       },
       {
         t: "p",
-        text: "En español la doble negación es lo correcto: «no he visto a nadie» lleva dos negativos y suena perfecto. En inglés eso no existe — dos negaciones se anulan y la frase pasa a significar lo contrario, o simplemente suena a inglés mal aprendido.",
+        text: "Algunas variedades del inglés sí usan concordancia negativa, como «I don't know nothing», y no por eso son formas de hablar inferiores. Aquí trabajamos el inglés estándar habitual en textos académicos. Dos negativos también pueden aparecer en otras estructuras: «It is not impossible» no significa «es imposible».",
       },
       {
         t: "p",
-        text: "La solución es siempre la misma: una sola negación por frase. O niegas el verbo y usas anything, anybody, anywhere; o dejas el verbo en positivo y usas nothing, nobody, nowhere. Las dos son correctas, pero no se mezclan.",
+        text: "En estas oraciones estándar con una sola idea negativa, puedes negar el verbo y usar anything/anybody/anywhere, o usar nothing/nobody/nowhere sin negar el verbo. No es una prohibición de incluir más de una negación en una oración con varias cláusulas o sentidos distintos.",
       },
       {
         t: "formula",
@@ -4232,15 +4232,15 @@ export const LESSONS = [
       }
     ],
     quiz: [
-      { q: "«No sé nada» es…", options: ["I don't know nothing","I don't know anything","I know not nothing"], answer: 1, why: "Una sola negación: el don't ya niega." },
+      { q: "«No sé nada», en inglés estándar, es…", options: ["I don't know nothing","I don't know anything","I know not nothing"], answer: 1, why: "Para este sentido negativo estándar, don't se combina con anything." },
       { q: "«No vi a nadie» es…", options: ["I didn't see nobody","I didn't see anyone","I saw nobody not"], answer: 1, why: "Con verbo negativo, detrás va anyone." },
       { q: "«I know nothing» es…", options: ["Incorrecto","Correcto, con el verbo en positivo","Lo mismo que I don't know nothing"], answer: 1, why: "Negar con la palabra y dejar el verbo positivo también vale." },
       { q: "«Nunca dice nada» es…", options: ["She never says nothing","She never says anything","She doesn't never say"], answer: 1, why: "«Never» ya es la negación, así que detrás anything." },
       { q: "¿Cuántas negaciones caben en una frase inglesa?", options: ["Una","Dos","Las que hagan falta"], answer: 0, why: "Una. Dos se anulan y suena a inglés mal aprendido." },
       { q: "«No he visto a nadie» es…", options: ["I haven't seen nobody","I haven't seen anybody","I have seen nobody not"], answer: 1, why: "El «no» ya está en «haven't»: detrás va anybody, no nobody." },
       { q: "«No quiero nada» es…", options: ["I don't want nothing","I don't want anything","I want nothing not"], answer: 1, why: "Una negación por frase: don't + anything." },
-      { q: "«I want nothing» ¿está bien?", options: ["No, nunca","Sí: la negación la lleva «nothing» y el verbo va en positivo","Solo en poesía"], answer: 1, why: "Vale mientras haya UNA sola negación: o don't + anything, o nothing con el verbo afirmativo." },
-      { q: "¿Por qué a un español le sale la doble negación?", options: ["Porque en español es obligatoria","Porque suena más enfático","Porque el inglés la permitía antes"], answer: 0, why: "«No he visto a nadie» lleva dos negativos en español y es lo correcto; en inglés no." }
+      { q: "«I want nothing» ¿está bien?", options: ["No, nunca","Sí: la negación la lleva «nothing» y el verbo va en positivo","Solo en poesía"], answer: 1, why: "En esta oración estándar, nothing expresa por sí mismo que no quieres nada. También puedes decir I don't want anything." },
+      { q: "¿Qué patrón español puede llevarte a decir «I haven't seen nobody»?", options: ["La concordancia negativa de «no he visto a nadie»","El orden de los adjetivos","El uso del futuro"], answer: 0, why: "El español usa no + nadie en esa posición. El inglés estándar enseñado aquí usa haven't + anybody; otras variedades tienen otros patrones." }
     ],
   },
 
@@ -4494,7 +4494,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "Y ojo con lo que va detrás de «like»: si es un verbo, se pone en -ing, no en infinitivo. «Me gusta leer» es «I like reading». También vale «I like to read», pero «I like read» no existe nunca.",
+        text: "Like admite un verbo en -ing o un infinitivo con to: «I like reading» y «I like to read». No uses directamente la forma base: «I like read» no es la estructura estándar.",
       },
       {
         t: "table",
@@ -4793,7 +4793,7 @@ export const LESSONS = [
       { q: "«I am tired» — «Yo también» es…", options: ["So do I","So am I","So I am"], answer: 1, why: "Con «be» se repite el propio verbo: so am I." },
       { q: "«I went there» — «Yo también» es…", options: ["So do I","So did I","So went I"], answer: 1, why: "Pasado simple → el auxiliar es «did»." },
       { q: "«I don't like it» — «Yo tampoco» es…", options: ["Neither don't I","Neither do I","So don't I"], answer: 1, why: "«Neither» ya niega: el auxiliar va en positivo." },
-      { q: "¿Por qué «Neither don't I» está mal?", options: ["Porque el orden es otro","Porque habría dos negaciones en la misma frase","Porque «neither» no existe"], answer: 1, why: "En inglés solo cabe una negación por frase." },
+      { q: "¿Por qué para decir «yo tampoco» usamos «Neither do I», no «Neither don't I»?", options: ["Porque I va siempre delante","Porque neither ya aporta la negación de esta respuesta","Porque neither no existe"], answer: 1, why: "La respuesta estándar usa neither + auxiliar afirmativo + sujeto. No es una prohibición de todas las oraciones con varios elementos negativos." },
       { q: "«I can't swim» — «Yo tampoco» es…", options: ["Neither can I","Neither can't I","So can I"], answer: 0, why: "El modal se repite en positivo detrás de neither." },
       { q: "«Me too» y «Me neither»…", options: ["están mal","valen, pero son informales","solo valen por escrito"], answer: 1, why: "Son correctos en conversación informal y siempre funcionan." },
       { q: "«I love coffee» — «Pues yo no» es…", options: ["I don't","So don't I","Neither do I"], answer: 0, why: "Para lo contrario: sujeto + auxiliar, sin invertir." },
@@ -5049,7 +5049,7 @@ export const LESSONS = [
       { q: "«Me dio el libro» es…", options: ["He gave to me the book","He gave me the book","He gave the book me"], answer: 1, why: "Con la persona delante no se pone «to»." },
       { q: "«Dio el libro a María» es…", options: ["He gave the book to Maria","He gave to Maria the book","He gave the book Maria"], answer: 0, why: "Con la persona detrás hace falta «to»." },
       { q: "¿Cuál es el error más típico?", options: ["Olvidar el artículo","Poner «to» con la persona delante","Usar el plural"], answer: 1, why: "«Give to me the book» junta los dos órdenes y no existe." },
-      { q: "«Me explicó el problema» es…", options: ["He explained me the problem","He explained the problem to me","He explained to me the problem"], answer: 1, why: "«Explain» SIEMPRE lleva la persona detrás con «to»." },
+      { q: "Usa explain + cosa + to + persona para «Me explicó el problema».", options: ["He explained me the problem","He explained the problem to me","He explained to me the problem"], answer: 1, why: "La estructura solicitada es explain the problem to me. Explain no admite me como objeto indirecto sin to; la frase con to me delante del objeto puede aparecer en otros contextos." },
       { q: "¿Cuál de estos verbos NO admite «verbo + persona + cosa»?", options: ["give","send","explain"], answer: 2, why: "Explain, say, describe y suggest necesitan siempre la preposición." },
       { q: "«¿Me pasas la sal?» es…", options: ["Can you pass to me the salt?","Can you pass me the salt?","Can you pass the salt me?"], answer: 1, why: "Persona delante, sin preposición." },
       { q: "«Te invito a un café» (te compro un café) es…", options: ["I'll buy you a coffee","I'll buy to you a coffee","I'll buy a coffee you"], answer: 0, why: "«Buy» admite persona + cosa; con la persona detrás sería «for you»." },
@@ -5421,7 +5421,7 @@ export const LESSONS = [
         t: "error",
         wrong: "With who are you talking? / About what are you thinking?",
         right: "Who are you talking with? / What are you thinking about?",
-        why: "Poner la preposición delante no es incorrecto del todo, pero suena antiguo y libresco. Nadie habla así. En inglés hablado va SIEMPRE al final.",
+        why: "La preposición al final es habitual en conversación. Ponerla antes del relativo o interrogativo también puede ser correcto y es más formal: «To whom should I speak?».",
       },
       {
         t: "p",
@@ -5750,7 +5750,7 @@ export const LESSONS = [
         t: "error",
         wrong: "I studied yesterday at home. / She works every day in an office.",
         right: "I studied at home yesterday. / She works in an office every day.",
-        why: "El orden es lugar y luego tiempo, nunca al revés. En español los dos órdenes suenan bien, así que hay que corregirlo a conciencia.",
+        why: "El orden neutro habitual es lugar y después tiempo. El tiempo también puede ir al principio para situar o contrastar la escena; no todos los cambios de orden son errores.",
       },
       {
         t: "p",
@@ -6045,11 +6045,11 @@ export const LESSONS = [
     id: "verbo-persona-infinitivo",
     title: "«Quiero que vengas»: want you to come",
     tag: "Estructuras",
-    goal: "Traducir el «que + subjuntivo» del español, que en inglés no existe.",
+    goal: "Usar verbo + persona + to con want, ask, tell y otros verbos de petición o deseo.",
     blocks: [
       {
         t: "p",
-        text: "Esta es, con diferencia, una de las estructuras que más se falla, porque el español obliga a algo que el inglés no tiene. Cuando quieres que OTRA persona haga algo, nosotros abrimos una frase nueva con «que» y un subjuntivo: «quiero QUE VENGAS». El inglés no abre nada: encadena la persona y el verbo con «to».",
+        text: "Con want, ask o tell, el inglés suele usar persona + to + verbo: «I want you to come». El español usa aquí «quiero que vengas». El inglés también tiene estructuras con that y subjuntivo, como «I suggest that she go»; la estructura depende del verbo, no de traducir siempre que por to.",
       },
       {
         t: "formula",
@@ -6091,11 +6091,11 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Truco para no bloquearte al hablar: si en español te sale «que» seguido de subjuntivo (que vengas, que llame, que esperara), traduce mentalmente por «a que alguien haga». «Quiero que vengas» → «te quiero A TI venir» → «I want you to come». El «que» no se traduce nunca: se convierte en «to».",
+        text: "Para los verbos de esta lección, recuerda el patrón con una persona como objeto: «I want you to come», «I asked her to wait». Comprueba qué estructura admite cada verbo; no conviertas cualquier que español en to.",
       },
       {
         t: "p",
-        text: "Ahora la excepción que hay que separar bien, porque son justo los verbos vecinos: MAKE, LET, HAVE y HELP no llevan «to» (los tienes en su propia lección). Y hay un verbo, SAY, que directamente no admite esta estructura: no se dice «I said him to wait», se dice «I told him to wait».",
+        text: "En estas causativas activas, make, let y have llevan persona + verbo sin to. Help admite ambas formas: «help me carry» y «help me to carry». Con say no uses este patrón: «I told him to wait», no «I said him to wait». En pasiva, make cambia: «I was made to wait».",
       },
       {
         t: "table",
@@ -6126,7 +6126,7 @@ export const LESSONS = [
       { q: "¿Por qué «him» y no «he»?", options: ["Porque suena mejor","Porque es el objeto del verbo «want»","Porque «he» no existe"], answer: 1, why: "Aunque en español sea él quien llama, en inglés es el objeto de want." },
       { q: "«Me dijo que esperara» es…", options: ["She said me to wait","She told me to wait","She told me that wait"], answer: 1, why: "«Say» no admite persona detrás; «tell» sí." },
       { q: "¿Cuál NO lleva «to»?", options: ["want","ask","make"], answer: 2, why: "Make, let y have van con el verbo pelado: «I made him wait»." },
-      { q: "«Le pedí que me ayudara» es…", options: ["I asked her help me","I asked her to help me","I asked that she help me"], answer: 1, why: "ask + persona + to + verbo." },
+      { q: "Usa ask + persona + to para «Le pedí que me ayudara».", options: ["I asked her help me","I asked her to help me","I asked that she help me"], answer: 1, why: "La estructura solicitada es ask + persona + to + verbo. Asked that she help me puede usarse en un registro formal con otra estructura." },
       { q: "«I want you come» está mal porque…", options: ["falta «that»","falta «to»","sobra «you»"], answer: 1, why: "Las tres piezas son obligatorias: persona, to y verbo." },
       { q: "Con «help» se puede decir…", options: ["solo «help him wait»","solo «help him to wait»","las dos"], answer: 2, why: "«Help» admite las dos formas." },
       { q: "«No nos dejan aparcar» con «allow» es…", options: ["They don't allow us park","They don't allow us to park","They don't allow that we park"], answer: 1, why: "«Allow» va con to, como want, tell y ask." },
@@ -6686,7 +6686,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "El motivo por el que a un español le sale mal es que nosotros ahí ponemos SUBJUNTIVO: «cuando LLEGUE», «en cuanto TERMINE». Como el subjuntivo no existe en inglés, la tentación es sustituirlo por un futuro, que es lo que suena a «todavía no ha pasado». Pero el inglés lo resuelve con el presente de toda la vida.",
+        text: "El español usa subjuntivo en «cuando llegue» y «en cuanto termine». En estas cláusulas temporales referidas al futuro, el inglés usa normalmente presente, no will: «when I arrive». Esto no significa que el inglés carezca de subjuntivo en otras estructuras.",
       },
       {
         t: "table",
@@ -6782,7 +6782,7 @@ export const LESSONS = [
       },
       {
         t: "p",
-        text: "Y aquí está lo que lo hace especial: «be» NO necesita auxiliar para negar ni para preguntar. Todos los demás verbos piden «do», «does» o «did»; este se apaña solo. Para negar se le pega «not» detrás, y para preguntar salta delante del sujeto.",
+        text: "En las preguntas y negativas simples de esta lección, be no necesita do: «Is she ready?», «She is not ready». Los verbos léxicos suelen necesitar do/does/did, pero los modales y otros auxiliares tienen sus propias reglas. El imperativo negativo sí usa do con be: «Don't be late».",
       },
       {
         t: "table",
@@ -6803,7 +6803,7 @@ export const LESSONS = [
       },
       {
         t: "tip",
-        text: "Truco para no fallar: pregúntate si en la frase hay ya un «am», «is», «are», «was» o «were». Si lo hay, ESE es tu auxiliar — no traigas ningún «do». Si no lo hay, entonces sí hace falta do/does/did. Esta misma regla te vale para las preguntas, las negativas, las coletillas y las respuestas cortas.",
+        text: "Para estas frases simples con am/is/are/was/were, niega o pregunta con la propia forma de be. Con un verbo léxico en presente o pasado simple suele hacer falta do/does/did. Si ya hay un modal o un auxiliar como have, trabaja con él; no añadas do automáticamente.",
       },
       {
         t: "table",
@@ -6834,7 +6834,7 @@ export const LESSONS = [
       { q: "¿Cuántas formas tiene «be» en presente?", options: ["Una","Dos","Tres: am, is, are"], answer: 2, why: "Es el único verbo inglés que conserva tres formas." },
       { q: "«No estoy cansado» es…", options: ["I don't am tired","I'm not tired","I no am tired"], answer: 1, why: "«Be» se niega con «not» detrás, sin «do»." },
       { q: "«¿Estás listo?» es…", options: ["Do you are ready?","Are you ready?","You are ready?"], answer: 1, why: "«Be» salta delante del sujeto para preguntar." },
-      { q: "¿Cuándo hace falta «do» con «be»?", options: ["En preguntas","En negativas","Nunca"], answer: 2, why: "«Be» es su propio auxiliar." },
+      { q: "¿Necesitas do para preguntar o negar «She is ready»?", options: ["Sí, para preguntar","Sí, para negar","No: Is she ready? / She is not ready"], answer: 2, why: "Aquí be forma la pregunta y la negación sin do. El imperativo es distinto: Don't be late." },
       { q: "El participio de «be» es…", options: ["was","been","being"], answer: 1, why: "«I have been busy»." },
       { q: "«Being» se usa en…", options: ["el pasado simple","el continuo y la pasiva","las preguntas"], answer: 1, why: "«He is being difficult»." },
       { q: "Pasado de «they»:", options: ["was","were","been"], answer: 1, why: "You, we y they llevan «were»." },

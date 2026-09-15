@@ -3619,6 +3619,97 @@ main { max-width: 1120px; padding-inline: 20px; }
 }
 
 /* Aprender: una ruta clara y práctica centrada en un ejercicio cada vez. */
+.mission-hub, .mission-exercise, .mission-result { display: grid; gap: 16px; padding: 24px; margin-bottom: 24px; max-width: 760px; margin-inline: auto; }
+.mission-hub h3, .mission-result h3 { font-size: 24px; line-height: 1.3; }
+.mission-hub p, .mission-exercise p, .mission-result p { margin: 0; line-height: 1.6; }
+.mission-path { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; counter-reset: path; }
+.mission-path li { counter-increment: path; font-size: 13px; background: var(--accent-soft); padding: 8px 12px; border-radius: 12px; }
+.mission-path li::before { content: counter(path) ". "; font-weight: 750; }
+.mission-hub summary, .mission-result summary { min-height: 48px; padding-block: 12px; cursor: pointer; font-weight: 650; }
+.mission-list { display: grid; gap: 16px; padding-block: 16px; }
+.mission-list article { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.mission-exercise h3 { font-size: 22px; line-height: 1.5; overflow-wrap: anywhere; }
+.mission-exercise progress { width: 100%; height: 8px; accent-color: var(--accent); }
+.mission-exercise form, .mission-exercise .quiz-options { display: grid; gap: 12px; }
+.mission-exercise label { font-weight: 650; }
+.mission-exercise input { min-width: 0; width: 100%; min-height: 48px; padding: 12px; font: inherit; font-size: 16px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 12px; }
+.mission-exercise .quiz-option { min-height: 48px; padding: 16px; font: inherit; text-align: left; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.mission-exercise .quiz-option:hover { border-color: var(--accent); background: var(--accent-soft); }
+.mission-hub .btn, .mission-exercise .btn, .mission-result .btn { min-height: 48px; white-space: normal; }
+.mission-example { font-size: 20px; border-left: 3px solid var(--accent); padding-left: 16px; }
+.review-plan { display: grid; gap: 12px; padding: 24px; margin: 0 auto 24px; max-width: 760px; }
+.review-plan h3 { font-size: 24px; line-height: 1.3; }
+.review-plan p { margin: 0; line-height: 1.6; }
+.review-plan summary { min-height: 48px; padding-block: 12px; cursor: pointer; font-weight: 650; }
+.review-plan .btn { min-height: 48px; white-space: normal; }
+.review-day-summary { background: var(--accent-soft); border-radius: 12px; padding: 12px; font-size: 14px; }
+.review-plan-groups { display: grid; gap: 16px; padding-block: 12px; }
+.review-plan-groups article { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.review-plan-groups h4 { line-height: 1.4; overflow-wrap: anywhere; }
+.review-plan-groups p { font-size: 14px; }
+@media (max-width: 719px) { .review-plan { padding: 20px 16px; } }
+.mission-audio { display: grid; gap: 12px; padding: 16px; background: var(--accent-soft); border-radius: 16px; }
+.mission-audio .row-actions { display: grid; grid-template-columns: 1fr 1fr; margin: 0; gap: 8px; }
+.mission-audio p { margin: 0; font-size: 14px; line-height: 1.5; }
+.mission-audio .btn { min-height: 48px; white-space: normal; padding: 12px; }
+.mission-audio .pista-box { font-size: 16px; }
+@media (max-width: 359px) { .mission-audio .row-actions { grid-template-columns: 1fr; } }
+.mission-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.mission-metrics div { background: var(--accent-soft); padding: 12px; border-radius: 12px; }
+.mission-metrics dt { font-size: 13px; line-height: 1.4; }
+.mission-metrics dd { font-size: 28px; font-weight: 750; margin: 8px 0 0; }
+@media (max-width: 719px) {
+  .mission-hub, .mission-exercise, .mission-result { padding: 20px 16px; }
+  .mission-exercise h3 { font-size: 20px; }
+  body:has(.view[data-view="juegos"].is-active) .daybar { display: none; }
+}
+@media (max-width: 359px) { .mission-metrics { grid-template-columns: 1fr; } .mission-metrics div { display: flex; align-items: center; justify-content: space-between; gap: 12px; } .mission-metrics dd { margin: 0; } }
+.game-learning-panel { display: grid; gap: 12px; padding: 20px; margin-bottom: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+.game-learning-panel label, .game-written-review label { font-weight: 650; }
+.game-learning-panel p, .game-purpose p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+.game-learning-panel select, .game-written-review input { width: 100%; min-width: 0; min-height: 48px; padding: 12px; font: inherit; font-size: 16px; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
+.game-purpose { margin: 0 0 20px; }
+.game-purpose summary { min-height: 44px; padding-block: 12px; cursor: pointer; color: var(--accent); font-weight: 650; }
+.game-learning-last { color: var(--muted); font-size: 12px; }
+.game-meta { flex-wrap: wrap; }
+.game-meta .game-learning-last { order: -1; flex-basis: 100%; }
+#juego-activo > .btn-back { display: flex; align-items: center; width: 100%; margin-left: 0; border-radius: 0; background: var(--bg); }
+.game-learning-summary { line-height: 1.7; }
+.game-written-review { display: grid; gap: 16px; }
+.game-written-review form { display: grid; gap: 12px; }
+.game-written-review h3 { font-size: 20px; line-height: 1.5; overflow-wrap: anywhere; }
+#rapid-feedback .btn, #pair-feedback .btn { width: 100%; min-height: 48px; margin-top: 12px; }
+#rapid-feedback .explain, #pair-feedback .explain { margin-top: 16px; }
+#game-box .explain:focus { outline: none; }
+@media (max-width: 719px) { .game-learning-panel, .game-written-review { padding: 20px 16px; } }
+.learning-route-picker { display: grid; gap: 8px; margin: 24px 0; }
+.learning-route-picker label { font-weight: 700; }
+.learning-route-picker select { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; font-size: 16px; }
+.learning-route-picker p { margin: 0; font-size: 14px; }
+.learning-unit { margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+.learning-unit > summary { min-height: 48px; padding: 12px 0; cursor: pointer; font-size: 18px; font-weight: 700; line-height: 1.5; }
+.learning-unit > summary span { display: block; margin-left: 20px; color: var(--muted); font-size: 13px; font-weight: 400; }
+.learning-unit .lesson-grid { margin-top: 16px; }
+.lesson-prerequisites .btn-back { display: inline-flex; align-items: center; min-height: 44px; margin: 0; position: static; text-align: left; }
+.lesson-learning-state { color: var(--accent); }
+.lesson-transfer { display: grid; gap: 16px; margin: 24px 0; padding: 24px; }
+.lesson-transfer p { margin: 0; line-height: 1.6; }
+.lesson-transfer summary { min-height: 44px; padding-block: 12px; cursor: pointer; font-weight: 650; }
+.lesson-transfer details p { margin-block: 12px; }
+.lesson-transfer textarea, .written-answer input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; font-size: 16px; color: var(--text); background: var(--bg); }
+.lesson-transfer textarea { resize: vertical; }
+.written-answer { display: grid; gap: 12px; margin: 16px 0; }
+.written-answer label { font-weight: 650; }
+.written-answer p { font-size: 13px; margin: 0; }
+.written-answer input, .written-answer .btn { min-height: 48px; }
+.order-words { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.order-words .btn { min-width: 44px; min-height: 44px; padding: 8px 12px; }
+#order-output { display: block; min-height: 48px; margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--accent-soft); overflow-wrap: anywhere; }
+@media (max-width: 719px) {
+  .lesson-transfer { padding: 20px 16px; }
+  .learning-unit > summary { font-size: 17px; }
+  body:has(.view[data-view="lecciones"].is-active) .daybar { display: none; }
+}
 .learning-next-card { display: grid; gap: 12px; margin-bottom: 24px; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--accent-soft); }
 .learning-next-card .eyebrow { margin: 0; }
 .learning-next-card h3 { font-size: 24px; line-height: 1.25; }

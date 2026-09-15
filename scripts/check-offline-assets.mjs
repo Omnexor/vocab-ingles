@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+const root = new URL('../public/', import.meta.url);
+const sw = await readFile(new URL('sw.js', root), 'utf8');
+const files = ['NUCLEO', 'BASICOS'].flatMap(name => [...sw.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`))[1].matchAll(/"\.\/([^"\s]+)"/g)].map(m => m[1]));
+assert.equal(new Set(files).size, files.length);
+assert.ok(files.includes('learning-engine.js'));
+assert.ok(files.includes('grammar-practice.js'));
+assert.ok(files.includes('game-learning.js'));
+assert.ok(files.includes('game-missions.js'));
+assert.ok(files.includes('game-audio.js'));
+const hash = createHash('sha256');
+for (const file of files) hash.update(await readFile(new URL(file, root)));
+const seal = hash.digest('hex').slice(0, 16);
+if (!process.argv.includes('--print')) assert.equal(sw.match(/const SELLO = "([a-f0-9]+)"/)[1], seal, 'Update SW version and seal after changing cached assets');
+console.log(JSON.stringify({ result: process.argv.includes('--print') ? 'CALCULATED' : 'PASS', assets: files.length, seal }));
