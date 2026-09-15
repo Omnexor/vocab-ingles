@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE
   ? pathToFileURL(resolve(process.env.PLAYWRIGHT_MODULE)).href : 'playwright');
 const browser = await chromium.launch();
+const swVersion = Number((await readFile(new URL('../public/sw.js', import.meta.url), 'utf8')).match(/const VERSION = (\d+)/)[1]);
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
@@ -11,14 +13,14 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://localhost:3000');
   await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.waitForFunction(async () => {
+  await page.waitForFunction(async version => {
     const names = await caches.keys();
-    const name = names.find(n => n === 'vocab-v52');
+    const name = names.find(n => n === `vocab-v${version}`);
     if (!name) return false;
     const cache = await caches.open(name);
     const assets = ['index.html', 'app.js', 'learning-engine.js', 'grammar-practice.js', 'game-learning.js', 'game-missions.js', 'game-audio.js', 'lessons.js', 'vocabulario.json'];
     return (await Promise.all(assets.map(path => cache.match(`./${path}`)))).every(Boolean);
-  });
+  }, swVersion);
   await context.setOffline(true);
   await page.reload();
   await page.getByRole('button', { name: 'Aprender', exact: true }).click();
@@ -28,7 +30,7 @@ try {
   await page.reload();
   await page.getByRole('button', { name: 'Aprender', exact: true }).click();
   await page.locator('#learning-next button').click();
-  await page.locator('#resume-quiz').click();
+  await page.locator('#written-response').waitFor();
   assert.equal(await page.locator('#written-response').inputValue(), 'offline draft');
   await page.locator('#nose').click();
   assert.ok(await page.locator('.explain').isVisible());
@@ -60,6 +62,6 @@ try {
   const listening = await page.evaluate(() => JSON.parse(localStorage.getItem('vocab-ingles:v1')).missionSessions['listen-cafe']);
   assert.equal(listening.answers[0].assisted,true);
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ result: 'PASS', checks: 'SW v52, offline boot, grammar draft, game errors, written review, mission resume and audio transcript fallback offline' }));
+  console.log(JSON.stringify({ result: 'PASS', checks: `SW v${swVersion}, offline boot, grammar draft, game errors, written review, mission resume and audio transcript fallback offline` }));
   await context.close();
 } finally { await browser.close(); }

@@ -151,7 +151,8 @@ try {
     await index();
     assert.equal(await page.locator('#learning-next button').getAttribute('data-lesson'), lesson.id, 'Due review takes priority');
     await page.locator('#learning-next button').click();
-    await page.locator('#start-retention').click();
+    await page.locator('#written-response').waitFor();
+    assert.equal((await draft()).mode, 'retention', 'The recommendation opens the due review directly');
     const firstReview = (await draft()).items.map(i => i.id).sort();
     assert.ok(!firstReview.includes(writtenItem.id), 'Different prompts after delay');
     await page.locator('#lesson-theory-toggle').click();

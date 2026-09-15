@@ -19,6 +19,14 @@ Los intervalos son decisiones del producto, no una receta óptima demostrada par
 
 Un repaso temprano, generado por IA, parcial de errores o realizado consultando la teoría no acredita retención. Fallar una evaluación actual devuelve la lección a refuerzo sin borrar la mejor nota histórica. Los errores escritos y de reconocimiento pendientes no se eliminan por completar una práctica distinta.
 
+## Navegación de Aprender
+
+- La recomendación prioriza la práctica guardada más reciente, el repaso vencido más antiguo, los errores pendientes y después la siguiente lección sin práctica inicial completa. Los botones de continuar, repasar, reforzar y escribir abren directamente la actividad correspondiente.
+- La ruta permite buscar por título, objetivo, etiqueta y unidad, sin distinguir mayúsculas ni tildes. Los filtros «En curso» y «Repasar» muestran recuentos y un estado vacío con una salida clara. Cambiar entre gramática y pronunciación reinicia los filtros; volver desde una lección conserva la búsqueda, las unidades abiertas, el foco y la posición.
+- El progreso de cada unidad cuenta la práctica inicial: reconocimiento y aplicación escrita en gramática, reconocimiento en pronunciación. Este contador es distinto de las lecciones consolidadas tras los repasos diferidos.
+- Dentro de una lección, las etapas «Reconoce, Escribe, Recuerda» muestran qué falta. La explicación es accesible desde un botón y los detalles del método quedan disponibles en un desplegable. La pronunciación mantiene la invitación a escuchar e imitar, sin atribuir una evaluación al habla.
+- En móvil, enfocar la búsqueda desplaza el catálogo a la zona visible. Los controles tienen un mínimo de 44 px; las pestañas también funcionan con flechas, Inicio y Fin.
+
 ## Compatibilidad y límites
 
 - Se conserva `lessons.best/done/last`; `done` antiguo es historial, no dominio nuevo. No se convierten notas anteriores automáticamente en progreso de la nueva ruta.
@@ -39,6 +47,8 @@ Con el servidor local en el puerto 3000 y Playwright instalado (o `PLAYWRIGHT_MO
 
 ```text
 node scripts/check-grammar-engine.mjs
+node scripts/check-learning-hub-ui.mjs
+node scripts/check-grammar-ui.mjs
 node scripts/check-learning.mjs
 node scripts/check-mobile.mjs
 node scripts/check-grammar-offline.mjs

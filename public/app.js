@@ -4131,6 +4131,92 @@ const NO_LO_SE = "__no_lo_se__";
 
 let quiz = null; // { lesson, items, i, aciertos, elegida }
 let learningLane = "grammar";
+let learningQuery = "";
+let learningFilter = "all";
+let learningReturn = null;
+const learningUnitsOpen = new Map();
+const learningText = value => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+const learningLaneLessons = () => LESSONS.filter(l => isPronunciation(l.id) === (learningLane === "pronunciation"));
+const initialPracticeComplete = l => {
+  const p = lessonProgress(l.id);
+  return !!p.testPassedAt && (isPronunciation(l.id) || !!p.productionPassedAt);
+};
+const matchesLearningFilter = (l, filter) => {
+  const p = lessonProgress(l.id);
+  if (filter === "review") return dueReview(p, todayStr()) || !!lessonMistakes(l.id);
+  if (filter === "active") return !!lessonSession(l.id) || !!lessonMistakes(l.id)
+    || (!!p.last || !!p.testPassedAt || !!p.productionPassedAt) && !initialPracticeComplete(l);
+  return true;
+};
+
+function nextLearningLesson() {
+  const lane = learningLaneLessons();
+  return lane.filter(l => lessonSession(l.id)).sort((a, b) => lessonSession(b.id).updatedAt - lessonSession(a.id).updatedAt)[0]
+    || lane.filter(l => dueReview(lessonProgress(l.id), todayStr())).sort((a, b) => lessonProgress(a.id).nextReview.localeCompare(lessonProgress(b.id).nextReview))[0]
+    || lane.find(l => lessonMistakes(l.id))
+    || lane.find(l => !initialPracticeComplete(l));
+}
+
+function lessonSteps(lesson) {
+  const p = lessonProgress(lesson.id);
+  const steps = isPronunciation(lesson.id)
+    ? [["Escucha", "Ejemplos con audio", false], ["Reconoce", "Comprueba lo aprendido", !!p.testPassedAt]]
+    : [["Reconoce", "Comprende la regla", !!p.testPassedAt], ["Escribe", "Aplica en dos frases", !!p.productionPassedAt], ["Recuerda", "Repasos en otros días", p.retentionPasses >= 2]];
+  const current = isPronunciation(lesson.id) ? -1 : steps.findIndex(([, , complete]) => !complete);
+  return `<ol class="lesson-steps" aria-label="Etapas de la lección">${steps.map(([title, hint, complete], i) => `<li class="${complete ? "is-complete" : i === current ? "is-current" : ""}" ${i === current ? 'aria-current="step"' : ""}><span class="lesson-step-number" aria-hidden="true">${complete ? "✓" : i + 1}</span><span><b>${title}</b><small>${complete ? "Completado" : hint}</small></span></li>`).join("")}</ol>`;
+}
+
+function renderLearningCatalog() {
+  const lane = learningLaneLessons();
+  const next = nextLearningLesson();
+  const query = learningText(learningQuery.trim());
+  const matching = lane.filter(l => matchesLearningFilter(l, learningFilter)
+    && learningText(`${l.title} ${l.goal} ${l.tag} ${PATH.find(g => g.ids.includes(l.id))?.title || ""}`).includes(query));
+  const ids = new Set(matching.map(l => l.id));
+  const filtering = !!query || learningFilter !== "all";
+  $("#learning-route-progress").textContent = `${lane.filter(initialPracticeComplete).length} de ${lane.length} con práctica inicial completa`;
+  $$("[data-learning-filter]").forEach(button => {
+    button.setAttribute("aria-pressed", String(button.dataset.learningFilter === learningFilter));
+    $("span", button).textContent = lane.filter(l => matchesLearningFilter(l, button.dataset.learningFilter)).length;
+  });
+  $("#learning-results").textContent = filtering
+    ? `${matching.length} ${matching.length === 1 ? "lección encontrada" : "lecciones encontradas"}${learningQuery.trim() ? ` para «${learningQuery.trim()}»` : ""}`
+    : "Elige una unidad. Puedes explorar a tu ritmo.";
+  const card = l => {
+    const p = lessonProgress(l.id);
+    const session = lessonSession(l.id);
+    const pending = lessonMistakes(l.id);
+    const status = session ? `En curso · ejercicio ${session.i + 1}/${session.items.length}` : isPronunciation(l.id) && p.testPassedAt ? "Reconocimiento superado" : learningState(p, todayStr());
+    return `<button class="lesson-card${l.id === next?.id ? " is-next" : ""}" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(status)}">
+      <span class="lesson-card-top"><span class="lesson-position">${String(lane.indexOf(l) + 1).padStart(2, "0")}</span><span class="lesson-tag">${l.id === next?.id ? "Siguiente paso" : esc(l.tag)}</span></span>
+      <span class="lesson-title">${esc(l.title)}</span><span class="lesson-goal">${esc(l.goal)}</span>
+      ${pending ? `<span class="lesson-pending">${pending.items.length} para reforzar</span>` : ""}
+      <span class="lesson-meta"><span class="lesson-state${p.retentionPasses >= 2 ? " is-done" : ""}">${esc(status)}</span><span class="lesson-open" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span></span>
+    </button>`;
+  };
+  $("#lecciones-lista").innerHTML = matching.length ? PATH.filter(g => g.pronunciation === (learningLane === "pronunciation")).map((g, i) => {
+    const lessons = g.ids.map(getLesson).filter(l => l && ids.has(l.id));
+    if (!lessons.length) return "";
+    const unitKey = `${learningLane}-${i}`;
+    const complete = g.ids.map(getLesson).filter(initialPracticeComplete).length;
+    const open = filtering || (learningUnitsOpen.get(unitKey) ?? (g.ids.includes(next?.id) || !next && i === 0));
+    return `<details class="learning-unit" data-learning-unit="${unitKey}" ${open ? "open" : ""}>
+      <summary><span class="learning-unit-number" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span><span class="learning-unit-title"><b>${esc(g.title)}</b><small>${complete}/${g.ids.length} practicadas${filtering ? ` · ${lessons.length} visibles` : ""}</small><progress max="${g.ids.length}" value="${complete}" aria-label="Práctica inicial de ${esc(g.title)}"></progress></span><svg class="learning-unit-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary>
+      <div class="lesson-grid">${lessons.map(card).join("")}</div></details>`;
+  }).join("") : `<div class="learning-empty"><h4>${query ? "No encontramos esa lección" : learningFilter === "review" ? "Sin repasos pendientes" : "Todavía no hay lecciones en curso"}</h4><p>${query ? "Prueba con otra palabra o vuelve a ver toda la ruta." : learningFilter === "review" ? "Aquí aparecerán tus repasos programados y los ejercicios que necesites reforzar." : "Empieza por la recomendación o explora una unidad. Tu práctica se guardará para continuar después."}</p><button class="btn btn-ghost" id="learning-clear">Ver todas las lecciones</button></div>`;
+  $$("[data-learning-unit]").forEach(unit => {
+    const initialOpen = unit.open;
+    unit.ontoggle = () => { if (!filtering && (learningUnitsOpen.has(unit.dataset.learningUnit) || unit.open !== initialOpen)) learningUnitsOpen.set(unit.dataset.learningUnit, unit.open); };
+  });
+  if ($("#learning-clear")) $("#learning-clear").onclick = () => {
+    learningQuery = "";
+    learningFilter = "all";
+    $("#learning-search").value = "";
+    renderLearningCatalog();
+    $("#learning-search").focus({ preventScroll: true });
+  };
+}
 
 function lessonProgress(id) {
   return store.lessons[id] || { best: 0, done: false, last: null };
@@ -4179,14 +4265,14 @@ function saveLessonSession() {
   save();
 }
 
-async function renderLeccionesIndex() {
+async function renderLeccionesIndex({ restore = false } = {}) {
   await cargarLecciones();
   quiz = null;
   $("#leccion-detalle").hidden = true;
   $("#lectura-detalle").hidden = true;
   $("#lecciones-index").hidden = false;
   document.title = "Aprender · Vocab";
-  irAlInicio($("#lecciones-index"));
+  if (!restore) { learningReturn = null; irAlInicio($("#lecciones-index")); }
 
   const grammar = LESSONS.filter(l => !isPronunciation(l.id));
   const hechas = grammar.filter(l => lessonProgress(l.id).retentionPasses >= 2).length;
@@ -4194,51 +4280,50 @@ async function renderLeccionesIndex() {
   $("#lecciones-sub").textContent = hechas || textosLeidos
     ? `${hechas} consolidadas en la práctica · ${textosLeidos} lecturas terminadas`
     : "Comprende, aplica y vuelve a recordar. Sin prisa.";
-  $("#count-gramatica").textContent = `${hechas}/${grammar.length}`;
-  $("#count-frases").textContent = FRASES.length;
-  $("#count-lecturas").textContent = `${textosLeidos}/${TEXTOS.length}`;
+  $("#count-gramatica").textContent = `${grammar.length} lecciones`;
+  $("#count-frases").textContent = `${FRASES.length} expresiones`;
+  $("#count-lecturas").textContent = `${TEXTOS.length} textos`;
   renderLecturasIndex();
 
-  const lane = LESSONS.filter(l => isPronunciation(l.id) === (learningLane === "pronunciation"));
-  const paused = lane.filter(l => lessonSession(l.id))
-    .sort((a, b) => lessonSession(b.id).updatedAt - lessonSession(a.id).updatedAt)[0];
-  const siguiente = paused || lane.find(l => dueReview(lessonProgress(l.id), todayStr()))
-    || lane.find(l => lessonMistakes(l.id))
-    || lane.find(l => !lessonProgress(l.id).testPassedAt || (!isPronunciation(l.id) && !lessonProgress(l.id).productionPassedAt));
+  const siguiente = nextLearningLesson();
   const draft = siguiente && lessonSession(siguiente.id);
   const mistakes = siguiente && lessonMistakes(siguiente.id);
+  const progress = siguiente && lessonProgress(siguiente.id);
+  const due = siguiente && dueReview(progress, todayStr());
+  const needsWriting = siguiente && !isPronunciation(siguiente.id) && progress.testPassedAt && !progress.productionPassedAt;
+  const action = draft ? "resume-quiz" : due ? "start-retention" : mistakes ? "saved-mistakes" : needsWriting ? "start-production" : "";
   $("#learning-next").innerHTML = siguiente ? `
-    <div class="learning-next-card">
-      <span class="eyebrow">${draft ? "Donde lo dejaste" : dueReview(lessonProgress(siguiente.id), todayStr()) ? "Hoy toca recordar" : "Tu siguiente paso"}</span>
+    <section class="learning-next-card" aria-label="Tu siguiente paso">
+      <div class="learning-next-top"><span class="eyebrow">${draft ? "Donde lo dejaste" : due ? "Hoy toca recordar" : mistakes ? "Refuerza lo aprendido" : needsWriting ? "Ahora, con tus palabras" : "Tu siguiente paso"}</span><span class="learning-next-unit">${esc(PATH.find(g => g.ids.includes(siguiente.id)).title.replace(" · ruta independiente", ""))}</span></div>
       <h3>${esc(siguiente.title)}</h3>
-      <p>${draft ? `Ejercicio ${draft.i + 1} de ${draft.items.length}. ${sinSitio ? "No se ha podido guardar el avance. Mantén la app abierta." : "Tu avance está guardado en este navegador."}` : mistakes ? `${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"} para reforzar. Puedes repasarlos sin repetir toda la prueba.` : lessonProgress(siguiente.id).last ? "Vuelve a practicar esta lección y comprueba lo aprendido." : esc(siguiente.goal)}</p>
-      <button class="btn" data-lesson="${siguiente.id}">${draft ? "Retomar práctica" : lessonProgress(siguiente.id).last ? "Retomar lección" : "Empezar lección"}</button>
-    </div>` : `<div class="learning-next-card"><h3>Al día con esta ruta</h3><p>Los repasos aparecerán cuando toque. Mientras tanto, aplica lo aprendido en Lecturas.</p></div>`;
-
-  const card = (l) => {
-    const p = lessonProgress(l.id);
-    const session = lessonSession(l.id);
-    const pending = lessonMistakes(l.id);
-    const estado = session ? `En curso · ejercicio ${session.i + 1}/${session.items.length}` : isPronunciation(l.id) && p.testPassedAt ? "Prueba de reconocimiento superada" : learningState(p, todayStr());
-    return `<button class="lesson-card" data-lesson="${l.id}" aria-label="${esc(l.title)}. ${esc(l.goal)}. ${esc(estado)}">
-      <span class="lesson-tag">${esc(l.tag)}</span>
-      <span class="lesson-title">${esc(l.title)}</span>
-      <span class="lesson-goal">${esc(l.goal)}</span>
-      ${pending ? `<span class="lesson-pending">${pending.items.length} para reforzar</span>` : ""}
-      <span class="lesson-meta">
-        <span class="lesson-state${p.retentionPasses >= 2 ? " is-done" : ""}">${esc(estado)}</span>
-        <span class="lesson-open">Abrir <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 7l5 5-5 5"/></svg></span>
-      </span>
-    </button>`;
+      <p>${draft ? `Ejercicio ${draft.i + 1} de ${draft.items.length}. ${sinSitio ? "No se ha podido guardar el avance. Mantén la app abierta." : "Continúa exactamente donde lo dejaste."}` : due ? "Comprueba qué recuerdas con dos enunciados distintos. Inténtalo sin consultar la teoría." : mistakes ? `${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"} para reforzar, con explicación y un nuevo intento.` : needsWriting ? "Ya superaste el test. Ahora aplica la regla en dos frases sin opciones." : esc(siguiente.goal)}</p>
+      <button class="btn" data-lesson="${siguiente.id}" data-learning-action="${action}">${draft ? "Continuar práctica" : due ? "Hacer el repaso de hoy" : mistakes ? "Reforzar mis errores" : needsWriting ? "Aplicar por escrito" : "Empezar lección"}<span aria-hidden="true">→</span></button>
+      <span class="learning-next-note">${draft ? "Tu práctica continúa desde la última respuesta" : due ? "2 ejercicios · repaso espaciado" : needsWriting ? "2 ejercicios · respuesta escrita" : mistakes ? "Practica a tu ritmo, sin reloj" : isPronunciation(siguiente.id) ? "Escucha los ejemplos y practica en voz alta" : "Comprende la regla, practica y vuelve a recordar"}</span>
+    </section>` : `<section class="learning-next-card"><span class="eyebrow">Buen trabajo</span><h3>Al día con esta ruta</h3><p>Los repasos aparecerán cuando toque. Sigue aplicando lo aprendido en un texto.</p><button class="btn" id="learning-read-next">Practicar con una lectura <span aria-hidden="true">→</span></button></section>`;
+  if ($("#learning-read-next")) $("#learning-read-next").onclick = () => { cambiarModoAprender("lecturas"); $("#modo-lecturas").focus(); };
+  $("#learning-lane").value = learningLane;
+  $("#learning-lane").onchange = event => {
+    learningLane = event.target.value;
+    learningQuery = "";
+    learningFilter = "all";
+    renderLeccionesIndex();
   };
-  $("#lecciones-lista").classList.remove("lesson-grid");
-  $("#lecciones-lista").innerHTML = `<div class="learning-route-picker"><label for="learning-lane">Tu ruta</label>
-    <select id="learning-lane"><option value="grammar" ${learningLane === "grammar" ? "selected" : ""}>Gramática · ruta progresiva</option><option value="pronunciation" ${learningLane === "pronunciation" ? "selected" : ""}>Pronunciación · sonidos y ritmo</option></select>
-    <p class="muted">Ruta orientativa, sin bloqueos. Una nota de test no equivale a dominar una regla.</p></div>`
-    + PATH.filter(g => g.pronunciation === (learningLane === "pronunciation")).map((g, i) => `<details class="learning-unit" ${i === 0 || g.ids.includes(siguiente?.id) ? "open" : ""}>
-      <summary>${esc(g.title)} <span>${g.ids.length} lecciones</span></summary>
-      <div class="lesson-grid">${g.ids.map(id => card(getLesson(id))).join("")}</div></details>`).join("");
-  $("#learning-lane").onchange = event => { learningLane = event.target.value; renderLeccionesIndex(); };
+  $("#learning-search").value = learningQuery;
+  $("#learning-search").onfocus = () => {
+    if (window.matchMedia("(max-width: 719px)").matches) $(".learning-catalog").scrollIntoView({ block: "start", behavior: "instant" });
+  };
+  $("#learning-search").oninput = event => { learningQuery = event.target.value; renderLearningCatalog(); };
+  $$("[data-learning-filter]").forEach(button => { button.onclick = () => { learningFilter = button.dataset.learningFilter; renderLearningCatalog(); }; });
+  renderLearningCatalog();
+  if (restore && learningReturn) {
+    const previous = learningReturn;
+    learningReturn = null;
+    requestAnimationFrame(() => {
+      const card = $(`[data-lesson="${previous.id}"]`, $("#lecciones-lista"));
+      if (card?.checkVisibility()) card.focus({ preventScroll: true });
+      window.scrollTo({ top: previous.scroll, behavior: "instant" });
+    });
+  }
 }
 
 /**
@@ -4311,10 +4396,12 @@ function pintarBloque(b) {
   }
 }
 
-async function openLeccion(id) {
+async function openLeccion(id, action = "") {
   await cargarLecciones();
   const lesson = getLesson(id);
   if (!lesson) return;
+
+  if (!$("#lecciones-index").hidden) learningReturn = { id, scroll: window.scrollY };
 
   const p = lessonProgress(id);
   const draft = lessonSession(id);
@@ -4322,6 +4409,8 @@ async function openLeccion(id) {
   const pronunciation = isPronunciation(id);
   const prerequisite = prerequisites(id).map(getLesson).filter(Boolean);
   const due = dueReview(p, todayStr());
+  const needsWriting = !pronunciation && p.testPassedAt && !p.productionPassedAt;
+  const primary = draft ? "resume" : due ? "retention" : mistakes ? "mistakes" : needsWriting ? "production" : "test";
   const example = lesson.blocks.filter(b => b.t === "examples").flatMap(b => b.items)[0];
   $("#lecciones-index").hidden = true;
   const box = $("#leccion-detalle");
@@ -4347,17 +4436,27 @@ async function openLeccion(id) {
         <p>${draft.answers.length > draft.i ? "Tu última respuesta está guardada. Verás la explicación antes de seguir." : "Puedes seguir desde aquí, aunque hayas cerrado la app."}</p>
         <button class="btn" id="resume-quiz">Continuar práctica</button>
       </div>` : ""}
-      <p class="lesson-learning-state"><b>${esc(pronunciation && p.testPassedAt ? "Prueba de reconocimiento superada" : learningState(p, todayStr()))}</b>${p.best ? ` · Mejor test: ${p.best}%` : ""}</p>
-      <p><b>${lesson.quiz.length} ejercicios de reconocimiento</b> · 80% para superar el test, no para demostrar dominio.</p>
-      <span>${pronunciation ? "Escucha e imita los ejemplos. Este test no evalúa tu pronunciación hablada." : "1. Comprende la regla · 2. Supera el test y escribe · 3. Recuerda con otros enunciados, primero a los 2 días y después a los 7."}</span>
-      ${p.done && !p.testPassedAt ? '<p class="muted">Tu nota anterior se conserva. La nueva ruta necesita una prueba actual y práctica escrita; no convierte notas antiguas en dominio.</p>' : ""}
-      ${draft && (draft.version === 1 || draft.eligible === false) ? '<p class="muted">Esta práctica cuenta como entrenamiento, no como evaluación de retención. Si procede de una versión anterior, puede conservar enunciados antiguos. Tu historial no se pierde.</p>' : ""}
-      ${prerequisite.length ? `<p class="lesson-prerequisites">Antes te puede ayudar: ${prerequisite.map(l => `<button class="btn-back" data-lesson="${l.id}">${esc(l.title)}</button>`).join(" ")}</p>` : ""}
-      ${store.lessonSessions?.[id] && !draft ? `<p class="muted">La práctica guardada no es compatible con esta lección. Puedes empezar una nueva; tu mejor nota se conserva.</p>` : ""}
-      <button class="btn ${draft || mistakes ? "btn-ghost" : ""}" id="start-quiz">${draft ? "Empezar de nuevo" : p.done ? "Practicar otra vez" : "Empezar práctica"}</button>
-      ${mistakes ? `<button class="btn ${draft ? "btn-ghost" : ""}" id="saved-mistakes">Reforzar ${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
-      ${!pronunciation ? `<button class="btn btn-ghost" id="start-production">Aplicar por escrito · 2 ejercicios</button>
-        ${due ? '<button class="btn" id="start-retention">Repaso de hoy · otros enunciados</button><p class="muted">Inténtalo sin consultar la teoría. Puedes abrirla si necesitas ayuda, pero entonces contará solo como entrenamiento.</p>' : p.nextReview ? `<p class="muted">Próximo repaso: <b>${esc(p.nextReview)}</b>. Repetir hoy sirve para practicar, pero no acredita retención.</p>` : '<p class="muted">El repaso se programa tras superar el test y los 2 ejercicios escritos. Se consolida con dos repasos diferidos correctos; no es una certificación de nivel.</p>'}` : ""}
+      <p class="lesson-learning-state"><b>${esc(pronunciation && p.testPassedAt ? "Prueba de reconocimiento superada" : learningState(p, todayStr()))}</b></p>
+      ${lessonSteps(lesson)}
+      ${!draft ? `<div class="lesson-next-guidance"><h3>${due ? "Es momento de recordar" : mistakes ? "Da otra vuelta a lo que costó" : needsWriting ? "Ya lo reconoces. Ahora escríbelo." : pronunciation ? "Escucha, imita y reconoce" : "Comprende la regla y ponla a prueba"}</h3><p>${due ? "Dos enunciados nuevos para comprobar qué recuerdas. Inténtalo sin consultar la teoría." : mistakes ? "Revisa la explicación y vuelve a intentarlo. Cada error te muestra qué practicar." : needsWriting ? "Aplica la regla en dos frases sin opciones. Después programaremos tu repaso." : pronunciation ? "Escucha los ejemplos y repítelos en voz alta antes de hacer la prueba." : `${lesson.quiz.length} preguntas con explicación. Puedes leer los ejemplos antes de empezar.`}</p></div>` : ""}
+      <div class="lesson-practice-actions">
+        ${due ? `<button class="btn ${primary === "retention" ? "" : "btn-ghost"}" id="start-retention">Hacer el repaso de hoy</button>` : ""}
+        ${mistakes ? `<button class="btn ${primary === "mistakes" ? "" : "btn-ghost"}" id="saved-mistakes">Reforzar ${mistakes.items.length} ${mistakes.items.length === 1 ? "ejercicio" : "ejercicios"}</button>` : ""}
+        ${needsWriting ? '<button class="btn ' + (primary === "production" ? '' : 'btn-ghost') + '" id="start-production">Aplicar por escrito · 2 ejercicios</button>' : ""}
+        <button class="btn ${primary === "test" ? "" : "btn-ghost"}" id="start-quiz">${draft ? "Empezar de nuevo" : p.testPassedAt ? "Repetir prueba de reconocimiento" : "Empezar práctica"}</button>
+        <button class="btn btn-ghost" id="read-lesson-theory">${pronunciation ? "Escuchar los ejemplos" : "Leer explicación y ejemplos"}</button>
+        ${!pronunciation && !needsWriting ? '<button class="btn btn-ghost lesson-secondary-action" id="start-production">Aplicar por escrito · 2 ejercicios</button>' : ""}
+      </div>
+      ${!pronunciation && p.nextReview && !due ? `<p class="lesson-review-date">Próximo repaso: <b>${esc(reviewDateLabel(p.nextReview))}</b></p>` : ""}
+      ${p.done && !p.testPassedAt ? '<p class="muted">Tu nota anterior se conserva. Completa una prueba actual y la práctica escrita para avanzar en esta ruta.</p>' : ""}
+      ${draft && (draft.version === 1 || draft.eligible === false) ? '<p class="muted">Esta práctica cuenta como entrenamiento, no como evaluación de retención. Tu historial se conserva.</p>' : ""}
+      ${store.lessonSessions?.[id] && !draft ? '<p class="muted">No se puede retomar esta práctica guardada. Puedes empezar otra; tu mejor nota se conserva.</p>' : ""}
+      <details class="lesson-method"><summary>Cómo avanzar en esta lección</summary>
+        <p>${pronunciation ? "El test comprueba el reconocimiento; no evalúa tu pronunciación hablada. Sigue escuchando e imitando los ejemplos." : "Supera el test con un 80% y resuelve los dos ejercicios escritos. Después vuelve a recordar con otros enunciados: primero a los 2 días y después a los 7. Dos repasos diferidos correctos consolidan la lección en la práctica."}</p>
+        ${p.best ? `<p>Mejor prueba de reconocimiento: <b>${p.best}%</b>.</p>` : ""}
+        ${!pronunciation ? '<p>Repetir hoy te ayuda a practicar. Para comprobar retención, espera al repaso programado e inténtalo sin consultar la teoría. La ruta no certifica un nivel.</p>' : ""}
+        ${prerequisite.length ? `<p class="lesson-prerequisites">Antes te puede ayudar: ${prerequisite.map(l => `<button class="btn-back" data-lesson="${l.id}">${esc(l.title)}</button>`).join(" ")}</p>` : ""}
+      </details>
     </div>
     <div id="lesson-theory">
       <article class="lesson-body">${lesson.blocks.map(blockHtml).join("")}</article>
@@ -4376,9 +4475,15 @@ async function openLeccion(id) {
 
   $("#back-lecciones").onclick = () => {
     quiz = null;
-    renderLeccionesIndex();
+    renderLeccionesIndex({ restore: true });
   };
   $("#start-quiz").onclick = () => startQuiz(lesson, lesson.quiz);
+  $("#read-lesson-theory").onclick = () => {
+    const theory = $("#lesson-theory");
+    theory.setAttribute("tabindex", "-1");
+    theory.focus({ preventScroll: true });
+    theory.scrollIntoView({ block: "start", behavior: "instant" });
+  };
   if ($("#resume-quiz")) $("#resume-quiz").onclick = () => startQuiz(lesson, draft.items, { ia: draft.ia, review: draft.review, mode: draft.mode, resume: draft });
   if ($("#start-production")) $("#start-production").onclick = () => startQuiz(lesson, productionItems(lesson), { mode: "production" });
   if ($("#start-retention")) $("#start-retention").onclick = () => startQuiz(lesson, productionItems(lesson, (p.retentionPasses || 0) % 2 + 1), { mode: "retention" });
@@ -4419,6 +4524,7 @@ async function openLeccion(id) {
   };
 
   irAlInicio(box);
+  if (["resume-quiz", "start-retention", "saved-mistakes", "start-production"].includes(action)) $(`#${action}`, box)?.click();
 }
 
 /** Pide ejercicios nuevos a Claude sobre esta lección. */
@@ -4676,6 +4782,7 @@ function cambiarModoAprender(modo) {
   ]) {
     $(sel).classList.toggle("is-active", modo === id);
     $(sel).setAttribute("aria-selected", String(modo === id));
+    $(sel).tabIndex = modo === id ? 0 : -1;
   }
   $("#panel-gramatica").hidden = modo !== "gramatica";
   $("#panel-frases").hidden = modo !== "frases";
@@ -5321,7 +5428,7 @@ document.addEventListener("click", (e) => {
   if (btn) speak(btn.dataset.speak);
 
   const card = e.target.closest("[data-lesson]");
-  if (card) openLeccion(card.dataset.lesson);
+  if (card) openLeccion(card.dataset.lesson, card.dataset.learningAction);
 
   const lect = e.target.closest("[data-lectura]");
   if (lect) abrirLectura(lect.dataset.lectura);
@@ -5384,6 +5491,16 @@ $("#chips-verbos").addEventListener("click", (e) => {
 $("#modo-gramatica").addEventListener("click", () => cambiarModoAprender("gramatica"));
 $("#modo-frases").addEventListener("click", () => cambiarModoAprender("frases"));
 $("#modo-lecturas").addEventListener("click", () => cambiarModoAprender("lecturas"));
+$(".learning-tabs").addEventListener("keydown", event => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  const tabs = $$("[role=tab]", event.currentTarget);
+  const index = tabs.indexOf(event.target);
+  if (index < 0) return;
+  event.preventDefault();
+  const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+  tabs[next].click();
+  tabs[next].focus();
+});
 
 $("#set-level").addEventListener("change", (e) => {
   store.settings.level = e.target.value;

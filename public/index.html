@@ -152,25 +152,46 @@
           </div>
 
           <div class="seg seg-3 learning-tabs" role="tablist" aria-label="Tipo de contenido">
-            <button class="seg-btn is-active" id="modo-gramatica" role="tab" aria-selected="true">
+            <button class="seg-btn is-active" id="modo-gramatica" role="tab" aria-selected="true" aria-controls="panel-gramatica">
               <span>Gramática</span><small id="count-gramatica">0/0</small>
             </button>
-            <button class="seg-btn" id="modo-frases" role="tab" aria-selected="false">
+            <button class="seg-btn" id="modo-frases" role="tab" aria-selected="false" aria-controls="panel-frases" tabindex="-1">
               <span>Frases</span><small id="count-frases">0</small>
             </button>
-            <button class="seg-btn" id="modo-lecturas" role="tab" aria-selected="false">
+            <button class="seg-btn" id="modo-lecturas" role="tab" aria-selected="false" aria-controls="panel-lecturas" tabindex="-1">
               <span>Lecturas</span><small id="count-lecturas">0/0</small>
             </button>
           </div>
 
-          <div id="panel-gramatica">
+          <div id="panel-gramatica" role="tabpanel" aria-labelledby="modo-gramatica">
+            <div class="learning-route-picker">
+              <label for="learning-lane">Tu ruta</label>
+              <select id="learning-lane">
+                <option value="grammar">Gramática · paso a paso</option>
+                <option value="pronunciation">Pronunciación · sonidos y ritmo</option>
+              </select>
+            </div>
             <div id="learning-next"></div>
-            <div id="lecciones-lista" class="lesson-grid"></div>
+            <section class="learning-catalog" aria-labelledby="learning-catalog-title">
+              <div class="learning-catalog-head"><h3 id="learning-catalog-title">Explora tu ruta</h3><p id="learning-route-progress" class="muted"></p></div>
+              <div class="learning-search">
+                <label class="sr-only" for="learning-search">Buscar una lección</label>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+                <input type="search" id="learning-search" placeholder="Busca: pasado, preguntas…" autocomplete="off" aria-controls="lecciones-lista">
+              </div>
+              <div class="learning-filters" role="group" aria-label="Filtrar lecciones">
+                <button type="button" data-learning-filter="all" aria-pressed="true">Todas <span></span></button>
+                <button type="button" data-learning-filter="active" aria-pressed="false">En curso <span></span></button>
+                <button type="button" data-learning-filter="review" aria-pressed="false">Repasar <span></span></button>
+              </div>
+              <p id="learning-results" class="learning-results" role="status" aria-live="polite" aria-atomic="true"></p>
+              <div id="lecciones-lista"></div>
+            </section>
           </div>
 
           <!-- Frases hechas: lo que un nativo suelta entero y no se saca del
                vocabulario suelto. -->
-          <div id="panel-frases" hidden>
+          <div id="panel-frases" role="tabpanel" aria-labelledby="modo-frases" hidden>
             <p class="hint-line">
               Frases que se dicen enteras, tal cual. Toca una para ver de dónde
               sale, cuándo se usa y dónde está la trampa.
@@ -179,7 +200,7 @@
             <div id="frases-lista"></div>
           </div>
 
-          <div id="panel-lecturas" hidden>
+          <div id="panel-lecturas" role="tabpanel" aria-labelledby="modo-lecturas" hidden>
             <p class="hint-line">
               Texto seguido, no palabras sueltas. Toca cualquier palabra que no
               conozcas para ver qué significa y añadirla a tus palabras. Toca la
